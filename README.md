@@ -48,6 +48,18 @@ Está pensada como PWA: se instala en el móvil desde el navegador y se usa como
 - **Entrenador / cuerpo técnico** — acceso completo: gestiona plantilla, crea partidos, convoca, pasa lista y registra estadísticas.
 - **Jugador** — consulta calendario y convocatorias, confirma disponibilidad y ve sus propias estadísticas.
 
+### Cuentas de usuario
+
+No hay registro público: la aplicación no tiene pantalla de alta. Las cuentas las crea el entrenador a mano, desde el panel de Supabase (*Authentication → Add user*, con email y contraseña), y se las pasa al jugador por el canal que use ahora el equipo.
+
+Toda cuenta nueva empieza con el rol `jugador`. El ascenso a `entrenador` se hace directamente por SQL (nunca desde la aplicación, para que nadie pueda concederse a sí mismo más permisos):
+
+```sql
+update perfiles set rol = 'entrenador' where id = '<uuid de la cuenta>';
+```
+
+Una vez creada la cuenta, el entrenador la vincula a la ficha del jugador correspondiente desde el panel de la aplicación (fase 4). Hasta que no está vinculada, esa cuenta no puede leer ningún dato del equipo. Si un jugador olvida la contraseña, en esta beta se la restablece el entrenador desde el panel de Supabase (*Authentication → reset password*).
+
 ## Puesta en marcha
 
 Requisitos: Node.js 20 o superior y Docker (para levantar Supabase en local).
@@ -103,7 +115,8 @@ src/
 │   └── (panel)/         # Zona privada
 ├── components/          # Componentes reutilizables
 ├── lib/
-│   └── supabase/        # Clientes de Supabase (servidor y proxy)
+│   ├── supabase/        # Clientes de Supabase (servidor y proxy)
+│   └── utils.ts         # Función cn() que usan los componentes de shadcn/ui
 ├── types/
 │   └── database.ts      # Tipos generados desde el esquema (no editar a mano)
 └── proxy.ts             # Refresca la sesión en cada petición
