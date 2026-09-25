@@ -50,17 +50,20 @@ Está pensada como PWA: se instala en el móvil desde el navegador y se usa como
 
 ## Puesta en marcha
 
-Requisitos: Node.js 20 o superior y una cuenta de Supabase.
+Requisitos: Node.js 20 o superior y Docker (para levantar Supabase en local).
 
 ```bash
 # Clonar el repositorio
 git clone https://github.com/juanrrajosee/App-Atletico-Trelle.git
 cd App-Atletico-Trelle
 
-# Instalar dependencias
+# Instalar dependencias (incluye la CLI de Supabase)
 npm install
 
-# Configurar las variables de entorno
+# Levantar Supabase en local; al terminar muestra la URL y las claves
+npm run db:iniciar
+
+# Configurar las variables de entorno con esos valores
 cp .env.example .env.local
 
 # Levantar el entorno de desarrollo
@@ -73,26 +76,44 @@ La aplicación queda disponible en `http://localhost:3000`.
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 ```
 
-Las dos primeras están en el panel de Supabase, en *Project Settings → API*. La `SERVICE_ROLE_KEY` solo se usa en servidor y **nunca** debe subirse al repositorio ni exponerse en el cliente.
+En local, las muestra `npm run db:iniciar` (o `npx supabase status`). En un proyecto remoto están en el panel de Supabase, en *Project Settings → API Keys*. La clave *publishable* es pública: los permisos los controla Row Level Security en la base de datos. La aplicación no usa la clave `service_role` / *secret*, que **nunca** debe subirse al repositorio ni exponerse en el cliente.
+
+### Scripts
+
+| Script | Qué hace |
+|---|---|
+| `npm run dev` | Servidor de desarrollo |
+| `npm run build` | Compilación de producción |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | Comprobación de tipos (TypeScript) |
+| `npm run db:iniciar` / `db:parar` | Arranca / para Supabase en local |
+| `npm run db:reset` | Recrea la base de datos local aplicando todas las migraciones |
+| `npm run db:test` | Tests de la base de datos (políticas RLS) |
+| `npm run db:tipos` | Genera `src/types/database.ts` a partir del esquema local |
 
 ## Estructura del proyecto
 
 ```
 src/
 ├── app/                 # Rutas y páginas (App Router)
-│   ├── (auth)/          # Login y registro
-│   ├── (dashboard)/     # Zona privada
-│   └── api/             # Endpoints
+│   ├── (auth)/          # Acceso a la aplicación
+│   └── (panel)/         # Zona privada
 ├── components/          # Componentes reutilizables
-├── lib/                 # Cliente de Supabase y utilidades
-└── types/               # Tipos de TypeScript
+├── lib/
+│   └── supabase/        # Clientes de Supabase (servidor y proxy)
+├── types/
+│   └── database.ts      # Tipos generados desde el esquema (no editar a mano)
+└── proxy.ts             # Refresca la sesión en cada petición
 supabase/
-└── migrations/          # Esquema de la base de datos
+├── config.toml          # Configuración de Supabase en local
+├── migrations/          # Esquema de la base de datos, en SQL numerado
+└── tests/               # Tests de las políticas RLS
 ```
+
+Las escrituras se hacen con Server Actions usando la sesión del usuario, así que todas pasan por Row Level Security.
 
 ## Estado
 
