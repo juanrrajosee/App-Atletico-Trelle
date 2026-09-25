@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import type { Database } from "@/types/database";
 import { obtenerEntornoSupabase } from "./entorno";
 
 /**
@@ -14,7 +15,7 @@ export async function crearClienteServidor() {
   const almacenCookies = await cookies();
   const { url, clave } = obtenerEntornoSupabase();
 
-  return createServerClient(url, clave, {
+  return createServerClient<Database>(url, clave, {
     cookies: {
       getAll() {
         return almacenCookies.getAll();
