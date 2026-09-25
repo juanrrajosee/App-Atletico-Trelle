@@ -1,5 +1,12 @@
 -- Tests de RLS para "partidos".
 begin;
+
+-- Cada test parte de una base de datos vacía, tenga los datos que tenga la
+-- base local. Todo va dentro de la transacción: el rollback del final lo
+-- deja todo como estaba.
+truncate auth.users, public.jugadores, public.partidos, public.entrenamientos
+  cascade;
+
 select plan(5);
 
 insert into auth.users (id, email) values
