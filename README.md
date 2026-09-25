@@ -50,15 +50,28 @@ Está pensada como PWA: se instala en el móvil desde el navegador y se usa como
 
 ### Cuentas de usuario
 
-No hay registro público: la aplicación no tiene pantalla de alta. Las cuentas las crea el entrenador a mano, desde el panel de Supabase (*Authentication → Add user*, con email y contraseña), y se las pasa al jugador por el canal que use ahora el equipo.
+No hay registro público: la aplicación no tiene pantalla de alta y Supabase rechaza cualquier alta desde fuera. Las cuentas las crea el entrenador a mano y se las pasa a cada jugador por el canal que use ahora el equipo.
 
-Toda cuenta nueva empieza con el rol `jugador`. El ascenso a `entrenador` se hace directamente por SQL (nunca desde la aplicación, para que nadie pueda concederse a sí mismo más permisos):
+**Crear una cuenta.** En el panel de Supabase (en local, `http://127.0.0.1:54323`): *Authentication → Users → Add user → Create new user*, con email y contraseña (mínimo 8 caracteres) y marcando *Auto Confirm User*.
+
+**Hacer entrenador a una cuenta.** Toda cuenta nueva empieza como `jugador`. El ascenso se hace por SQL, desde el *SQL Editor* del panel, nunca desde la aplicación (así nadie puede concederse a sí mismo más permisos):
 
 ```sql
-update perfiles set rol = 'entrenador' where id = '<uuid de la cuenta>';
+update perfiles set rol = 'entrenador'
+where id = (select id from auth.users where email = 'correo@ejemplo.com');
 ```
 
-Una vez creada la cuenta, el entrenador la vincula a la ficha del jugador correspondiente desde el panel de la aplicación (fase 4). Hasta que no está vinculada, esa cuenta no puede leer ningún dato del equipo. Si un jugador olvida la contraseña, en esta beta se la restablece el entrenador desde el panel de Supabase (*Authentication → reset password*).
+**Vincular la cuenta a su ficha.** Hasta que el entrenador no vincula una cuenta de jugador con su ficha (desde la propia aplicación, a partir de la fase 4), esa cuenta solo ve una pantalla de "cuenta pendiente" y no puede leer ningún dato del equipo.
+
+**Contraseña olvidada.** La recuperación por email necesita un servidor de correo propio, que la beta no tiene. El entrenador pone una contraseña nueva desde el *SQL Editor* y se la pasa al jugador:
+
+```sql
+update auth.users
+set encrypted_password = extensions.crypt('contraseña-nueva', extensions.gen_salt('bf'))
+where email = 'correo@ejemplo.com';
+```
+
+**En el proyecto de Supabase real** (cuando se despliegue), hay que desactivar el registro en *Authentication → Sign In / Providers → Allow new users to sign up*, dejando activado el proveedor de email (si se desactiva, tampoco se puede iniciar sesión).
 
 ## Puesta en marcha
 
@@ -110,20 +123,25 @@ En local, las muestra `npm run db:iniciar` (o `npx supabase status`). En un proy
 
 ```
 src/
-├── app/                 # Rutas y páginas (App Router)
-│   ├── (auth)/          # Acceso a la aplicación
-│   └── (panel)/         # Zona privada
-├── components/          # Componentes reutilizables
+├── app/                   # Rutas y páginas (App Router)
+│   ├── (auth)/            # Pantalla de acceso y acciones de sesión
+│   ├── (panel)/           # Zona privada: cabecera, navegación inferior e inicio
+│   └── pendiente/         # Cuenta de jugador aún sin vincular a su ficha
+├── components/
+│   ├── ui/                # Componentes de shadcn/ui
+│   └── navegacion-inferior.tsx
 ├── lib/
-│   ├── supabase/        # Clientes de Supabase (servidor y proxy)
-│   └── utils.ts         # Función cn() que usan los componentes de shadcn/ui
+│   ├── auth.ts            # Usuario actual y comprobación de acceso
+│   ├── fechas.ts          # Fechas siempre en hora de España
+│   ├── supabase/          # Clientes de Supabase (servidor y proxy)
+│   └── utils.ts           # Función cn() que usan los componentes de shadcn/ui
 ├── types/
-│   └── database.ts      # Tipos generados desde el esquema (no editar a mano)
-└── proxy.ts             # Refresca la sesión en cada petición
+│   └── database.ts        # Tipos generados desde el esquema (no editar a mano)
+└── proxy.ts               # Refresca la sesión y manda a /acceso si no la hay
 supabase/
-├── config.toml          # Configuración de Supabase en local
-├── migrations/          # Esquema de la base de datos, en SQL numerado
-└── tests/               # Tests de las políticas RLS
+├── config.toml            # Configuración de Supabase en local
+├── migrations/            # Esquema de la base de datos, en SQL numerado
+└── tests/                 # Tests de las políticas RLS
 ```
 
 Las escrituras se hacen con Server Actions usando la sesión del usuario, así que todas pasan por Row Level Security.
