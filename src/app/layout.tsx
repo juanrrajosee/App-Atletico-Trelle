@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -13,9 +13,18 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Atlético Trelle",
+  title: {
+    default: "Atlético Trelle",
+    template: "%s · Atlético Trelle",
+  },
   description:
     "Gestión del Atlético Trelle: plantilla, partidos, convocatorias, entrenamientos y estadísticas.",
+};
+
+// "cover" deja que la barra de navegación inferior use el espacio de la zona
+// segura del móvil (la barra de gestos del iPhone, por ejemplo).
+export const viewport: Viewport = {
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
