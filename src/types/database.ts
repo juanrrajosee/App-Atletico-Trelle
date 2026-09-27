@@ -97,6 +97,36 @@ export type Database = {
         };
         Relationships: [];
       };
+      noticias: {
+        Row: {
+          actualizado_en: string;
+          creado_en: string;
+          cuerpo: string;
+          id: string;
+          publicada_en: string | null;
+          resumen: string | null;
+          titulo: string;
+        };
+        Insert: {
+          actualizado_en?: string;
+          creado_en?: string;
+          cuerpo: string;
+          id?: string;
+          publicada_en?: string | null;
+          resumen?: string | null;
+          titulo: string;
+        };
+        Update: {
+          actualizado_en?: string;
+          creado_en?: string;
+          cuerpo?: string;
+          id?: string;
+          publicada_en?: string | null;
+          resumen?: string | null;
+          titulo?: string;
+        };
+        Relationships: [];
+      };
       partidos: {
         Row: {
           campo: string | null;
