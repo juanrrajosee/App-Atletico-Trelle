@@ -16,7 +16,8 @@ Cualquiera puede abrir la aplicación y ver cuándo juega el equipo, cómo qued�
 | Calendario y resultados, con la edición del partido (resultado, alineación y estadísticas) | Hecho |
 | Votaciones por partido y rankings por categoría | Hecho |
 | Estadísticas de la temporada: balance del equipo, clasificaciones y ficha de cada jugador | Hecho |
-| Noticias, historia del club y directiva, tienda (pedir presupuesto por teléfono) | Fases 9 a 11 |
+| Noticias, con borradores, y su escritura por el administrador | Hecho |
+| Historia del club y directiva, tienda (pedir presupuesto por teléfono) | Fases 10 y 11 |
 | Parte de edición completa | Fase 12 |
 | Importación de los datos de la FGF | Pendiente de su autorización |
 
@@ -34,7 +35,7 @@ Cualquiera puede abrir la aplicación y ver cuándo juega el equipo, cómo qued�
 ## Roles
 
 - **Aficionado** — cualquiera que se crea una cuenta. Ve lo mismo que sin cuenta y, además, vota después de cada partido.
-- **Administrador** — gestiona los datos del club: la plantilla y los partidos (calendario, resultados y alineaciones).
+- **Administrador** — gestiona los datos del club: la plantilla, los partidos (calendario, resultados y alineaciones) y las noticias.
 
 Sin cuenta se puede consultar todo lo público. La base de datos lo impone con Row Level Security: el público solo lee, y únicamente el administrador escribe.
 
@@ -91,6 +92,16 @@ Salen solas de los resultados y de las alineaciones que registra el administrado
 - **Ficha de cada jugador:** sus convocatorias, partidos jugados, titularidades, minutos, goles, asistencias y tarjetas, lo que ha ganado en las votaciones y la lista de sus partidos.
 
 Solo cuentan los partidos jugados. Un jugador está *convocado* si figura en la alineación, y ha *jugado* si fue titular o salió desde el banquillo. Los jugadores dados de baja conservan su historial.
+
+### Noticias
+
+El administrador las escribe desde *Noticias → Nueva*: título, un resumen opcional (para la lista y para la vista previa al compartir el enlace; si no hay, se usa el principio del texto) y el texto, con los párrafos separados por una línea en blanco. Por ahora son solo de texto: la subida de fotos está fuera de la beta.
+
+Una noticia se guarda como *borrador* (solo la ve el administrador) o *publicada*. Al publicarla se le pone la fecha de ese momento, que no cambia aunque se edite después. El inicio enseña las tres últimas publicadas.
+
+### Navegación
+
+La barra de abajo tiene *Inicio*, *Partidos*, *Noticias* y *Equipo*; *Equipo* reúne con pestañas la plantilla, las estadísticas y las votaciones. En un móvil caben cómodamente cinco secciones, así que lo que venga se agrupa igual.
 
 ### Datos de la Federación Galega de Fútbol (FGF)
 
@@ -151,7 +162,7 @@ En local, las muestra `npm run db:iniciar` (o `npx supabase status`). En un proy
 | `npm run typecheck` | Comprobación de tipos (TypeScript) |
 | `npm run db:iniciar` / `db:parar` | Arranca / para Supabase en local |
 | `npm run db:reset` | Recrea la base de datos local aplicando todas las migraciones |
-| `npm run db:test` | Tests de la base de datos (políticas RLS, reglas de los resultados, votaciones y estadísticas) |
+| `npm run db:test` | Tests de la base de datos (políticas RLS, reglas de los resultados, votaciones, estadísticas y noticias) |
 | `npm run db:tipos` | Genera `src/types/database.ts` a partir del esquema local |
 
 ## Estructura del proyecto
@@ -162,11 +173,13 @@ src/
 │   ├── (auth)/            # Entrar, crear cuenta, recuperar contraseña, Google
 │   ├── (publico)/         # Parte pública: cabecera, navegación inferior e inicio
 │   │   ├── estadisticas/  # Balance del equipo y clasificaciones de la temporada
+│   │   ├── noticias/      # Noticias, y su escritura y publicación (administrador)
 │   │   ├── partidos/      # Calendario y resultados, y alta, edición y alineación (administrador)
 │   │   ├── plantilla/     # Plantilla y ficha de cada jugador con sus estadísticas; alta, edición y baja (administrador)
 │   │   └── votaciones/    # Votar, resultados y ranking de la temporada
 │   └── auth/              # Vuelta de los enlaces de email y de Google
 ├── components/
+│   ├── noticias/          # Lista de noticias
 │   ├── partidos/          # Marcador, tarjeta, lista y etiqueta de los partidos
 │   ├── plantilla/         # Piezas compartidas de la plantilla (etiqueta de estado)
 │   ├── ui/                # Componentes de shadcn/ui
@@ -175,12 +188,14 @@ src/
 │   ├── campo-formulario.tsx
 │   ├── clasificacion.tsx  # Lista de jugadores con puestos (y empates)
 │   ├── navegacion-inferior.tsx
+│   ├── pestanas-equipo.tsx # Plantilla, estadísticas y votaciones
 │   └── selector-temporada.tsx
 ├── lib/
 │   ├── auth.ts            # Usuario actual y comprobación de administrador
 │   ├── fechas.ts          # Fechas siempre en hora de España (y su paso a UTC)
 │   ├── formularios.ts     # Estado común de los formularios
 │   ├── ids.ts             # Comprobación de ids
+│   ├── noticias.ts        # Borrador o publicada, párrafos y resumen
 │   ├── partidos.ts        # Estados, local y visitante, victoria, empate o derrota
 │   ├── plantilla.ts       # Posiciones y estados: textos en español y colores
 │   ├── rutas.ts           # A qué página volver después de entrar
