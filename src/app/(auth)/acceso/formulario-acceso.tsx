@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,6 +54,13 @@ export function FormularioAcceso() {
       <Button type="submit" disabled={pendiente} className="h-11 w-full">
         {pendiente ? "Entrando…" : "Entrar"}
       </Button>
+
+      <Link
+        href="/recuperar"
+        className="text-center text-sm text-muted-foreground underline-offset-4 hover:underline"
+      >
+        ¿Has olvidado tu contraseña?
+      </Link>
     </form>
   );
 }

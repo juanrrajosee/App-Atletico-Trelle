@@ -128,3 +128,70 @@ function erroresRegistro(
       };
   }
 }
+
+export type EstadoRecuperacion = {
+  error: string | null;
+  email: string;
+  /** Email al que se ha mandado el enlace, si ha ido bien. */
+  enviadoA: string | null;
+};
+
+export async function pedirRecuperacion(
+  _estadoAnterior: EstadoRecuperacion,
+  formData: FormData,
+): Promise<EstadoRecuperacion> {
+  const email = String(formData.get("email") ?? "").trim();
+
+  if (!z.email().safeParse(email).success) {
+    return { error: "Escribe un email válido.", email, enviadoA: null };
+  }
+
+  const supabase = await crearClienteServidor();
+  const { error } = await supabase.auth.resetPasswordForEmail(email);
+
+  if (error) {
+    return {
+      error:
+        error.code === "over_email_send_rate_limit"
+          ? "Se han enviado demasiados emails seguidos. Espera un poco y vuelve a intentarlo."
+          : "No se ha podido enviar el email. Inténtalo de nuevo en un momento.",
+      email,
+      enviadoA: null,
+    };
+  }
+
+  // Supabase responde igual exista o no la cuenta (para no desvelar qué
+  // emails están registrados), y el mensaje también.
+  return { error: null, email, enviadoA: email };
+}
+
+export type EstadoNuevaContrasena = { error: string | null };
+
+export async function cambiarContrasena(
+  _estadoAnterior: EstadoNuevaContrasena,
+  formData: FormData,
+): Promise<EstadoNuevaContrasena> {
+  const contrasena = String(formData.get("contrasena") ?? "");
+
+  if (contrasena.length < 8) {
+    return { error: "La contraseña tiene que tener al menos 8 caracteres." };
+  }
+
+  const supabase = await crearClienteServidor();
+  const { error } = await supabase.auth.updateUser({ password: contrasena });
+
+  if (error) {
+    switch (error.code) {
+      case "same_password":
+        return { error: "Tiene que ser distinta de la que tenías." };
+      case "weak_password":
+        return { error: "Esa contraseña es demasiado fácil. Prueba con otra." };
+      default:
+        return {
+          error: "No se ha podido cambiar la contraseña. Pide otro enlace e inténtalo de nuevo.",
+        };
+    }
+  }
+
+  redirect("/");
+}
