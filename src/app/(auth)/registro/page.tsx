@@ -3,6 +3,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { obtenerUsuarioActual } from "@/lib/auth";
+import { googleActivado } from "@/lib/supabase/proveedores";
+import { BotonGoogle, SeparadorEmail } from "../boton-google";
 import { FormularioRegistro } from "./formulario-registro";
 
 export const metadata: Metadata = {
@@ -13,6 +15,8 @@ export default async function PaginaRegistro() {
   if (await obtenerUsuarioActual()) {
     redirect("/");
   }
+
+  const conGoogle = await googleActivado();
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center px-4 py-10">
@@ -27,7 +31,13 @@ export default async function PaginaRegistro() {
         </div>
 
         <Card>
-          <CardContent>
+          <CardContent className="flex flex-col gap-5">
+            {conGoogle && (
+              <>
+                <BotonGoogle />
+                <SeparadorEmail />
+              </>
+            )}
             <FormularioRegistro />
           </CardContent>
         </Card>

@@ -3,10 +3,19 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { obtenerUsuarioActual } from "@/lib/auth";
+import { googleActivado } from "@/lib/supabase/proveedores";
+import { BotonGoogle, SeparadorEmail } from "../boton-google";
 import { FormularioAcceso } from "./formulario-acceso";
 
 export const metadata: Metadata = {
   title: "Entrar",
+};
+
+/** Avisos al volver de un enlace de email o de Google que no ha funcionado. */
+const AVISOS: Record<string, string> = {
+  "enlace-no-valido":
+    "El enlace no es válido o ha caducado. Si ya confirmaste tu cuenta, entra con tu email y contraseña.",
+  google: "No se ha podido entrar con Google. Inténtalo de nuevo.",
 };
 
 export default async function PaginaAcceso({
@@ -16,9 +25,9 @@ export default async function PaginaAcceso({
     redirect("/");
   }
 
-  // Llega aquí desde /auth/confirmar si el enlace del email no sirve.
   const { error } = await searchParams;
-  const enlaceNoValido = error === "enlace-no-valido";
+  const aviso = typeof error === "string" ? AVISOS[error] : undefined;
+  const conGoogle = await googleActivado();
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center px-4 py-10">
@@ -32,18 +41,23 @@ export default async function PaginaAcceso({
           </p>
         </div>
 
-        {enlaceNoValido && (
+        {aviso && (
           <p
             role="alert"
             className="rounded-lg border border-destructive/30 px-4 py-3 text-sm text-destructive"
           >
-            El enlace no es válido o ha caducado. Si ya confirmaste tu cuenta,
-            entra con tu email y contraseña.
+            {aviso}
           </p>
         )}
 
         <Card>
-          <CardContent>
+          <CardContent className="flex flex-col gap-5">
+            {conGoogle && (
+              <>
+                <BotonGoogle />
+                <SeparadorEmail />
+              </>
+            )}
             <FormularioAcceso />
           </CardContent>
         </Card>

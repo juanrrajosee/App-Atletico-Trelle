@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
@@ -194,4 +195,24 @@ export async function cambiarContrasena(
   }
 
   redirect("/");
+}
+
+/**
+ * Empieza el acceso con Google: Supabase devuelve la dirección de Google a la
+ * que hay que ir, y Google vuelve después a /auth/callback. La primera vez
+ * crea la cuenta (de aficionado, como cualquier otra).
+ */
+export async function entrarConGoogle() {
+  const origen = (await headers()).get("origin");
+  const supabase = await crearClienteServidor();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: `${origen}/auth/callback` },
+  });
+
+  if (error || !data.url) {
+    redirect("/acceso?error=google");
+  }
+
+  redirect(data.url);
 }
