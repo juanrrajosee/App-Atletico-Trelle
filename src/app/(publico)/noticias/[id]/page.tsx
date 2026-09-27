@@ -1,10 +1,13 @@
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Pencil } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BotonBorrar } from "@/components/boton-borrar";
 import { FechaNoticia } from "@/components/noticias/lista-noticias";
+import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
 import { estadoNoticia, parrafos, resumenDe } from "@/lib/noticias";
+import { borrarNoticia } from "../acciones";
 import { cargarNoticia } from "../datos";
 
 export async function generateMetadata({
@@ -75,10 +78,26 @@ export default async function PaginaNoticia({
         </div>
       </article>
 
-      {administrador && estadoNoticia(noticia) !== "publicada" && (
-        <p className="rounded-lg border px-4 py-3 text-sm text-muted-foreground">
-          Esta noticia todavía no está publicada: solo la ves tú.
-        </p>
+      {administrador && (
+        <div className="flex flex-col gap-3">
+          {estadoNoticia(noticia) !== "publicada" && (
+            <p className="rounded-lg border px-4 py-3 text-sm text-muted-foreground">
+              Esta noticia todavía no está publicada: solo la ves tú.
+            </p>
+          )}
+          <Button asChild variant="outline" className="h-11">
+            <Link href={`/noticias/${noticia.id}/editar`}>
+              <Pencil aria-hidden />
+              Editar noticia
+            </Link>
+          </Button>
+          <BotonBorrar
+            accion={borrarNoticia.bind(null, noticia.id)}
+            texto="Borrar noticia"
+            pregunta="¿Borrar esta noticia?"
+            consecuencias="Desaparecerá de la aplicación y no se puede deshacer."
+          />
+        </div>
       )}
     </div>
   );
