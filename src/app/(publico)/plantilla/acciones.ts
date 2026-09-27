@@ -5,6 +5,7 @@ import { refresh, revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { EstadoBorrado } from "@/components/boton-borrar";
 import { exigirAdministrador } from "@/lib/auth";
+import { responder } from "@/lib/formularios";
 import { esIdValido } from "@/lib/ids";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
 import {
@@ -14,14 +15,6 @@ import {
 } from "./validacion";
 
 const NO_ENCONTRADO = "No se ha encontrado el jugador. Puede que se haya borrado.";
-
-/** Nuevo estado del formulario, contando esta respuesta. */
-function responder(
-  anterior: EstadoFormularioJugador,
-  respuesta: RespuestaFormularioJugador,
-): EstadoFormularioJugador {
-  return { ...respuesta, intento: anterior.intento + 1 };
-}
 
 /** Traduce los errores de la base de datos a mensajes para el formulario. */
 function respuestaConError(

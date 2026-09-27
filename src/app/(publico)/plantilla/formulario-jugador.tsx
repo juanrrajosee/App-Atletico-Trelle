@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, type ReactNode } from "react";
+import { useActionState } from "react";
+import { CampoFormulario } from "@/components/campo-formulario";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   NativeSelect,
   NativeSelectOption,
@@ -54,7 +54,7 @@ export function FormularioJugador({
       className="flex flex-col gap-5"
       noValidate
     >
-      <Campo id="nombre" etiqueta="Nombre" error={errores.nombre}>
+      <CampoFormulario id="nombre" etiqueta="Nombre" error={errores.nombre}>
         <Input
           id="nombre"
           name="nombre"
@@ -64,9 +64,9 @@ export function FormularioJugador({
           className="h-11"
           {...conError("nombre")}
         />
-      </Campo>
+      </CampoFormulario>
 
-      <Campo id="apellidos" etiqueta="Apellidos" error={errores.apellidos}>
+      <CampoFormulario id="apellidos" etiqueta="Apellidos" error={errores.apellidos}>
         <Input
           id="apellidos"
           name="apellidos"
@@ -76,10 +76,10 @@ export function FormularioJugador({
           className="h-11"
           {...conError("apellidos")}
         />
-      </Campo>
+      </CampoFormulario>
 
       <div className="grid grid-cols-[6rem_1fr] gap-3">
-        <Campo id="dorsal" etiqueta="Dorsal" error={errores.dorsal}>
+        <CampoFormulario id="dorsal" etiqueta="Dorsal" error={errores.dorsal}>
           <Input
             id="dorsal"
             name="dorsal"
@@ -91,9 +91,9 @@ export function FormularioJugador({
             className="h-11"
             {...conError("dorsal")}
           />
-        </Campo>
+        </CampoFormulario>
 
-        <Campo id="posicion" etiqueta="Posición" error={errores.posicion}>
+        <CampoFormulario id="posicion" etiqueta="Posición" error={errores.posicion}>
           <NativeSelect
             id="posicion"
             name="posicion"
@@ -110,10 +110,10 @@ export function FormularioJugador({
               </NativeSelectOption>
             ))}
           </NativeSelect>
-        </Campo>
+        </CampoFormulario>
       </div>
 
-      <Campo id="estado" etiqueta="Estado" error={errores.estado}>
+      <CampoFormulario id="estado" etiqueta="Estado" error={errores.estado}>
         <NativeSelect
           id="estado"
           name="estado"
@@ -127,7 +127,7 @@ export function FormularioJugador({
             </NativeSelectOption>
           ))}
         </NativeSelect>
-      </Campo>
+      </CampoFormulario>
 
       {estado.mensaje && (
         <p role="alert" className="text-sm text-destructive">
@@ -144,29 +144,5 @@ export function FormularioJugador({
         </Button>
       </div>
     </form>
-  );
-}
-
-function Campo({
-  id,
-  etiqueta,
-  error,
-  children,
-}: {
-  id: CampoJugador;
-  etiqueta: string;
-  error?: string;
-  children: ReactNode;
-}) {
-  return (
-    <div className="grid content-start gap-2 *:data-[slot=native-select-wrapper]:w-full">
-      <Label htmlFor={id}>{etiqueta}</Label>
-      {children}
-      {error && (
-        <p id={`${id}-error`} className="text-sm text-destructive">
-          {error}
-        </p>
-      )}
-    </div>
   );
 }

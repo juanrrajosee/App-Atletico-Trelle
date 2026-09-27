@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { EstadoFormulario, RespuestaFormulario } from "@/lib/formularios";
 import { ESTADOS_JUGADOR, POSICIONES } from "@/lib/plantilla";
 
 export type CampoJugador =
@@ -8,20 +9,8 @@ export type CampoJugador =
   | "posicion"
   | "estado";
 
-export type EstadoFormularioJugador = {
-  errores: Partial<Record<CampoJugador, string>>;
-  mensaje: string | null;
-  /** Lo que se había escrito, para no vaciar el formulario si hay errores. */
-  valores: Partial<Record<CampoJugador, string>>;
-  /**
-   * Cuántas veces ha respondido el servidor. El formulario lo usa como key
-   * para montarse de nuevo con los valores enviados: si no, React lo
-   * restablece tras cada envío y los selectores vuelven a su opción inicial.
-   */
-  intento: number;
-};
-
-export type RespuestaFormularioJugador = Omit<EstadoFormularioJugador, "intento">;
+export type EstadoFormularioJugador = EstadoFormulario<CampoJugador>;
+export type RespuestaFormularioJugador = RespuestaFormulario<CampoJugador>;
 
 const esquemaJugador = z.object({
   nombre: z
