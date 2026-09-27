@@ -17,7 +17,8 @@ Cualquiera puede abrir la aplicación y ver cuándo juega el equipo, cómo qued�
 | Votaciones por partido y rankings por categoría | Hecho |
 | Estadísticas de la temporada: balance del equipo, clasificaciones y ficha de cada jugador | Hecho |
 | Noticias, con borradores, y su escritura por el administrador | Hecho |
-| Historia del club y directiva, tienda (pedir presupuesto por teléfono) | Fases 10 y 11 |
+| El club: historia, la de Trelle, directiva y contacto, y su edición por el administrador | Hecho |
+| Tienda (pedir presupuesto por teléfono) | Fase 11 |
 | Parte de edición completa | Fase 12 |
 | Importación de los datos de la FGF | Pendiente de su autorización |
 
@@ -35,7 +36,7 @@ Cualquiera puede abrir la aplicación y ver cuándo juega el equipo, cómo qued�
 ## Roles
 
 - **Aficionado** — cualquiera que se crea una cuenta. Ve lo mismo que sin cuenta y, además, vota después de cada partido.
-- **Administrador** — gestiona los datos del club: la plantilla, los partidos (calendario, resultados y alineaciones) y las noticias.
+- **Administrador** — gestiona los datos del club: la plantilla, los partidos (calendario, resultados y alineaciones), las noticias y la sección del club.
 
 Sin cuenta se puede consultar todo lo público. La base de datos lo impone con Row Level Security: el público solo lee, y únicamente el administrador escribe.
 
@@ -99,9 +100,15 @@ El administrador las escribe desde *Noticias → Nueva*: título, un resumen opc
 
 Una noticia se guarda como *borrador* (solo la ve el administrador) o *publicada*. Al publicarla se le pone la fecha de ese momento, que no cambia aunque se edite después. El inicio enseña las tres últimas publicadas.
 
+### El club
+
+La sección *Club* enseña la historia del club, la de Trelle, la directiva y el contacto (teléfono y email que se pueden pulsar, y el campo). El administrador lo rellena todo desde la propia sección: *Editar historia y contacto* para los textos y el contacto, y *Añadir* (o tocar a una persona) para la directiva, con su cargo y su posición en la lista. Lo que no se ha escrito no sale.
+
+La directiva son datos de personas que se publican: se añade solo a quien esté de acuerdo.
+
 ### Navegación
 
-La barra de abajo tiene *Inicio*, *Partidos*, *Noticias* y *Equipo*; *Equipo* reúne con pestañas la plantilla, las estadísticas y las votaciones. En un móvil caben cómodamente cinco secciones, así que lo que venga se agrupa igual.
+La barra de abajo tiene *Inicio*, *Partidos*, *Noticias*, *Equipo* y *Club*; *Equipo* reúne con pestañas la plantilla, las estadísticas y las votaciones. En un móvil caben cómodamente cinco secciones, así que lo que venga se agrupa igual (la tienda irá dentro de *Club*).
 
 ### Datos de la Federación Galega de Fútbol (FGF)
 
@@ -162,7 +169,7 @@ En local, las muestra `npm run db:iniciar` (o `npx supabase status`). En un proy
 | `npm run typecheck` | Comprobación de tipos (TypeScript) |
 | `npm run db:iniciar` / `db:parar` | Arranca / para Supabase en local |
 | `npm run db:reset` | Recrea la base de datos local aplicando todas las migraciones |
-| `npm run db:test` | Tests de la base de datos (políticas RLS, reglas de los resultados, votaciones, estadísticas y noticias) |
+| `npm run db:test` | Tests de la base de datos (políticas RLS, reglas de los resultados, votaciones, estadísticas, noticias y club) |
 | `npm run db:tipos` | Genera `src/types/database.ts` a partir del esquema local |
 
 ## Estructura del proyecto
@@ -172,6 +179,7 @@ src/
 ├── app/                   # Rutas y páginas (App Router)
 │   ├── (auth)/            # Entrar, crear cuenta, recuperar contraseña, Google
 │   ├── (publico)/         # Parte pública: cabecera, navegación inferior e inicio
+│   │   ├── club/          # Historia, directiva y contacto, y su edición (administrador)
 │   │   ├── estadisticas/  # Balance del equipo y clasificaciones de la temporada
 │   │   ├── noticias/      # Noticias, y su escritura y publicación (administrador)
 │   │   ├── partidos/      # Calendario y resultados, y alta, edición y alineación (administrador)
@@ -189,7 +197,8 @@ src/
 │   ├── clasificacion.tsx  # Lista de jugadores con puestos (y empates)
 │   ├── navegacion-inferior.tsx
 │   ├── pestanas-equipo.tsx # Plantilla, estadísticas y votaciones
-│   └── selector-temporada.tsx
+│   ├── selector-temporada.tsx
+│   └── texto.tsx          # Texto escrito en la aplicación, en párrafos
 ├── lib/
 │   ├── auth.ts            # Usuario actual y comprobación de administrador
 │   ├── fechas.ts          # Fechas siempre en hora de España (y su paso a UTC)
@@ -201,7 +210,7 @@ src/
 │   ├── rutas.ts           # A qué página volver después de entrar
 │   ├── supabase/          # Clientes de Supabase y proveedores de acceso
 │   ├── temporadas.ts      # Qué temporada es y cómo se llama
-│   ├── textos.ts          # Singular y plural ("1 gol", "3 goles")
+│   ├── textos.ts          # Singular y plural ("1 gol", "3 goles") y párrafos
 │   ├── utils.ts           # Función cn() que usan los componentes de shadcn/ui
 │   └── votaciones.ts      # Categorías y candidatos de las votaciones
 ├── types/
