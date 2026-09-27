@@ -137,3 +137,28 @@ export async function tieneHistorial(jugadorId: string): Promise<boolean> {
 
   return (count ?? 0) > 0;
 }
+
+/** Nombre y apellidos de unos jugadores, por su id (también los de baja). */
+export async function cargarNombres(
+  ids: string[],
+): Promise<Map<string, string>> {
+  if (ids.length === 0) {
+    return new Map();
+  }
+
+  const supabase = await crearClienteServidor();
+  const { data, error } = await supabase
+    .from("jugadores_publicos")
+    .select("id, nombre, apellidos")
+    .in("id", ids);
+
+  if (error) {
+    throw new Error(`No se han podido cargar los jugadores: ${error.message}`);
+  }
+
+  return new Map(
+    data.flatMap(({ id, nombre, apellidos }) =>
+      id && nombre && apellidos ? [[id, `${nombre} ${apellidos}`]] : [],
+    ),
+  );
+}

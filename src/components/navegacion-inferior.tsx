@@ -2,6 +2,7 @@
 
 import {
   CalendarDays,
+  ChartColumn,
   House,
   Trophy,
   Users,
@@ -18,6 +19,7 @@ const SECCIONES: Seccion[] = [
   { href: "/", etiqueta: "Inicio", icono: House },
   { href: "/partidos", etiqueta: "Partidos", icono: CalendarDays },
   { href: "/votaciones", etiqueta: "Votaciones", icono: Trophy },
+  { href: "/estadisticas", etiqueta: "Estadísticas", icono: ChartColumn },
   { href: "/plantilla", etiqueta: "Plantilla", icono: Users },
 ];
 

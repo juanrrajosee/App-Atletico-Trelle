@@ -9,8 +9,8 @@ import {
   NOMBRE_CORTO_CATEGORIA,
   type CategoriaVotacion,
 } from "@/lib/votaciones";
+import { cargarNombres } from "../plantilla/datos";
 import {
-  cargarNombres,
   cargarRanking,
   cargarVotacionesAbiertas,
   type PuestoRanking,

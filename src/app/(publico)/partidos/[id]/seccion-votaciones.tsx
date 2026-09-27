@@ -14,9 +14,9 @@ import {
 } from "@/lib/votaciones";
 import { cn } from "@/lib/utils";
 import { votar } from "../../votaciones/acciones";
+import { cargarNombres } from "../../plantilla/datos";
 import {
   cargarMisVotos,
-  cargarNombres,
   cargarResultados,
   cargarVotacion,
   type ResultadoVotacion,

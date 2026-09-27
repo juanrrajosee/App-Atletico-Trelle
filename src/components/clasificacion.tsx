@@ -25,11 +25,14 @@ export function Clasificacion({
   titulo,
   filas,
   maximo = 10,
+  copa = true,
 }: {
   titulo: string;
   filas: FilaClasificacion[];
   /** Cuántas filas se enseñan como mucho. */
   maximo?: number;
+  /** Si el primero lleva copa (no, por ejemplo, en las tarjetas). */
+  copa?: boolean;
 }) {
   if (filas.length === 0) {
     return null;
@@ -51,12 +54,12 @@ export function Clasificacion({
                 <span
                   className={cn(
                     "flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold tabular-nums",
-                    puesto === 1
+                    copa && puesto === 1
                       ? "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300"
                       : "bg-muted",
                   )}
                 >
-                  {puesto === 1 ? (
+                  {copa && puesto === 1 ? (
                     <>
                       <Trophy className="size-4" aria-hidden />
                       <span className="sr-only">1</span>
