@@ -14,10 +14,11 @@ Cualquiera puede abrir la aplicación y ver cuándo juega el equipo, cómo qued�
 | Plantilla pública (sin datos de salud) y su gestión por el administrador | Hecho |
 | Cuentas de aficionado: registro con email confirmado o con Google, y recuperación de contraseña | Hecho |
 | Calendario y resultados, con la edición del partido (resultado, alineación y estadísticas) | Hecho |
-| Votaciones por partido y rankings por categoría | Fase 7 |
+| Votaciones por partido y rankings por categoría | Hecho |
 | Estadísticas públicas de los jugadores | Fase 8 |
 | Noticias, historia del club y directiva, tienda (pedir presupuesto por teléfono) | Fases 9 a 11 |
 | Parte de edición completa | Fase 12 |
+| Importación de los datos de la FGF | Pendiente de su autorización |
 
 ## Tecnologías
 
@@ -32,7 +33,7 @@ Cualquiera puede abrir la aplicación y ver cuándo juega el equipo, cómo qued�
 
 ## Roles
 
-- **Aficionado** — cualquiera que se crea una cuenta. Ve lo mismo que sin cuenta y, además, podrá votar.
+- **Aficionado** — cualquiera que se crea una cuenta. Ve lo mismo que sin cuenta y, además, vota después de cada partido.
 - **Administrador** — gestiona los datos del club: la plantilla y los partidos (calendario, resultados y alineaciones).
 
 Sin cuenta se puede consultar todo lo público. La base de datos lo impone con Row Level Security: el público solo lee, y únicamente el administrador escribe.
@@ -63,6 +64,28 @@ El administrador lo hace todo desde la propia aplicación, en *Partidos*:
 La base de datos cuida de que todo cuadre: un partido jugado tiene siempre los dos goles y uno sin jugar ninguno; los goles de los jugadores no pueden pasar de los del equipo (pueden quedarse por debajo, por ejemplo con un gol en propia puerta del rival); y a un partido con alineación no se le puede quitar el resultado: antes hay que borrarla (dejando a todos como no convocados).
 
 Borrar un partido borra también su alineación y sus estadísticas.
+
+### Votaciones
+
+Después de cada partido, la afición vota en tres categorías:
+
+| Categoría | A quién se puede votar |
+|---|---|
+| MVP del partido | A los que jugaron |
+| Mejor suplente | A los suplentes que salieron al campo |
+| Jugador con más compromiso | A todos los convocados |
+
+- **Cuándo:** la votación se abre en cuanto el partido está jugado y tiene la alineación registrada, y se cierra a las 23:59 (hora de España) del día del partido. Por eso conviene registrar la alineación ese mismo día.
+- **Quién:** cualquiera con cuenta, un voto por categoría y partido, que no se puede cambiar. Sin cuenta, la ficha del partido invita a entrar y, al hacerlo, se vuelve al partido.
+- **Resultados:** mientras está abierta nadie ve cómo va. Al cerrarse, la ficha del partido enseña el recuento y quién ha ganado (con empate, ganan todos los empatados).
+- **Ranking:** en *Votaciones*, por temporada (del 1 de julio al 30 de junio) y categoría: cuántas veces ha ganado cada jugador y, para desempatar, cuántos votos suma.
+- **Privacidad:** nadie, tampoco el administrador, puede ver a quién ha votado cada cuenta: solo se publican los totales. Si se borra una cuenta, sus votos siguen contando, ya sin dueño.
+
+Todas estas reglas las impone la base de datos, no solo la pantalla.
+
+### Datos de la Federación Galega de Fútbol (FGF)
+
+La web de la FGF publica el calendario, los resultados y las actas de los partidos del Trelle, pero su [aviso legal](https://www.futgal.es/pnfg/NNws_ShwNewDup?codigo=15023&cod_primaria=140&cod_secundaria=140) solo permite un uso particular: copiar o publicar sus contenidos requiere su autorización previa y por escrito. Además, la web oculta los marcadores a los programas que la leen. Por eso la aplicación no la importa: los datos se meten a mano, y la importación queda pendiente de pedirle permiso a la FGF.
 
 ### Configuración del proyecto de Supabase real
 
@@ -119,7 +142,7 @@ En local, las muestra `npm run db:iniciar` (o `npx supabase status`). En un proy
 | `npm run typecheck` | Comprobación de tipos (TypeScript) |
 | `npm run db:iniciar` / `db:parar` | Arranca / para Supabase en local |
 | `npm run db:reset` | Recrea la base de datos local aplicando todas las migraciones |
-| `npm run db:test` | Tests de la base de datos (políticas RLS y reglas de los resultados) |
+| `npm run db:test` | Tests de la base de datos (políticas RLS, reglas de los resultados y de las votaciones) |
 | `npm run db:tipos` | Genera `src/types/database.ts` a partir del esquema local |
 
 ## Estructura del proyecto
@@ -130,12 +153,14 @@ src/
 │   ├── (auth)/            # Entrar, crear cuenta, recuperar contraseña, Google
 │   ├── (publico)/         # Parte pública: cabecera, navegación inferior e inicio
 │   │   ├── partidos/      # Calendario y resultados, y alta, edición y alineación (administrador)
-│   │   └── plantilla/     # Plantilla pública, y alta, edición y baja (administrador)
+│   │   ├── plantilla/     # Plantilla pública, y alta, edición y baja (administrador)
+│   │   └── votaciones/    # Votar, resultados y ranking de la temporada
 │   └── auth/              # Vuelta de los enlaces de email y de Google
 ├── components/
 │   ├── partidos/          # Marcador, tarjeta, lista y etiqueta de los partidos
 │   ├── plantilla/         # Piezas compartidas de la plantilla (etiqueta de estado)
 │   ├── ui/                # Componentes de shadcn/ui
+│   ├── votaciones/        # Formulario de voto y aviso de votación abierta
 │   ├── boton-borrar.tsx   # Botón de borrar con confirmación
 │   ├── campo-formulario.tsx
 │   └── navegacion-inferior.tsx
@@ -146,8 +171,10 @@ src/
 │   ├── ids.ts             # Comprobación de ids
 │   ├── partidos.ts        # Estados, local y visitante, victoria, empate o derrota
 │   ├── plantilla.ts       # Posiciones y estados: textos en español y colores
+│   ├── rutas.ts           # A qué página volver después de entrar
 │   ├── supabase/          # Clientes de Supabase y proveedores de acceso
-│   └── utils.ts           # Función cn() que usan los componentes de shadcn/ui
+│   ├── utils.ts           # Función cn() que usan los componentes de shadcn/ui
+│   └── votaciones.ts      # Categorías, candidatos y temporadas
 ├── types/
 │   └── database.ts        # Tipos generados desde el esquema (no editar a mano)
 └── proxy.ts               # Refresca la sesión en cada petición
@@ -158,7 +185,7 @@ supabase/
 └── tests/                 # Tests de la base de datos (pgTAP)
 ```
 
-Las escrituras se hacen con Server Actions usando la sesión del usuario, así que todas pasan por Row Level Security. La alineación se guarda con la función `guardar_alineacion()` de la base de datos, que reemplaza la anterior en una sola transacción.
+Las escrituras se hacen con Server Actions usando la sesión del usuario, así que todas pasan por Row Level Security. La alineación se guarda con la función `guardar_alineacion()` de la base de datos, que reemplaza la anterior en una sola transacción, y los votos con `votar()`.
 
 ## Estado
 
