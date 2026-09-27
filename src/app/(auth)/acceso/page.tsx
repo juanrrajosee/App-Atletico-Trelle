@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { obtenerUsuarioActual } from "@/lib/auth";
+import { rutaDeVuelta } from "@/lib/rutas";
 import { googleActivado } from "@/lib/supabase/proveedores";
 import { BotonGoogle, SeparadorEmail } from "../boton-google";
 import { FormularioAcceso } from "./formulario-acceso";
@@ -21,11 +22,15 @@ const AVISOS: Record<string, string> = {
 export default async function PaginaAcceso({
   searchParams,
 }: PageProps<"/acceso">) {
+  const { error, siguiente: siguienteParametro } = await searchParams;
+  // Adónde volver después de entrar (por ejemplo, al partido que se iba a
+  // votar).
+  const siguiente = rutaDeVuelta(siguienteParametro);
+
   if (await obtenerUsuarioActual()) {
-    redirect("/");
+    redirect(siguiente);
   }
 
-  const { error } = await searchParams;
   const aviso = typeof error === "string" ? AVISOS[error] : undefined;
   const conGoogle = await googleActivado();
 
@@ -54,18 +59,22 @@ export default async function PaginaAcceso({
           <CardContent className="flex flex-col gap-5">
             {conGoogle && (
               <>
-                <BotonGoogle />
+                <BotonGoogle siguiente={siguiente} />
                 <SeparadorEmail />
               </>
             )}
-            <FormularioAcceso />
+            <FormularioAcceso siguiente={siguiente} />
           </CardContent>
         </Card>
 
         <p className="text-center text-sm text-muted-foreground">
           ¿No tienes cuenta?{" "}
           <Link
-            href="/registro"
+            href={
+              siguiente === "/"
+                ? "/registro"
+                : `/registro?siguiente=${encodeURIComponent(siguiente)}`
+            }
             className="font-medium text-foreground underline underline-offset-4"
           >
             Crear cuenta

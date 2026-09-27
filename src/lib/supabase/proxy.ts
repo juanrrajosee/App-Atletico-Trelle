@@ -1,5 +1,6 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { rutaDeVuelta } from "@/lib/rutas";
 import type { Database } from "@/types/database";
 import { obtenerEntornoSupabase } from "./entorno";
 
@@ -41,9 +42,16 @@ export async function actualizarSesion(request: NextRequest) {
   const haySesion = Boolean(data?.claims);
   const enAcceso = RUTAS_DE_ACCESO.includes(request.nextUrl.pathname);
 
+  // Con la sesión iniciada, a la página de la que se venía (?siguiente=) o
+  // al inicio.
   const respuesta =
     haySesion && enAcceso
-      ? NextResponse.redirect(new URL("/", request.url))
+      ? NextResponse.redirect(
+          new URL(
+            rutaDeVuelta(request.nextUrl.searchParams.get("siguiente")),
+            request.url,
+          ),
+        )
       : NextResponse.next({ request });
 
   cookiesSesion.forEach(({ name, value, options }) =>

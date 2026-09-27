@@ -9,7 +9,8 @@ import { iniciarSesion, type EstadoAcceso } from "../acciones";
 
 const estadoInicial: EstadoAcceso = { error: null, email: "" };
 
-export function FormularioAcceso() {
+/** siguiente: la página a la que volver después de entrar. */
+export function FormularioAcceso({ siguiente }: { siguiente: string }) {
   const [estado, accion, pendiente] = useActionState(
     iniciarSesion,
     estadoInicial,
@@ -17,6 +18,7 @@ export function FormularioAcceso() {
 
   return (
     <form action={accion} className="flex flex-col gap-5">
+      <input type="hidden" name="siguiente" value={siguiente} />
       <div className="grid gap-2">
         <Label htmlFor="email">Email</Label>
         <Input

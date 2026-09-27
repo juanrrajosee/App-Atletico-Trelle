@@ -4,10 +4,14 @@ import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { entrarConGoogle } from "./acciones";
 
-/** Solo se enseña si el acceso con Google está activado en Supabase. */
-export function BotonGoogle() {
+/**
+ * Solo se enseña si el acceso con Google está activado en Supabase.
+ * siguiente: la página a la que volver después de entrar.
+ */
+export function BotonGoogle({ siguiente }: { siguiente: string }) {
   return (
     <form action={entrarConGoogle}>
+      <input type="hidden" name="siguiente" value={siguiente} />
       <BotonEnviar />
     </form>
   );

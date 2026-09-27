@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { obtenerUsuarioActual } from "@/lib/auth";
+import { rutaDeVuelta } from "@/lib/rutas";
 import { googleActivado } from "@/lib/supabase/proveedores";
 import { BotonGoogle, SeparadorEmail } from "../boton-google";
 import { FormularioRegistro } from "./formulario-registro";
@@ -11,9 +12,15 @@ export const metadata: Metadata = {
   title: "Crear cuenta",
 };
 
-export default async function PaginaRegistro() {
+export default async function PaginaRegistro({
+  searchParams,
+}: PageProps<"/registro">) {
+  // Adónde volver después de entrar con Google (por ejemplo, al partido que
+  // se iba a votar). Con email, se vuelve desde el enlace de confirmación.
+  const siguiente = rutaDeVuelta((await searchParams).siguiente);
+
   if (await obtenerUsuarioActual()) {
-    redirect("/");
+    redirect(siguiente);
   }
 
   const conGoogle = await googleActivado();
@@ -34,7 +41,7 @@ export default async function PaginaRegistro() {
           <CardContent className="flex flex-col gap-5">
             {conGoogle && (
               <>
-                <BotonGoogle />
+                <BotonGoogle siguiente={siguiente} />
                 <SeparadorEmail />
               </>
             )}
@@ -48,7 +55,14 @@ export default async function PaginaRegistro() {
 
         <p className="text-center text-sm text-muted-foreground">
           ¿Ya tienes cuenta?{" "}
-          <Link href="/acceso" className="font-medium text-foreground underline underline-offset-4">
+          <Link
+            href={
+              siguiente === "/"
+                ? "/acceso"
+                : `/acceso?siguiente=${encodeURIComponent(siguiente)}`
+            }
+            className="font-medium text-foreground underline underline-offset-4"
+          >
             Entrar
           </Link>
         </p>

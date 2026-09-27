@@ -1,10 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { rutaDeVuelta } from "@/lib/rutas";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
 
 /**
  * Vuelta de Google tras "Entrar con Google": cambia el código que manda
- * Supabase por la sesión. Si algo falla (o el usuario cancela en Google),
- * vuelve a la pantalla de entrar con un aviso.
+ * Supabase por la sesión y lleva a la página de la que se venía. Si algo
+ * falla (o el usuario cancela en Google), vuelve a la pantalla de entrar con
+ * un aviso.
  */
 export async function GET(request: NextRequest) {
   const codigo = request.nextUrl.searchParams.get("code");
@@ -14,7 +16,10 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(codigo);
 
     if (!error) {
-      return NextResponse.redirect(new URL("/", request.url));
+      const siguiente = rutaDeVuelta(
+        request.nextUrl.searchParams.get("siguiente"),
+      );
+      return NextResponse.redirect(new URL(siguiente, request.url));
     }
   }
 

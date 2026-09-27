@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { rutaDeVuelta } from "@/lib/rutas";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
 
 export type EstadoAcceso = {
@@ -32,7 +33,7 @@ export async function iniciarSesion(
     return { error: mensajeErrorAcceso(error.code), email };
   }
 
-  redirect("/");
+  redirect(rutaDeVuelta(formData.get("siguiente")));
 }
 
 function mensajeErrorAcceso(codigo: string | undefined) {
@@ -199,15 +200,19 @@ export async function cambiarContrasena(
 
 /**
  * Empieza el acceso con Google: Supabase devuelve la dirección de Google a la
- * que hay que ir, y Google vuelve después a /auth/callback. La primera vez
- * crea la cuenta (de aficionado, como cualquier otra).
+ * que hay que ir, y Google vuelve después a /auth/callback (que lleva luego
+ * a la página de la que se venía). La primera vez crea la cuenta (de
+ * aficionado, como cualquier otra).
  */
-export async function entrarConGoogle() {
+export async function entrarConGoogle(formData: FormData) {
   const origen = (await headers()).get("origin");
+  const siguiente = rutaDeVuelta(formData.get("siguiente"));
   const supabase = await crearClienteServidor();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
-    options: { redirectTo: `${origen}/auth/callback` },
+    options: {
+      redirectTo: `${origen}/auth/callback?siguiente=${encodeURIComponent(siguiente)}`,
+    },
   });
 
   if (error || !data.url) {
