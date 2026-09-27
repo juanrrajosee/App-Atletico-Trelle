@@ -143,3 +143,33 @@ export async function cargarFicha(
     perfilId: null,
   };
 }
+
+export type Cuenta = {
+  perfilId: string;
+  email: string;
+  rol: UsuarioActual["rol"];
+  /** Ficha a la que está vinculada, o null si está libre. */
+  jugadorId: string | null;
+};
+
+/**
+ * Cuentas de la aplicación con su email (solo para el entrenador: a
+ * cualquier otro la función de la base de datos no le devuelve nada).
+ */
+export async function cargarCuentas(): Promise<Cuenta[]> {
+  const supabase = await crearClienteServidor();
+  const { data, error } = await supabase.rpc("cuentas_usuario");
+
+  if (error) {
+    throw new Error(`No se han podido cargar las cuentas: ${error.message}`);
+  }
+
+  // Los tipos generados dan jugador_id como string, pero sale de un left
+  // join: en las cuentas sin vincular llega null.
+  return data.map((cuenta) => ({
+    perfilId: cuenta.perfil_id,
+    email: cuenta.email,
+    rol: cuenta.rol,
+    jugadorId: (cuenta.jugador_id as string | null) ?? null,
+  }));
+}

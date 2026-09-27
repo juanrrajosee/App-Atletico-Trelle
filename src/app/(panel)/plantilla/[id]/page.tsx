@@ -9,6 +9,7 @@ import { exigirAcceso } from "@/lib/auth";
 import { calcularEdad, formatearFecha } from "@/lib/fechas";
 import { NOMBRE_POSICION, iniciales } from "@/lib/plantilla";
 import { cargarFicha } from "../datos";
+import { SeccionCuenta } from "./seccion-cuenta";
 
 export const metadata: Metadata = {
   title: "Jugador",
@@ -89,12 +90,15 @@ export default async function PaginaFicha({
       )}
 
       {esEntrenador && (
-        <Button asChild variant="outline" className="h-11">
-          <Link href={`/plantilla/${jugador.id}/editar`}>
-            <Pencil aria-hidden />
-            Editar datos
-          </Link>
-        </Button>
+        <>
+          <Button asChild variant="outline" className="h-11">
+            <Link href={`/plantilla/${jugador.id}/editar`}>
+              <Pencil aria-hidden />
+              Editar datos
+            </Link>
+          </Button>
+          <SeccionCuenta jugadorId={jugador.id} perfilId={jugador.perfilId} />
+        </>
       )}
     </div>
   );

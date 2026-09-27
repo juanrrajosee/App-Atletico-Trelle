@@ -1,7 +1,7 @@
 "use server";
 
 import type { PostgrestError } from "@supabase/supabase-js";
-import { revalidatePath } from "next/cache";
+import { refresh, revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { exigirEntrenador } from "@/lib/auth";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
@@ -110,4 +110,65 @@ export async function actualizarJugador(
   revalidatePath("/plantilla");
   revalidatePath(`/plantilla/${id}`);
   redirect(`/plantilla/${id}`);
+}
+
+export type EstadoVinculacion = { error: string | null };
+
+export async function vincularCuenta(
+  jugadorId: string,
+  _anterior: EstadoVinculacion,
+  formData: FormData,
+): Promise<EstadoVinculacion> {
+  await exigirEntrenador();
+
+  const perfilId = String(formData.get("perfil_id") ?? "");
+  if (!esIdValido(perfilId)) {
+    return { error: "Elige una cuenta." };
+  }
+  if (!esIdValido(jugadorId)) {
+    return { error: NO_ENCONTRADO };
+  }
+
+  const supabase = await crearClienteServidor();
+  const { error } = await supabase
+    .from("jugadores")
+    .update({ perfil_id: perfilId })
+    .eq("id", jugadorId)
+    .select("id")
+    .single();
+
+  if (error) {
+    if (error.code === "23505") {
+      return { error: "Esa cuenta ya está vinculada a otro jugador." };
+    }
+    if (error.code === "PGRST116") {
+      return { error: NO_ENCONTRADO };
+    }
+    return { error: "No se ha podido vincular la cuenta. Inténtalo de nuevo." };
+  }
+
+  revalidatePath("/plantilla");
+  refresh();
+  return { error: null };
+}
+
+export async function desvincularCuenta(jugadorId: string) {
+  await exigirEntrenador();
+
+  if (!esIdValido(jugadorId)) {
+    return;
+  }
+
+  const supabase = await crearClienteServidor();
+  const { error } = await supabase
+    .from("jugadores")
+    .update({ perfil_id: null })
+    .eq("id", jugadorId);
+
+  if (error) {
+    throw new Error(`No se ha podido desvincular la cuenta: ${error.message}`);
+  }
+
+  revalidatePath("/plantilla");
+  refresh();
 }
