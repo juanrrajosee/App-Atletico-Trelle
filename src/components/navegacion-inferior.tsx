@@ -4,6 +4,7 @@ import {
   CalendarDays,
   House,
   Newspaper,
+  Shield,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -31,6 +32,7 @@ const SECCIONES: Seccion[] = [
     icono: Users,
     rutas: ["/plantilla", "/estadisticas", "/votaciones"],
   },
+  { href: "/club", etiqueta: "Club", icono: Shield },
 ];
 
 function estaActiva({ href, rutas = [href] }: Seccion, rutaActual: string) {
