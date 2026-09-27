@@ -12,17 +12,17 @@ export default async function LayoutPublico({ children }: LayoutProps<"/">) {
     <div className="flex flex-1 flex-col">
       <header className="sticky top-0 z-10 border-b bg-background">
         <div className="mx-auto flex h-14 max-w-2xl items-center justify-between gap-4 px-4">
-          <Link href="/" className="font-semibold tracking-tight">
+          <Link href="/" className="font-semibold tracking-tight whitespace-nowrap">
             Atlético Trelle
           </Link>
           {usuario ? (
             <div className="flex items-center gap-1">
               {esAdministrador(usuario) && (
-                <span className="text-sm text-muted-foreground">
-                  Administrador
-                </span>
+                <Button asChild variant="ghost" className="h-10 px-2 text-muted-foreground">
+                  <Link href="/administracion">Gestión</Link>
+                </Button>
               )}
-              <Button asChild variant="ghost" className="h-10">
+              <Button asChild variant="ghost" className="h-10 px-2">
                 <Link href="/cuenta">
                   <CircleUser aria-hidden />
                   Mi cuenta
