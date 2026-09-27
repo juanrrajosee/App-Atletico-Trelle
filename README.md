@@ -61,7 +61,7 @@ update perfiles set rol = 'entrenador'
 where id = (select id from auth.users where email = 'correo@ejemplo.com');
 ```
 
-**Vincular la cuenta a su ficha.** Hasta que el entrenador no vincula una cuenta de jugador con su ficha (desde la propia aplicación, a partir de la fase 4), esa cuenta solo ve una pantalla de "cuenta pendiente" y no puede leer ningún dato del equipo.
+**Vincular la cuenta a su ficha.** Desde la aplicación: *Plantilla →* el jugador *→ Cuenta de la aplicación*, se elige su cuenta por el email y *Vincular cuenta*. Hasta que no está vinculada, esa cuenta solo ve una pantalla de "cuenta pendiente" y no puede leer ningún dato del equipo. Desde la misma sección se puede desvincular.
 
 **Contraseña olvidada.** La recuperación por email necesita un servidor de correo propio, que la beta no tiene. El entrenador pone una contraseña nueva desde el *SQL Editor* y se la pasa al jugador:
 
@@ -126,13 +126,16 @@ src/
 ├── app/                   # Rutas y páginas (App Router)
 │   ├── (auth)/            # Pantalla de acceso y acciones de sesión
 │   ├── (panel)/           # Zona privada: cabecera, navegación inferior e inicio
+│   │   └── plantilla/     # Listado, ficha, alta, edición, cuenta y baja de jugadores
 │   └── pendiente/         # Cuenta de jugador aún sin vincular a su ficha
 ├── components/
+│   ├── plantilla/         # Piezas compartidas de la plantilla (etiqueta de estado)
 │   ├── ui/                # Componentes de shadcn/ui
 │   └── navegacion-inferior.tsx
 ├── lib/
 │   ├── auth.ts            # Usuario actual y comprobación de acceso
 │   ├── fechas.ts          # Fechas siempre en hora de España
+│   ├── plantilla.ts       # Posiciones y estados: textos en español y colores
 │   ├── supabase/          # Clientes de Supabase (servidor y proxy)
 │   └── utils.ts           # Función cn() que usan los componentes de shadcn/ui
 ├── types/
