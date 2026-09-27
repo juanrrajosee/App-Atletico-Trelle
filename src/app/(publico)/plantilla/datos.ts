@@ -1,5 +1,6 @@
 import "server-only";
 
+import { esIdValido } from "@/lib/ids";
 import type { EstadoJugador, Posicion } from "@/lib/plantilla";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
 
@@ -78,14 +79,6 @@ export async function cargarPlantilla(
   }
 
   return data.flatMap((fila) => desdeVistaPublica(fila) ?? []);
-}
-
-const PATRON_UUID =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-/** Evita mandar a la base de datos un id mal formado (daría un error). */
-export function esIdValido(id: string) {
-  return PATRON_UUID.test(id);
 }
 
 /** Un jugador, o null si no existe. */

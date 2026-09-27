@@ -4,8 +4,8 @@ import type { PostgrestError } from "@supabase/supabase-js";
 import { refresh, revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { exigirAdministrador } from "@/lib/auth";
+import { esIdValido } from "@/lib/ids";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
-import { esIdValido } from "./datos";
 import {
   validarJugador,
   type EstadoFormularioJugador,

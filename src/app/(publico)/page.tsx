@@ -1,32 +1,16 @@
-import { CalendarDays, MapPin } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { formatearFechaHora } from "@/lib/fechas";
-import { crearClienteServidor } from "@/lib/supabase/servidor";
+import { ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { TarjetaPartido } from "@/components/partidos/tarjeta-partido";
+import { cargarProximoPartido, cargarUltimoResultado } from "./partidos/datos";
 
 export default async function PaginaInicio() {
-  const supabase = await crearClienteServidor();
-
-  const { data: proximoPartido, error } = await supabase
-    .from("partidos")
-    .select("id, rival, fecha_hora, campo, condicion, competicion")
-    .eq("estado", "programado")
-    .gte("fecha_hora", new Date().toISOString())
-    .order("fecha_hora")
-    .limit(1)
-    .maybeSingle();
-
-  if (error) {
-    throw new Error(`No se ha podido cargar el próximo partido: ${error.message}`);
-  }
+  const [proximoPartido, ultimoResultado] = await Promise.all([
+    cargarProximoPartido(),
+    cargarUltimoResultado(),
+  ]);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8">
       <section aria-labelledby="titulo-proximo-partido">
         <h1
           id="titulo-proximo-partido"
@@ -36,35 +20,33 @@ export default async function PaginaInicio() {
         </h1>
 
         {proximoPartido ? (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">
-                {proximoPartido.condicion === "local"
-                  ? `Atlético Trelle – ${proximoPartido.rival}`
-                  : `${proximoPartido.rival} – Atlético Trelle`}
-              </CardTitle>
-              {proximoPartido.competicion && (
-                <CardDescription>{proximoPartido.competicion}</CardDescription>
-              )}
-            </CardHeader>
-            <CardContent className="flex flex-col gap-2 text-sm">
-              <p className="flex items-center gap-2">
-                <CalendarDays className="size-4 text-muted-foreground" aria-hidden />
-                {formatearFechaHora(proximoPartido.fecha_hora)}
-              </p>
-              <p className="flex items-center gap-2">
-                <MapPin className="size-4 text-muted-foreground" aria-hidden />
-                {proximoPartido.campo ??
-                  (proximoPartido.condicion === "local" ? "En casa" : "Fuera")}
-              </p>
-            </CardContent>
-          </Card>
+          <TarjetaPartido partido={proximoPartido} />
         ) : (
           <p className="rounded-xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
             No hay ningún partido programado.
           </p>
         )}
       </section>
+
+      {ultimoResultado && (
+        <section aria-labelledby="titulo-ultimo-resultado">
+          <h2
+            id="titulo-ultimo-resultado"
+            className="mb-4 text-xl font-semibold tracking-tight"
+          >
+            Último resultado
+          </h2>
+          <TarjetaPartido partido={ultimoResultado} />
+        </section>
+      )}
+
+      <Link
+        href="/partidos"
+        className="flex h-11 items-center justify-center gap-1 text-sm font-medium underline-offset-4 hover:underline"
+      >
+        Todos los partidos
+        <ChevronRight className="size-4" aria-hidden />
+      </Link>
     </div>
   );
 }

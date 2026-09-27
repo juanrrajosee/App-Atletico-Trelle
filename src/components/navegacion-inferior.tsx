@@ -1,6 +1,6 @@
 "use client";
 
-import { House, Users, type LucideIcon } from "lucide-react";
+import { CalendarDays, House, Users, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,7 @@ type Seccion = { href: string; etiqueta: string; icono: LucideIcon };
 // Cada fase añade aquí su sección cuando existe su pantalla.
 const SECCIONES: Seccion[] = [
   { href: "/", etiqueta: "Inicio", icono: House },
+  { href: "/partidos", etiqueta: "Partidos", icono: CalendarDays },
   { href: "/plantilla", etiqueta: "Plantilla", icono: Users },
 ];
 
