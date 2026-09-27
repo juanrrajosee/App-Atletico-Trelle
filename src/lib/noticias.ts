@@ -16,14 +16,6 @@ export function estadoNoticia({ publicada_en }: Pick<Noticia, "publicada_en">) {
   return new Date(publicada_en) > new Date() ? "programada" : "publicada";
 }
 
-/** Los párrafos del texto: se separan con una línea en blanco. */
-export function parrafos(cuerpo: string) {
-  return cuerpo
-    .split(/\n\s*\n/)
-    .map((parrafo) => parrafo.trim())
-    .filter(Boolean);
-}
-
 const LONGITUD_RESUMEN = 160;
 
 /**

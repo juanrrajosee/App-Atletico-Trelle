@@ -4,9 +4,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BotonBorrar } from "@/components/boton-borrar";
 import { FechaNoticia } from "@/components/noticias/lista-noticias";
+import { Texto } from "@/components/texto";
 import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
-import { estadoNoticia, parrafos, resumenDe } from "@/lib/noticias";
+import { estadoNoticia, resumenDe } from "@/lib/noticias";
 import { borrarNoticia } from "../acciones";
 import { cargarNoticia } from "../datos";
 
@@ -68,14 +69,7 @@ export default async function PaginaNoticia({
           )}
         </header>
 
-        <div className="flex flex-col gap-4 leading-relaxed">
-          {parrafos(noticia.cuerpo).map((parrafo, indice) => (
-            // Dentro de un párrafo se respetan los saltos de línea.
-            <p key={indice} className="whitespace-pre-line">
-              {parrafo}
-            </p>
-          ))}
-        </div>
+        <Texto texto={noticia.cuerpo} />
       </article>
 
       {administrador && (
