@@ -1,6 +1,6 @@
 "use client";
 
-import { House, type LucideIcon } from "lucide-react";
+import { House, Users, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -8,7 +8,10 @@ import { cn } from "@/lib/utils";
 type Seccion = { href: string; etiqueta: string; icono: LucideIcon };
 
 // Cada fase añade aquí su sección cuando existe su pantalla.
-const SECCIONES: Seccion[] = [{ href: "/", etiqueta: "Inicio", icono: House }];
+const SECCIONES: Seccion[] = [
+  { href: "/", etiqueta: "Inicio", icono: House },
+  { href: "/plantilla", etiqueta: "Plantilla", icono: Users },
+];
 
 function estaActiva(href: string, rutaActual: string) {
   return href === "/" ? rutaActual === "/" : rutaActual.startsWith(href);

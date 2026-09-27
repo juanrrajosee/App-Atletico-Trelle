@@ -1,0 +1,145 @@
+import "server-only";
+
+import type { UsuarioActual } from "@/lib/auth";
+import type { EstadoJugador, Posicion } from "@/lib/plantilla";
+import { crearClienteServidor } from "@/lib/supabase/servidor";
+
+export type JugadorListado = {
+  id: string;
+  nombre: string;
+  apellidos: string;
+  dorsal: number;
+  posicion: Posicion;
+  estado: EstadoJugador;
+  /** Solo lo sabe el entrenador; para un jugador es null. */
+  tieneCuenta: boolean | null;
+};
+
+/**
+ * La plantilla completa, ordenada por dorsal. El entrenador la lee de la
+ * tabla; un jugador, de la vista jugadores_roster, que no incluye ni el
+ * teléfono ni la fecha de nacimiento de sus compañeros.
+ */
+export async function cargarPlantilla(
+  usuario: UsuarioActual,
+): Promise<JugadorListado[]> {
+  const supabase = await crearClienteServidor();
+
+  if (usuario.rol === "entrenador") {
+    const { data, error } = await supabase
+      .from("jugadores")
+      .select("id, nombre, apellidos, dorsal, posicion, estado, perfil_id")
+      .order("dorsal");
+
+    if (error) {
+      throw new Error(`No se ha podido cargar la plantilla: ${error.message}`);
+    }
+
+    return data.map(({ perfil_id, ...jugador }) => ({
+      ...jugador,
+      tieneCuenta: perfil_id !== null,
+    }));
+  }
+
+  const { data, error } = await supabase
+    .from("jugadores_roster")
+    .select("id, nombre, apellidos, dorsal, posicion, estado")
+    .order("dorsal");
+
+  if (error) {
+    throw new Error(`No se ha podido cargar la plantilla: ${error.message}`);
+  }
+
+  // En las vistas, los tipos generados marcan todas las columnas como
+  // opcionales aunque en la tabla no lo sean.
+  return data.flatMap(({ id, nombre, apellidos, dorsal, posicion, estado }) =>
+    id && nombre && apellidos && dorsal && posicion && estado
+      ? [{ id, nombre, apellidos, dorsal, posicion, estado, tieneCuenta: null }]
+      : [],
+  );
+}
+
+export type FichaJugador = Omit<JugadorListado, "tieneCuenta"> & {
+  /**
+   * Teléfono y fecha de nacimiento: solo para el entrenador y para el propio
+   * jugador. Para el resto del equipo es null.
+   */
+  datosPersonales: {
+    fechaNacimiento: string | null;
+    telefono: string | null;
+  } | null;
+  /** Cuenta vinculada. Solo lo sabe el entrenador; para un jugador es null. */
+  perfilId: string | null;
+};
+
+const PATRON_UUID =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Evita mandar a la base de datos un id mal formado (daría un error). */
+export function esIdValido(id: string) {
+  return PATRON_UUID.test(id);
+}
+
+/** La ficha de un jugador, o null si no existe. */
+export async function cargarFicha(
+  usuario: UsuarioActual,
+  id: string,
+): Promise<FichaJugador | null> {
+  if (!esIdValido(id)) {
+    return null;
+  }
+
+  const supabase = await crearClienteServidor();
+  const esEntrenador = usuario.rol === "entrenador";
+
+  if (esEntrenador || usuario.jugador?.id === id) {
+    const { data, error } = await supabase
+      .from("jugadores")
+      .select(
+        "id, nombre, apellidos, dorsal, posicion, estado, fecha_nacimiento, telefono, perfil_id",
+      )
+      .eq("id", id)
+      .maybeSingle();
+
+    if (error) {
+      throw new Error(`No se ha podido cargar el jugador: ${error.message}`);
+    }
+    if (!data) {
+      return null;
+    }
+
+    const { fecha_nacimiento, telefono, perfil_id, ...jugador } = data;
+    return {
+      ...jugador,
+      datosPersonales: { fechaNacimiento: fecha_nacimiento, telefono },
+      perfilId: esEntrenador ? perfil_id : null,
+    };
+  }
+
+  const { data, error } = await supabase
+    .from("jugadores_roster")
+    .select("id, nombre, apellidos, dorsal, posicion, estado")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(`No se ha podido cargar el jugador: ${error.message}`);
+  }
+  if (!data?.id || !data.nombre || !data.apellidos || !data.dorsal) {
+    return null;
+  }
+  if (!data.posicion || !data.estado) {
+    return null;
+  }
+
+  return {
+    id: data.id,
+    nombre: data.nombre,
+    apellidos: data.apellidos,
+    dorsal: data.dorsal,
+    posicion: data.posicion,
+    estado: data.estado,
+    datosPersonales: null,
+    perfilId: null,
+  };
+}
