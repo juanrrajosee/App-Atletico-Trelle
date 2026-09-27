@@ -18,7 +18,7 @@ export const NOMBRE_CATEGORIA: Record<CategoriaVotacion, string> = {
 export const NOMBRE_CORTO_CATEGORIA: Record<CategoriaVotacion, string> = {
   mvp: "MVP",
   mejor_suplente: "mejor suplente",
-  compromiso: "el de más compromiso",
+  compromiso: "el más comprometido",
 };
 
 /** A quién se puede votar en cada categoría. */

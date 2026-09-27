@@ -1,6 +1,12 @@
 "use client";
 
-import { CalendarDays, House, Users, type LucideIcon } from "lucide-react";
+import {
+  CalendarDays,
+  House,
+  Trophy,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -11,6 +17,7 @@ type Seccion = { href: string; etiqueta: string; icono: LucideIcon };
 const SECCIONES: Seccion[] = [
   { href: "/", etiqueta: "Inicio", icono: House },
   { href: "/partidos", etiqueta: "Partidos", icono: CalendarDays },
+  { href: "/votaciones", etiqueta: "Votaciones", icono: Trophy },
   { href: "/plantilla", etiqueta: "Plantilla", icono: Users },
 ];
 
