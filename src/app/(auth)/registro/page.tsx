@@ -50,7 +50,12 @@ export default async function PaginaRegistro({
         </Card>
 
         <p className="text-center text-xs text-muted-foreground">
-          Al crear una cuenta confirmas que tienes 14 años o más.
+          Al crear una cuenta confirmas que tienes 14 años o más y que has
+          leído la{" "}
+          <Link href="/privacidad" className="underline underline-offset-4">
+            política de privacidad
+          </Link>
+          .
         </p>
 
         <p className="text-center text-sm text-muted-foreground">

@@ -23,6 +23,10 @@ export default async function PaginaEditarClub() {
           telefono: club.telefono ?? "",
           email: club.email ?? "",
           campo: club.campo ?? "",
+          titular_nombre: club.titular_nombre ?? "",
+          titular_cif: club.titular_cif ?? "",
+          titular_domicilio: club.titular_domicilio ?? "",
+          email_privacidad: club.email_privacidad ?? "",
         }}
       />
     </div>

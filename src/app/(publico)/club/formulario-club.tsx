@@ -111,6 +111,73 @@ export function FormularioClub({
         </CampoFormulario>
       </fieldset>
 
+      <fieldset className="flex flex-col gap-5">
+        <legend className="mb-1 text-lg font-semibold">Datos legales</legend>
+        <p className="-mt-2 text-sm text-muted-foreground">
+          Salen en la política de privacidad y en el aviso legal, como
+          responsable de la aplicación.
+        </p>
+
+        <CampoFormulario
+          id="titular_nombre"
+          etiqueta="Nombre del club"
+          error={errores.titular_nombre}
+        >
+          <Input
+            id="titular_nombre"
+            name="titular_nombre"
+            autoComplete="off"
+            defaultValue={valores.titular_nombre}
+            className="h-11"
+            {...conError("titular_nombre")}
+          />
+        </CampoFormulario>
+
+        <CampoFormulario id="titular_cif" etiqueta="CIF" error={errores.titular_cif}>
+          <Input
+            id="titular_cif"
+            name="titular_cif"
+            autoComplete="off"
+            autoCapitalize="characters"
+            defaultValue={valores.titular_cif}
+            className="h-11"
+            {...conError("titular_cif")}
+          />
+        </CampoFormulario>
+
+        <CampoFormulario
+          id="titular_domicilio"
+          etiqueta="Domicilio"
+          error={errores.titular_domicilio}
+        >
+          <Input
+            id="titular_domicilio"
+            name="titular_domicilio"
+            autoComplete="off"
+            defaultValue={valores.titular_domicilio}
+            className="h-11"
+            {...conError("titular_domicilio")}
+          />
+        </CampoFormulario>
+
+        <CampoFormulario
+          id="email_privacidad"
+          etiqueta="Email para temas de privacidad"
+          error={errores.email_privacidad}
+        >
+          <Input
+            id="email_privacidad"
+            name="email_privacidad"
+            type="email"
+            inputMode="email"
+            autoComplete="off"
+            defaultValue={valores.email_privacidad}
+            className="h-11"
+            {...conError("email_privacidad")}
+          />
+        </CampoFormulario>
+      </fieldset>
+
       {estado.mensaje && (
         <p role="alert" className="text-sm text-destructive">
           {estado.mensaje}

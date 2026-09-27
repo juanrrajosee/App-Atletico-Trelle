@@ -9,7 +9,7 @@ update public.club
   set historia_club = null, historia_trelle = null, email = null,
     telefono = null, campo = null;
 
-select plan(14);
+select plan(16);
 
 insert into auth.users (id, email) values
   ('e0000000-0000-0000-0000-000000000001', 'admin@test.local'),
@@ -38,6 +38,18 @@ select throws_ok(
   $$ update public.club set telefono = 'llámame' $$,
   '23514', null,
   'el teléfono, solo números'
+);
+
+select throws_ok(
+  $$ update public.club set titular_cif = 'no vale' $$,
+  '23514', null,
+  'el CIF tiene nueve letras o cifras'
+);
+
+select throws_ok(
+  $$ update public.club set email_privacidad = 'no-es-un-email' $$,
+  '23514', null,
+  'el email de privacidad tiene que tener forma de email'
 );
 
 -- Sin sesión.

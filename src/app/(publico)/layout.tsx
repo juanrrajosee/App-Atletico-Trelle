@@ -36,9 +36,21 @@ export default async function LayoutPublico({ children }: LayoutProps<"/">) {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-2xl flex-1 px-4 pt-6 pb-24">
+      <main className="mx-auto w-full max-w-2xl flex-1 px-4 pt-6">
         {children}
       </main>
+
+      {/* pb-24: por encima de la barra de navegación, que va fija abajo. */}
+      <footer className="mx-auto w-full max-w-2xl px-4 pt-12 pb-24">
+        <div className="flex justify-center gap-4 border-t pt-4 text-xs text-muted-foreground">
+          <Link href="/privacidad" className="underline-offset-4 hover:underline">
+            Privacidad
+          </Link>
+          <Link href="/aviso-legal" className="underline-offset-4 hover:underline">
+            Aviso legal
+          </Link>
+        </div>
+      </footer>
 
       <NavegacionInferior />
     </div>

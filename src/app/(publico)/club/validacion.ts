@@ -6,10 +6,29 @@ export type CampoClub =
   | "historia_trelle"
   | "telefono"
   | "email"
-  | "campo";
+  | "campo"
+  | "titular_nombre"
+  | "titular_cif"
+  | "titular_domicilio"
+  | "email_privacidad";
 
 export type EstadoFormularioClub = EstadoFormulario<CampoClub>;
 export type RespuestaFormularioClub = RespuestaFormulario<CampoClub>;
+
+/** Un texto corto opcional: vacío se guarda como null. */
+const textoCorto = (maximo: number) =>
+  z
+    .string()
+    .trim()
+    .max(maximo, `Como mucho ${maximo} caracteres.`)
+    .transform((texto) => texto || null);
+
+/** Un email opcional: vacío se guarda como null. */
+const emailOpcional = z
+  .string()
+  .trim()
+  .pipe(z.union([z.literal(""), z.email("Escribe un email válido.")]))
+  .transform((texto) => texto || null);
 
 /** Un texto largo opcional: vacío se guarda como null. */
 const textoLargo = z
@@ -30,16 +49,17 @@ const esquemaClub = z.object({
         .regex(/^(\+?[0-9 ]{9,20})?$/, "Escribe solo números (y el +34 si quieres)."),
     )
     .transform((texto) => texto || null),
-  email: z
+  email: emailOpcional,
+  campo: textoCorto(200),
+  titular_nombre: textoCorto(120),
+  titular_cif: z
     .string()
     .trim()
-    .pipe(z.union([z.literal(""), z.email("Escribe un email válido.")]))
+    .toUpperCase()
+    .regex(/^([A-Z0-9]{9})?$/, "El CIF tiene 9 letras o cifras, sin guiones.")
     .transform((texto) => texto || null),
-  campo: z
-    .string()
-    .trim()
-    .max(200, "Como mucho 200 caracteres.")
-    .transform((texto) => texto || null),
+  titular_domicilio: textoCorto(200),
+  email_privacidad: emailOpcional,
 });
 
 export type DatosClub = z.infer<typeof esquemaClub>;

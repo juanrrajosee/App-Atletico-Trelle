@@ -5,7 +5,15 @@ import type { Tables } from "@/types/database";
 
 export type Club = Pick<
   Tables<"club">,
-  "historia_club" | "historia_trelle" | "email" | "telefono" | "campo"
+  | "historia_club"
+  | "historia_trelle"
+  | "email"
+  | "telefono"
+  | "campo"
+  | "titular_nombre"
+  | "titular_cif"
+  | "titular_domicilio"
+  | "email_privacidad"
 >;
 
 export type MiembroDirectiva = Pick<
@@ -18,7 +26,9 @@ export async function cargarClub(): Promise<Club> {
   const supabase = await crearClienteServidor();
   const { data, error } = await supabase
     .from("club")
-    .select("historia_club, historia_trelle, email, telefono, campo")
+    .select(
+      "historia_club, historia_trelle, email, telefono, campo, titular_nombre, titular_cif, titular_domicilio, email_privacidad",
+    )
     .single();
 
   if (error) {
