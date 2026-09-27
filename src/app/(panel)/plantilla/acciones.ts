@@ -172,3 +172,58 @@ export async function desvincularCuenta(jugadorId: string) {
   revalidatePath("/plantilla");
   refresh();
 }
+
+export type EstadoBorrado = { error: string | null };
+
+export async function borrarJugador(
+  jugadorId: string,
+): Promise<EstadoBorrado> {
+  await exigirEntrenador();
+
+  if (!esIdValido(jugadorId)) {
+    return { error: NO_ENCONTRADO };
+  }
+
+  const supabase = await crearClienteServidor();
+  const { error, count } = await supabase
+    .from("jugadores")
+    .delete({ count: "exact" })
+    .eq("id", jugadorId);
+
+  if (error) {
+    // 23503: otras tablas (convocatorias, asistencias...) lo referencian.
+    if (error.code === "23503") {
+      return {
+        error: "Tiene historial en el equipo, así que no se puede borrar. Dale de baja.",
+      };
+    }
+    return { error: "No se ha podido borrar el jugador. Inténtalo de nuevo." };
+  }
+  if (count === 0) {
+    return { error: NO_ENCONTRADO };
+  }
+
+  revalidatePath("/plantilla");
+  redirect("/plantilla");
+}
+
+export async function darDeBaja(jugadorId: string) {
+  await exigirEntrenador();
+
+  if (!esIdValido(jugadorId)) {
+    return;
+  }
+
+  const supabase = await crearClienteServidor();
+  const { error } = await supabase
+    .from("jugadores")
+    .update({ estado: "baja" })
+    .eq("id", jugadorId);
+
+  if (error) {
+    throw new Error(`No se ha podido dar de baja al jugador: ${error.message}`);
+  }
+
+  revalidatePath("/plantilla");
+  refresh();
+}

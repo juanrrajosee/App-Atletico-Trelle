@@ -173,3 +173,31 @@ export async function cargarCuentas(): Promise<Cuenta[]> {
     jugadorId: (cuenta.jugador_id as string | null) ?? null,
   }));
 }
+
+/**
+ * Si el jugador aparece en alguna convocatoria, asistencia o estadística.
+ * Con historial no se le puede borrar (la base de datos tampoco lo
+ * permite): se le da de baja.
+ */
+export async function tieneHistorial(jugadorId: string): Promise<boolean> {
+  const supabase = await crearClienteServidor();
+  const contar = (tabla: "convocatorias" | "asistencias" | "estadisticas_partido") =>
+    supabase
+      .from(tabla)
+      .select("id", { count: "exact", head: true })
+      .eq("jugador_id", jugadorId);
+
+  const resultados = await Promise.all([
+    contar("convocatorias"),
+    contar("asistencias"),
+    contar("estadisticas_partido"),
+  ]);
+
+  for (const { error } of resultados) {
+    if (error) {
+      throw new Error(`No se ha podido consultar el historial: ${error.message}`);
+    }
+  }
+
+  return resultados.some(({ count }) => (count ?? 0) > 0);
+}
