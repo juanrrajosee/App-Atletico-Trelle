@@ -186,6 +186,7 @@ export type Database = {
     };
     Functions: {
       es_administrador: { Args: Record<PropertyKey, never>; Returns: boolean };
+      guardar_alineacion: { Args: { p_filas: Json; p_partido_id: string }; Returns: undefined };
     };
     Enums: {
       condicion_partido: "local" | "visitante";

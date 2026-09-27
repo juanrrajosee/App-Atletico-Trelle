@@ -21,8 +21,10 @@ values
   ('a0000000-0000-0000-0000-00000000000a', 'Ana', 'Ruiz', 7, 'delantero'),
   ('b0000000-0000-0000-0000-00000000000b', 'Bea', 'Soto', 9, 'centrocampista');
 
-insert into public.partidos (id, rival, fecha_hora, condicion, estado)
-  values ('11111111-0000-0000-0000-000000000001', 'CD Rival', now() - interval '1 day', 'local', 'jugado');
+insert into public.partidos
+  (id, rival, fecha_hora, condicion, estado, goles_favor, goles_contra)
+  values ('11111111-0000-0000-0000-000000000001', 'CD Rival',
+    now() - interval '1 day', 'local', 'jugado', 2, 0);
 
 -- El administrador registra las estadísticas del partido.
 set local role authenticated;
