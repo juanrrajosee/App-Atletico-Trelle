@@ -1,7 +1,9 @@
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin, Pencil, Phone } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { Texto } from "@/components/texto";
+import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
 import { cargarClub, cargarDirectiva, type MiembroDirectiva } from "./datos";
 
@@ -26,6 +28,14 @@ export default async function PaginaClub() {
         <h1 className="text-2xl font-semibold tracking-tight">
           Atlético Trelle
         </h1>
+        {administrador && (
+          <Button asChild variant="outline" className="h-11">
+            <Link href="/club/editar">
+              <Pencil aria-hidden />
+              Editar historia y contacto
+            </Link>
+          </Button>
+        )}
       </div>
 
       {vacio && !administrador && (
