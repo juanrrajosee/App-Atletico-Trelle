@@ -1,4 +1,3 @@
-import { aHoraDeEspana } from "@/lib/fechas";
 import { Constants, type Database } from "@/types/database";
 
 export type CategoriaVotacion =
@@ -45,20 +44,4 @@ export function esCandidato(
     case "compromiso":
       return true;
   }
-}
-
-/**
- * Temporada a la que pertenece una fecha, por el año en que empieza: del 1
- * de julio al 30 de junio (en hora de España). 2026 es la 2026/27.
- */
-export function temporadaDe(fechaIso: string) {
-  const { fecha } = aHoraDeEspana(fechaIso);
-  const ano = Number(fecha.slice(0, 4));
-  const mes = Number(fecha.slice(5, 7));
-  return mes >= 7 ? ano : ano - 1;
-}
-
-/** 2026 → "2026/27". */
-export function nombreTemporada(temporada: number) {
-  return `${temporada}/${String(temporada + 1).slice(-2)}`;
 }
