@@ -5,7 +5,11 @@ import type { Partido } from "@/lib/partidos";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
 import type { CategoriaVotacion, EstadoVotacion } from "@/lib/votaciones";
 
-export type Votacion = { estado: EstadoVotacion; cierre: string };
+export type Votacion = {
+  estado: EstadoVotacion;
+  /** Cuándo se cierra (null mientras no hay alineación). */
+  cierre: string | null;
+};
 
 /** En qué punto está la votación de un partido y cuándo se cierra. */
 export async function cargarVotacion(partidoId: string): Promise<Votacion> {
@@ -99,10 +103,12 @@ export async function cargarRanking(
 
 /**
  * Los partidos con la votación abierta ahora mismo (normalmente ninguno o
- * uno). Solo pueden ser partidos jugados en las últimas 24 horas: la
- * votación se cierra a medianoche del día del partido.
+ * uno), con la hora de cierre. Solo pueden ser partidos con la alineación
+ * registrada en las últimas 24 horas: la votación dura eso.
  */
-export async function cargarVotacionesAbiertas(): Promise<Partido[]> {
+export async function cargarVotacionesAbiertas(): Promise<
+  (Partido & { cierre: string })[]
+> {
   const supabase = await crearClienteServidor();
   const ahora = new Date();
   const { data, error } = await supabase
@@ -111,9 +117,8 @@ export async function cargarVotacionesAbiertas(): Promise<Partido[]> {
       "id, rival, fecha_hora, campo, condicion, competicion, goles_favor, goles_contra, estado",
     )
     .eq("estado", "jugado")
-    .lte("fecha_hora", ahora.toISOString())
     .gte(
-      "fecha_hora",
+      "alineacion_registrada_en",
       new Date(ahora.getTime() - 24 * 60 * 60 * 1000).toISOString(),
     )
     .order("fecha_hora", { ascending: false });
@@ -126,5 +131,8 @@ export async function cargarVotacionesAbiertas(): Promise<Partido[]> {
     data.map((partido) => cargarVotacion(partido.id)),
   );
 
-  return data.filter((_, indice) => votaciones[indice].estado === "abierta");
+  return data.flatMap((partido, indice) => {
+    const { estado, cierre } = votaciones[indice];
+    return estado === "abierta" && cierre ? [{ ...partido, cierre }] : [];
+  });
 }

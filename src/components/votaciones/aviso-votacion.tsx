@@ -1,9 +1,14 @@
 import { ChevronRight, Vote } from "lucide-react";
 import Link from "next/link";
+import { formatearHasta } from "@/lib/fechas";
 import { titulo, type Partido } from "@/lib/partidos";
 
 /** Aviso de una votación abierta, que lleva al partido para votar. */
-export function AvisoVotacion({ partido }: { partido: Partido }) {
+export function AvisoVotacion({
+  partido,
+}: {
+  partido: Partido & { cierre: string };
+}) {
   return (
     <Link
       href={`/partidos/${partido.id}`}
@@ -14,7 +19,7 @@ export function AvisoVotacion({ partido }: { partido: Partido }) {
         <span className="font-medium">¡Votación abierta!</span>
         <span className="text-sm text-muted-foreground">
           {titulo(partido)}: vota al MVP, al mejor suplente y al de más
-          compromiso hasta las 23:59.
+          compromiso hasta {formatearHasta(partido.cierre)}.
         </span>
       </span>
       <ChevronRight

@@ -183,6 +183,7 @@ export type Database = {
       };
       partidos: {
         Row: {
+          alineacion_registrada_en: string | null;
           campo: string | null;
           competicion: string | null;
           condicion: Database["public"]["Enums"]["condicion_partido"];
@@ -195,6 +196,7 @@ export type Database = {
           rival: string;
         };
         Insert: {
+          alineacion_registrada_en?: string | null;
           campo?: string | null;
           competicion?: string | null;
           condicion: Database["public"]["Enums"]["condicion_partido"];
@@ -207,6 +209,7 @@ export type Database = {
           rival: string;
         };
         Update: {
+          alineacion_registrada_en?: string | null;
           campo?: string | null;
           competicion?: string | null;
           condicion?: Database["public"]["Enums"]["condicion_partido"];
@@ -358,7 +361,6 @@ export type Database = {
       };
     };
     Functions: {
-      cierre_votacion: { Args: { p_fecha_hora: string }; Returns: string };
       consultar_votacion: {
         Args: { p_partido_id: string };
         Returns: {

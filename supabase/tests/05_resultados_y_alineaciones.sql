@@ -6,7 +6,7 @@ begin;
 -- deja todo como estaba.
 truncate auth.users, public.jugadores, public.partidos cascade;
 
-select plan(15);
+select plan(17);
 
 insert into auth.users (id, email) values
   ('e0000000-0000-0000-0000-000000000001', 'admin@test.local'),
@@ -85,6 +85,32 @@ select is(
   (select count(*)::int || '-' || max(minutos)::text from public.estadisticas_partido),
   '1-80',
   'la nueva alineación sustituye a la anterior'
+);
+
+select is(
+  (select alineacion_registrada_en from public.partidos
+   where id = '11111111-0000-0000-0000-000000000001'),
+  now(),
+  'al registrar la alineación se apunta cuándo (abre la votación)'
+);
+
+reset role;
+update public.partidos set alineacion_registrada_en = now() - interval '1 hour'
+  where id = '11111111-0000-0000-0000-000000000001';
+set local role authenticated;
+set local request.jwt.claim.sub = 'e0000000-0000-0000-0000-000000000001';
+
+select public.guardar_alineacion('11111111-0000-0000-0000-000000000001', '[
+  {"jugador_id": "a0000000-0000-0000-0000-00000000000a", "titular": true,
+   "minutos": 80, "goles": 1, "asistencias": 1, "tarjetas_amarillas": 0,
+   "tarjeta_roja": false}
+]'::jsonb);
+
+select is(
+  (select alineacion_registrada_en from public.partidos
+   where id = '11111111-0000-0000-0000-000000000001'),
+  now() - interval '1 hour',
+  'volver a guardarla no alarga la votación'
 );
 
 select throws_ok(

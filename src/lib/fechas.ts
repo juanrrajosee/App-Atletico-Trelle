@@ -118,6 +118,22 @@ export function formatearFecha(fechaIso: string) {
   return (esDeEsteAno(fecha) ? formatoFecha : formatoFechaConAno).format(fecha);
 }
 
+/**
+ * Hasta cuándo dura algo, para leerlo seguido: "hoy a las 18:30", "mañana
+ * a las 9:00" o "el 3 de octubre a las 18:30".
+ */
+export function formatearHasta(fechaIso: string) {
+  const dia = aHoraDeEspana(fechaIso).fecha;
+  const hoy = aHoraDeEspana(new Date().toISOString()).fecha;
+  const manana = aHoraDeEspana(
+    new Date(Date.parse(`${hoy}T12:00:00Z`) + 24 * 60 * 60 * 1000).toISOString(),
+  ).fecha;
+  const hora = formatearHora(fechaIso);
+  if (dia === hoy) return `hoy a las ${hora}`;
+  if (dia === manana) return `mañana a las ${hora}`;
+  return `el ${formatearFecha(fechaIso)} a las ${hora}`;
+}
+
 /** Por ejemplo: "17:00". */
 export function formatearHora(fechaIso: string) {
   return formatoHora.format(new Date(fechaIso));

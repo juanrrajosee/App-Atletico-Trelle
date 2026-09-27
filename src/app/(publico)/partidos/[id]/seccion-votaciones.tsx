@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { FormularioVoto } from "@/components/votaciones/formulario-voto";
 import { Button } from "@/components/ui/button";
 import { obtenerUsuarioActual } from "@/lib/auth";
+import { formatearHasta } from "@/lib/fechas";
 import type { Partido } from "@/lib/partidos";
 import {
   CANDIDATOS_CATEGORIA,
@@ -98,8 +99,9 @@ export async function SeccionVotaciones({
   return (
     <Seccion>
       <p className="text-sm text-muted-foreground">
-        Votación abierta hasta las 23:59 de hoy. Los resultados se publican
-        al cerrarse.
+        Votación abierta
+        {votacion.cierre && ` hasta ${formatearHasta(votacion.cierre)}`}. Los
+        resultados se publican al cerrarse.
       </p>
 
       {!usuario && (

@@ -77,7 +77,7 @@ Después de cada partido, la afición vota en tres categorías:
 | Mejor suplente | A los suplentes que salieron al campo |
 | Jugador con más compromiso | A todos los convocados |
 
-- **Cuándo:** la votación se abre en cuanto el partido está jugado y tiene la alineación registrada, y se cierra a las 23:59 (hora de España) del día del partido. Por eso conviene registrar la alineación ese mismo día.
+- **Cuándo:** la votación se abre en cuanto el partido está jugado y tiene la alineación registrada, y dura 24 horas desde que se registró la alineación por primera vez (corregirla después no la alarga). Un partido de hace más de 7 días no abre votación aunque se le registre ahora la alineación, para que meter partidos antiguos no abra votaciones de golpe.
 - **Quién:** cualquiera con cuenta, un voto por categoría y partido, que no se puede cambiar. Sin cuenta, la ficha del partido invita a entrar y, al hacerlo, se vuelve al partido.
 - **Resultados:** mientras está abierta nadie ve cómo va. Al cerrarse, la ficha del partido enseña el recuento y quién ha ganado (con empate, ganan todos los empatados).
 - **Ranking:** en *Votaciones*, por temporada (del 1 de julio al 30 de junio) y categoría: cuántas veces ha ganado cada jugador y, para desempatar, cuántos votos suma.

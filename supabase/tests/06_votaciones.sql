@@ -6,7 +6,7 @@ begin;
 -- deja todo como estaba.
 truncate auth.users, public.jugadores, public.partidos cascade;
 
-select plan(33);
+select plan(37);
 
 insert into auth.users (id, email) values
   ('a0000000-0000-0000-0000-000000000001', 'aficionado-a@test.local'),
@@ -19,24 +19,36 @@ insert into public.jugadores (id, nombre, apellidos, dorsal, posicion) values
   ('c0000000-0000-0000-0000-00000000000c', 'Cris', 'Vila', 12, 'defensa');
 
 insert into public.partidos
-  (id, rival, fecha_hora, condicion, estado, goles_favor, goles_contra)
+  (id, rival, fecha_hora, condicion, estado, goles_favor, goles_contra,
+   alineacion_registrada_en)
 values
-  -- Abierto: se ha jugado hoy (la hora es la de ahora mismo).
-  ('11111111-0000-0000-0000-000000000001', 'Abierto', now(), 'local', 'jugado', 1, 0),
+  -- Abierto: jugado hoy y con la alineación registrada ahora mismo.
+  ('11111111-0000-0000-0000-000000000001', 'Abierto', now(), 'local', 'jugado', 1, 0, now()),
   -- Cerrado: se jugó hace tiempo.
-  ('22222222-0000-0000-0000-000000000002', 'Cerrado', '2025-10-05 15:00+00', 'local', 'jugado', 2, 1),
+  ('22222222-0000-0000-0000-000000000002', 'Cerrado', '2025-10-05 15:00+00', 'local', 'jugado', 2, 1, '2025-10-05 18:00+00'),
   -- Jugado hoy, pero aún sin alineación.
-  ('33333333-0000-0000-0000-000000000003', 'Sin alineación', now(), 'local', 'jugado', 0, 0),
+  ('33333333-0000-0000-0000-000000000003', 'Sin alineación', now(), 'local', 'jugado', 0, 0, null),
   -- Por jugar.
-  ('44444444-0000-0000-0000-000000000004', 'Programado', now() + interval '1 day', 'local', 'programado', null, null),
+  ('44444444-0000-0000-0000-000000000004', 'Programado', now() + interval '1 day', 'local', 'programado', null, null, null),
   -- Otro cerrado de la misma temporada, y uno de la siguiente.
-  ('55555555-0000-0000-0000-000000000005', 'Cerrado 2', '2025-10-12 15:00+00', 'local', 'jugado', 1, 1),
-  ('66666666-0000-0000-0000-000000000006', 'Otra temporada', '2026-08-01 15:00+00', 'local', 'jugado', 3, 0);
+  ('55555555-0000-0000-0000-000000000005', 'Cerrado 2', '2025-10-12 15:00+00', 'local', 'jugado', 1, 1, '2025-10-12 18:00+00'),
+  ('66666666-0000-0000-0000-000000000006', 'Otra temporada', '2026-08-01 15:00+00', 'local', 'jugado', 3, 0, '2026-08-01 18:00+00'),
+  -- Alineación registrada al día siguiente del partido: aún abierta.
+  ('77777777-0000-0000-0000-000000000007', 'Registrada ayer', now() - interval '2 days', 'local', 'jugado', 1, 0, now() - interval '23 hours'),
+  -- Registrada hace más de 24 horas: cerrada.
+  ('88888888-0000-0000-0000-000000000008', 'Pasadas 24 h', now() - interval '2 days', 'local', 'jugado', 1, 0, now() - interval '25 hours'),
+  -- Partido de hace 10 días al que se le registra ahora la alineación: no
+  -- abre votación. Y otro igual de antiguo, todavía sin alineación.
+  ('99999999-0000-0000-0000-000000000009', 'Antiguo', now() - interval '10 days', 'local', 'jugado', 1, 0, now()),
+  ('aaaaaaaa-0000-0000-0000-00000000000a', 'Antiguo sin alineación', now() - interval '10 days', 'local', 'jugado', 1, 0, null),
+  -- Con la alineación registrada hace un rato pero luego vaciada.
+  ('bbbbbbbb-0000-0000-0000-00000000000b', 'Vaciada', now(), 'local', 'jugado', 1, 0, now());
 
 insert into public.estadisticas_partido (partido_id, jugador_id, titular, minutos)
 select p.id, j.id, j.titular, j.minutos
 from (values
   ('11111111-0000-0000-0000-000000000001'::uuid),
+  ('77777777-0000-0000-0000-000000000007'),
   ('22222222-0000-0000-0000-000000000002'),
   ('55555555-0000-0000-0000-000000000005'),
   ('66666666-0000-0000-0000-000000000006')
@@ -67,8 +79,20 @@ select is(
   'abierta', 'jugado hoy y con alineación: abierta'
 );
 select is(
+  (select cierre from public.consultar_votacion('11111111-0000-0000-0000-000000000001')),
+  now() + interval '24 hours', 'se cierra 24 horas después de registrar la alineación'
+);
+select is(
+  (select estado::text from public.consultar_votacion('77777777-0000-0000-0000-000000000007')),
+  'abierta', 'da igual que la alineación se registre al día siguiente'
+);
+select is(
+  (select estado::text from public.consultar_votacion('88888888-0000-0000-0000-000000000008')),
+  'cerrada', 'pasadas las 24 horas: cerrada'
+);
+select is(
   (select estado::text from public.consultar_votacion('22222222-0000-0000-0000-000000000002')),
-  'cerrada', 'jugado otro día: cerrada'
+  'cerrada', 'un partido de otra temporada: cerrada'
 );
 select is(
   (select estado::text from public.consultar_votacion('33333333-0000-0000-0000-000000000003')),
@@ -79,12 +103,16 @@ select is(
   'pendiente', 'sin jugar: pendiente'
 );
 select is(
-  public.cierre_votacion('2026-10-04 15:00+00'), '2026-10-04 22:00+00'::timestamptz,
-  'en horario de verano se cierra a las 00:00 de España (22:00 UTC)'
+  (select estado::text from public.consultar_votacion('bbbbbbbb-0000-0000-0000-00000000000b')),
+  'pendiente', 'si se vacía la alineación, no hay a quién votar'
 );
 select is(
-  public.cierre_votacion('2026-12-06 22:30+00'), '2026-12-06 23:00+00'::timestamptz,
-  'en invierno, a las 23:00 UTC, aunque el partido acabe tarde'
+  (select estado::text from public.consultar_votacion('99999999-0000-0000-0000-000000000009')),
+  'cerrada', 'un partido de hace más de 7 días no abre votación al registrar su alineación'
+);
+select is(
+  (select estado::text from public.consultar_votacion('aaaaaaaa-0000-0000-0000-00000000000a')),
+  'cerrada', 'ni se queda esperándola'
 );
 
 -- Como la aficionada A.
