@@ -1,13 +1,23 @@
-import { CalendarDays, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+  Pencil,
+} from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BotonBorrar } from "@/components/boton-borrar";
 import { EtiquetaPartido } from "@/components/partidos/etiqueta-partido";
 import { Marcador } from "@/components/partidos/marcador";
+import { Button } from "@/components/ui/button";
+import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
 import { formatearFechaHora } from "@/lib/fechas";
 import { NOMBRE_CONDICION, titulo } from "@/lib/partidos";
 import { NOMBRE_POSICION } from "@/lib/plantilla";
 import { cn } from "@/lib/utils";
+import { borrarPartido } from "../acciones";
 import { cargarAlineacion, cargarPartido, type Participacion } from "../datos";
 
 export async function generateMetadata({
@@ -21,6 +31,7 @@ export default async function PaginaPartido({
   params,
 }: PageProps<"/partidos/[id]">) {
   const { id } = await params;
+  const administrador = esAdministrador(await obtenerUsuarioActual());
   const partido = await cargarPartido(id);
 
   if (!partido) {
@@ -80,6 +91,23 @@ export default async function PaginaPartido({
             : NOMBRE_CONDICION[partido.condicion]}
         </p>
       </div>
+
+      {administrador && (
+        <div className="flex flex-col gap-3">
+          <Button asChild variant="outline" className="h-11">
+            <Link href={`/partidos/${partido.id}/editar`}>
+              <Pencil aria-hidden />
+              Editar partido
+            </Link>
+          </Button>
+          <BotonBorrar
+            accion={borrarPartido.bind(null, partido.id)}
+            texto="Borrar partido"
+            pregunta={`¿Borrar el partido contra ${partido.rival}?`}
+            consecuencias="Se borrará del calendario junto con su alineación y sus estadísticas. No se puede deshacer."
+          />
+        </div>
+      )}
 
       {partido.estado === "jugado" && alineacion.length === 0 && (
         <p className="rounded-xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">

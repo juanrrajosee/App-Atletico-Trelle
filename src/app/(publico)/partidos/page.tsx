@@ -1,5 +1,9 @@
+import { Plus } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ListaPartidos } from "@/components/partidos/lista-partidos";
+import { Button } from "@/components/ui/button";
+import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
 import { cargarPartidos } from "./datos";
 
 export const metadata: Metadata = {
@@ -7,6 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function PaginaPartidos() {
+  const administrador = esAdministrador(await obtenerUsuarioActual());
   const partidos = await cargarPartidos();
   const ahora = new Date();
 
@@ -24,7 +29,17 @@ export default async function PaginaPartidos() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Partidos</h1>
+      <div className="flex items-center justify-between gap-4">
+        <h1 className="text-2xl font-semibold tracking-tight">Partidos</h1>
+        {administrador && (
+          <Button asChild className="h-11">
+            <Link href="/partidos/nuevo">
+              <Plus aria-hidden />
+              Añadir
+            </Link>
+          </Button>
+        )}
+      </div>
 
       {partidos.length === 0 && (
         <p className="rounded-xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
