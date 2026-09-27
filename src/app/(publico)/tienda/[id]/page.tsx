@@ -1,4 +1,4 @@
-import { ChevronLeft, MessageCircle, Phone } from "lucide-react";
+import { ChevronLeft, MessageCircle, Pencil, Phone } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -58,6 +58,21 @@ export default async function PaginaProducto({
         Tienda
       </Link>
 
+      {administrador && (
+        <Button asChild variant="outline" className="h-11">
+          <Link href={`/tienda/${producto.id}/editar`}>
+            <Pencil aria-hidden />
+            Editar producto
+          </Link>
+        </Button>
+      )}
+
+      {administrador && !producto.visible && (
+        <p className="rounded-lg border px-4 py-3 text-sm text-muted-foreground">
+          Este producto está oculto: solo lo ves tú.
+        </p>
+      )}
+
       <FotoProducto
         producto={producto}
         tamanos="(min-width: 42rem) 40rem, 100vw"
@@ -91,7 +106,11 @@ export default async function PaginaProducto({
         {club.telefono ? (
           <>
             <Button asChild className="h-11">
-              <a href={enlaceWhatsApp(club.telefono, mensajePresupuesto(producto))} target="_blank" rel="noopener noreferrer">
+              <a
+                href={enlaceWhatsApp(club.telefono, mensajePresupuesto(producto))}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <MessageCircle aria-hidden />
                 Por WhatsApp
               </a>

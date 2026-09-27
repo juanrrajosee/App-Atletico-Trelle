@@ -1,8 +1,10 @@
+import { Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PestanasClub } from "@/components/pestanas";
 import { FotoProducto } from "@/components/tienda/foto-producto";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
 import { formatearPrecio } from "@/lib/tienda";
 import { cargarProductos } from "./datos";
@@ -27,6 +29,14 @@ export default async function PaginaTienda() {
             teléfono o por WhatsApp.
           </p>
         </div>
+        {administrador && (
+          <Button asChild className="h-11">
+            <Link href="/tienda/nuevo">
+              <Plus aria-hidden />
+              Añadir
+            </Link>
+          </Button>
+        )}
       </div>
 
       {productos.length === 0 ? (
