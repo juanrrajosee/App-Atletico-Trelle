@@ -15,7 +15,7 @@ Cualquiera puede abrir la aplicación y ver cuándo juega el equipo, cómo qued�
 | Cuentas de aficionado: registro con email confirmado o con Google, y recuperación de contraseña | Hecho |
 | Calendario y resultados, con la edición del partido (resultado, alineación y estadísticas) | Hecho |
 | Votaciones por partido y rankings por categoría | Hecho |
-| Estadísticas públicas de los jugadores | Fase 8 |
+| Estadísticas de la temporada: balance del equipo, clasificaciones y ficha de cada jugador | Hecho |
 | Noticias, historia del club y directiva, tienda (pedir presupuesto por teléfono) | Fases 9 a 11 |
 | Parte de edición completa | Fase 12 |
 | Importación de los datos de la FGF | Pendiente de su autorización |
@@ -83,6 +83,15 @@ Después de cada partido, la afición vota en tres categorías:
 
 Todas estas reglas las impone la base de datos, no solo la pantalla.
 
+### Estadísticas
+
+Salen solas de los resultados y de las alineaciones que registra el administrador; no hay que meter nada más. Van por temporada (del 1 de julio al 30 de junio), y en cada pantalla se puede pasar a las anteriores, desde la 2023/24.
+
+- **Estadísticas:** el balance del equipo (partidos, victorias, empates, derrotas y goles) y las clasificaciones de goleadores, asistencias, minutos, partidos jugados y tarjetas.
+- **Ficha de cada jugador:** sus convocatorias, partidos jugados, titularidades, minutos, goles, asistencias y tarjetas, lo que ha ganado en las votaciones y la lista de sus partidos.
+
+Solo cuentan los partidos jugados. Un jugador está *convocado* si figura en la alineación, y ha *jugado* si fue titular o salió desde el banquillo. Los jugadores dados de baja conservan su historial.
+
 ### Datos de la Federación Galega de Fútbol (FGF)
 
 La web de la FGF publica el calendario, los resultados y las actas de los partidos del Trelle, pero su [aviso legal](https://www.futgal.es/pnfg/NNws_ShwNewDup?codigo=15023&cod_primaria=140&cod_secundaria=140) solo permite un uso particular: copiar o publicar sus contenidos requiere su autorización previa y por escrito. Además, la web oculta los marcadores a los programas que la leen. Por eso la aplicación no la importa: los datos se meten a mano, y la importación queda pendiente de pedirle permiso a la FGF.
@@ -142,7 +151,7 @@ En local, las muestra `npm run db:iniciar` (o `npx supabase status`). En un proy
 | `npm run typecheck` | Comprobación de tipos (TypeScript) |
 | `npm run db:iniciar` / `db:parar` | Arranca / para Supabase en local |
 | `npm run db:reset` | Recrea la base de datos local aplicando todas las migraciones |
-| `npm run db:test` | Tests de la base de datos (políticas RLS, reglas de los resultados y de las votaciones) |
+| `npm run db:test` | Tests de la base de datos (políticas RLS, reglas de los resultados, votaciones y estadísticas) |
 | `npm run db:tipos` | Genera `src/types/database.ts` a partir del esquema local |
 
 ## Estructura del proyecto
@@ -152,8 +161,9 @@ src/
 ├── app/                   # Rutas y páginas (App Router)
 │   ├── (auth)/            # Entrar, crear cuenta, recuperar contraseña, Google
 │   ├── (publico)/         # Parte pública: cabecera, navegación inferior e inicio
+│   │   ├── estadisticas/  # Balance del equipo y clasificaciones de la temporada
 │   │   ├── partidos/      # Calendario y resultados, y alta, edición y alineación (administrador)
-│   │   ├── plantilla/     # Plantilla pública, y alta, edición y baja (administrador)
+│   │   ├── plantilla/     # Plantilla y ficha de cada jugador con sus estadísticas; alta, edición y baja (administrador)
 │   │   └── votaciones/    # Votar, resultados y ranking de la temporada
 │   └── auth/              # Vuelta de los enlaces de email y de Google
 ├── components/
@@ -163,7 +173,9 @@ src/
 │   ├── votaciones/        # Formulario de voto y aviso de votación abierta
 │   ├── boton-borrar.tsx   # Botón de borrar con confirmación
 │   ├── campo-formulario.tsx
-│   └── navegacion-inferior.tsx
+│   ├── clasificacion.tsx  # Lista de jugadores con puestos (y empates)
+│   ├── navegacion-inferior.tsx
+│   └── selector-temporada.tsx
 ├── lib/
 │   ├── auth.ts            # Usuario actual y comprobación de administrador
 │   ├── fechas.ts          # Fechas siempre en hora de España (y su paso a UTC)
@@ -173,8 +185,10 @@ src/
 │   ├── plantilla.ts       # Posiciones y estados: textos en español y colores
 │   ├── rutas.ts           # A qué página volver después de entrar
 │   ├── supabase/          # Clientes de Supabase y proveedores de acceso
+│   ├── temporadas.ts      # Qué temporada es y cómo se llama
+│   ├── textos.ts          # Singular y plural ("1 gol", "3 goles")
 │   ├── utils.ts           # Función cn() que usan los componentes de shadcn/ui
-│   └── votaciones.ts      # Categorías, candidatos y temporadas
+│   └── votaciones.ts      # Categorías y candidatos de las votaciones
 ├── types/
 │   └── database.ts        # Tipos generados desde el esquema (no editar a mano)
 └── proxy.ts               # Refresca la sesión en cada petición
