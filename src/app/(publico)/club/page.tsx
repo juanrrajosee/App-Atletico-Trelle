@@ -1,4 +1,4 @@
-import { Mail, MapPin, Pencil, Phone } from "lucide-react";
+import { ChevronRight, Mail, MapPin, Pencil, Phone, Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -58,7 +58,7 @@ export default async function PaginaClub() {
       />
 
       {(directiva.length > 0 || administrador) && (
-        <Directiva directiva={directiva} />
+        <Directiva directiva={directiva} administrador={administrador} />
       )}
 
       {hayContacto && (
@@ -128,13 +128,27 @@ function Seccion({
   );
 }
 
-function Directiva({ directiva }: { directiva: MiembroDirectiva[] }) {
+function Directiva({
+  directiva,
+  administrador,
+}: {
+  directiva: MiembroDirectiva[];
+  administrador: boolean;
+}) {
   return (
     <section aria-labelledby="titulo-directiva" className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-4">
         <h2 id="titulo-directiva" className="text-xl font-semibold tracking-tight">
           Directiva
         </h2>
+        {administrador && (
+          <Button asChild variant="outline" className="h-10">
+            <Link href="/club/directiva/nuevo">
+              <Plus aria-hidden />
+              Añadir
+            </Link>
+          </Button>
+        )}
       </div>
 
       {directiva.length === 0 ? (
@@ -154,9 +168,23 @@ function Directiva({ directiva }: { directiva: MiembroDirectiva[] }) {
             );
             return (
               <li key={miembro.id}>
-                <div className="flex min-h-14 items-center px-4 py-2">
-                  {contenido}
-                </div>
+                {/* El administrador entra a editar; el público solo lo lee. */}
+                {administrador ? (
+                  <Link
+                    href={`/club/directiva/${miembro.id}/editar`}
+                    className="flex min-h-14 items-center gap-3 px-4 py-2 active:bg-accent"
+                  >
+                    {contenido}
+                    <ChevronRight
+                      className="size-4 shrink-0 text-muted-foreground"
+                      aria-hidden
+                    />
+                  </Link>
+                ) : (
+                  <div className="flex min-h-14 items-center px-4 py-2">
+                    {contenido}
+                  </div>
+                )}
               </li>
             );
           })}
