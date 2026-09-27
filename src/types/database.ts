@@ -238,6 +238,39 @@ export type Database = {
         };
         Relationships: [];
       };
+      productos: {
+        Row: {
+          creado_en: string;
+          descripcion: string | null;
+          foto: string | null;
+          id: string;
+          nombre: string;
+          orden: number;
+          precio_orientativo: number | null;
+          visible: boolean;
+        };
+        Insert: {
+          creado_en?: string;
+          descripcion?: string | null;
+          foto?: string | null;
+          id?: string;
+          nombre: string;
+          orden?: number;
+          precio_orientativo?: number | null;
+          visible?: boolean;
+        };
+        Update: {
+          creado_en?: string;
+          descripcion?: string | null;
+          foto?: string | null;
+          id?: string;
+          nombre?: string;
+          orden?: number;
+          precio_orientativo?: number | null;
+          visible?: boolean;
+        };
+        Relationships: [];
+      };
       votos: {
         Row: {
           categoria: Database["public"]["Enums"]["categoria_votacion"];
