@@ -4,6 +4,7 @@ import {
   ChevronRight,
   MapPin,
   Pencil,
+  Users,
 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -100,6 +101,14 @@ export default async function PaginaPartido({
               Editar partido
             </Link>
           </Button>
+          {partido.estado === "jugado" && (
+            <Button asChild variant="outline" className="h-11">
+              <Link href={`/partidos/${partido.id}/alineacion`}>
+                <Users aria-hidden />
+                Alineación y estadísticas
+              </Link>
+            </Button>
+          )}
           <BotonBorrar
             accion={borrarPartido.bind(null, partido.id)}
             texto="Borrar partido"

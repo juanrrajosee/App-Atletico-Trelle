@@ -179,3 +179,62 @@ export async function cargarAlineacion(
         a.dorsal - b.dorsal,
     );
 }
+
+export type JugadorAlineacion = Pick<
+  Tables<"jugadores">,
+  "id" | "nombre" | "apellidos" | "dorsal" | "posicion" | "estado"
+>;
+
+export type FilaGuardada = Pick<
+  Tables<"estadisticas_partido">,
+  | "jugador_id"
+  | "titular"
+  | "minutos"
+  | "goles"
+  | "asistencias"
+  | "tarjetas_amarillas"
+  | "tarjeta_roja"
+>;
+
+/**
+ * Para el editor de la alineación (solo el administrador): los jugadores
+ * que se pueden alinear, de portería a ataque y por dorsal, y lo que ya
+ * hay guardado. Se pueden alinear los que están en la plantilla y, además,
+ * los que ya estaban en esta alineación aunque luego se hayan dado de baja.
+ */
+export async function cargarEditorAlineacion(partidoId: string): Promise<{
+  jugadores: JugadorAlineacion[];
+  filas: FilaGuardada[];
+}> {
+  const supabase = await crearClienteServidor();
+  const [jugadores, filas] = await Promise.all([
+    supabase
+      .from("jugadores")
+      .select("id, nombre, apellidos, dorsal, posicion, estado")
+      .order("dorsal"),
+    supabase
+      .from("estadisticas_partido")
+      .select(
+        "jugador_id, titular, minutos, goles, asistencias, tarjetas_amarillas, tarjeta_roja",
+      )
+      .eq("partido_id", partidoId),
+  ]);
+
+  if (jugadores.error || filas.error) {
+    const error = jugadores.error ?? filas.error;
+    throw new Error(`No se ha podido cargar la alineación: ${error?.message}`);
+  }
+
+  const alineados = new Set(filas.data.map((fila) => fila.jugador_id));
+
+  return {
+    jugadores: jugadores.data
+      .filter((jugador) => jugador.estado !== "baja" || alineados.has(jugador.id))
+      .sort(
+        (a, b) =>
+          POSICIONES.indexOf(a.posicion) - POSICIONES.indexOf(b.posicion) ||
+          a.dorsal - b.dorsal,
+      ),
+    filas: filas.data,
+  };
+}
