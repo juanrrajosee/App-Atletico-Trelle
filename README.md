@@ -18,7 +18,7 @@ Cualquiera puede abrir la aplicación y ver cuándo juega el equipo, cómo qued�
 | Estadísticas de la temporada: balance del equipo, clasificaciones y ficha de cada jugador | Hecho |
 | Noticias, con borradores, y su escritura por el administrador | Hecho |
 | El club: historia, la de Trelle, directiva y contacto, y su edición por el administrador | Hecho |
-| Tienda (pedir presupuesto por teléfono) | Fase 11 |
+| Tienda con fotos: pedir presupuesto por WhatsApp o por teléfono | Hecho |
 | Parte de edición completa | Fase 12 |
 | Importación de los datos de la FGF | Pendiente de su autorización |
 
@@ -30,13 +30,13 @@ Cualquiera puede abrir la aplicación y ver cuándo juega el equipo, cómo qued�
 | Estilos | Tailwind CSS + shadcn/ui |
 | Base de datos | Supabase (PostgreSQL) |
 | Autenticación | Supabase Auth |
-| Almacenamiento | Supabase Storage (fotos, en fases posteriores) |
+| Almacenamiento | Supabase Storage (fotos de la tienda) |
 | Despliegue | Vercel |
 
 ## Roles
 
 - **Aficionado** — cualquiera que se crea una cuenta. Ve lo mismo que sin cuenta y, además, vota después de cada partido.
-- **Administrador** — gestiona los datos del club: la plantilla, los partidos (calendario, resultados y alineaciones), las noticias y la sección del club.
+- **Administrador** — gestiona los datos del club: la plantilla, los partidos (calendario, resultados y alineaciones), las noticias, la sección del club y la tienda.
 
 Sin cuenta se puede consultar todo lo público. La base de datos lo impone con Row Level Security: el público solo lee, y únicamente el administrador escribe.
 
@@ -96,7 +96,7 @@ Solo cuentan los partidos jugados. Un jugador está *convocado* si figura en la 
 
 ### Noticias
 
-El administrador las escribe desde *Noticias → Nueva*: título, un resumen opcional (para la lista y para la vista previa al compartir el enlace; si no hay, se usa el principio del texto) y el texto, con los párrafos separados por una línea en blanco. Por ahora son solo de texto: la subida de fotos está fuera de la beta.
+El administrador las escribe desde *Noticias → Nueva*: título, un resumen opcional (para la lista y para la vista previa al compartir el enlace; si no hay, se usa el principio del texto) y el texto, con los párrafos separados por una línea en blanco. Por ahora son solo de texto (las fotos, de momento, solo en la tienda).
 
 Una noticia se guarda como *borrador* (solo la ve el administrador) o *publicada*. Al publicarla se le pone la fecha de ese momento, que no cambia aunque se edite después. El inicio enseña las tres últimas publicadas.
 
@@ -106,9 +106,17 @@ La sección *Club* enseña la historia del club, la de Trelle, la directiva y el
 
 La directiva son datos de personas que se publican: se añade solo a quien esté de acuerdo.
 
+### Tienda
+
+Dentro de *Club*, en la pestaña *Tienda*. Los productos no se compran en la aplicación: cada uno tiene los botones *Por WhatsApp* (con un mensaje ya escrito: «Hola, me interesa … ¿Me podéis dar presupuesto?») y *Llamar*, los dos al teléfono del club que se pone en *Club → Editar historia y contacto*. Sin ese teléfono no salen los botones.
+
+El administrador añade productos desde *Tienda → Añadir*: foto, nombre, descripción, precio orientativo (opcional; si no se pone, no se enseña), posición en la tienda y si se ve. Un producto agotado se puede ocultar en vez de borrarlo.
+
+La foto se hace o se elige desde el móvil y **se reduce en el propio móvil** (1600 píxeles por el lado largo, en JPEG) antes de subirla, así pesa unos cientos de KB en lugar de varios MB. Se guarda en el bucket público `productos` de Supabase Storage, que crea la migración `0018_tienda.sql`: cualquiera ve las fotos, pero solo el administrador las sube y las borra. Al cambiar la foto, quitarla o borrar el producto, la anterior se borra.
+
 ### Navegación
 
-La barra de abajo tiene *Inicio*, *Partidos*, *Noticias*, *Equipo* y *Club*; *Equipo* reúne con pestañas la plantilla, las estadísticas y las votaciones. En un móvil caben cómodamente cinco secciones, así que lo que venga se agrupa igual (la tienda irá dentro de *Club*).
+La barra de abajo tiene *Inicio*, *Partidos*, *Noticias*, *Equipo* y *Club*. *Equipo* reúne con pestañas la plantilla, las estadísticas y las votaciones, y *Club* la información del club y la tienda. En un móvil caben cómodamente cinco secciones, así que lo que venga se agrupa igual.
 
 ### Datos de la Federación Galega de Fútbol (FGF)
 
@@ -169,7 +177,7 @@ En local, las muestra `npm run db:iniciar` (o `npx supabase status`). En un proy
 | `npm run typecheck` | Comprobación de tipos (TypeScript) |
 | `npm run db:iniciar` / `db:parar` | Arranca / para Supabase en local |
 | `npm run db:reset` | Recrea la base de datos local aplicando todas las migraciones |
-| `npm run db:test` | Tests de la base de datos (políticas RLS, reglas de los resultados, votaciones, estadísticas, noticias y club) |
+| `npm run db:test` | Tests de la base de datos (políticas RLS, reglas de los resultados, votaciones, estadísticas, noticias, club y tienda) |
 | `npm run db:tipos` | Genera `src/types/database.ts` a partir del esquema local |
 
 ## Estructura del proyecto
@@ -184,25 +192,28 @@ src/
 │   │   ├── noticias/      # Noticias, y su escritura y publicación (administrador)
 │   │   ├── partidos/      # Calendario y resultados, y alta, edición y alineación (administrador)
 │   │   ├── plantilla/     # Plantilla y ficha de cada jugador con sus estadísticas; alta, edición y baja (administrador)
+│   │   ├── tienda/        # Productos y pedir presupuesto, y su gestión con fotos (administrador)
 │   │   └── votaciones/    # Votar, resultados y ranking de la temporada
 │   └── auth/              # Vuelta de los enlaces de email y de Google
 ├── components/
 │   ├── noticias/          # Lista de noticias
 │   ├── partidos/          # Marcador, tarjeta, lista y etiqueta de los partidos
 │   ├── plantilla/         # Piezas compartidas de la plantilla (etiqueta de estado)
+│   ├── tienda/            # Foto de un producto
 │   ├── ui/                # Componentes de shadcn/ui
 │   ├── votaciones/        # Formulario de voto y aviso de votación abierta
 │   ├── boton-borrar.tsx   # Botón de borrar con confirmación
 │   ├── campo-formulario.tsx
 │   ├── clasificacion.tsx  # Lista de jugadores con puestos (y empates)
 │   ├── navegacion-inferior.tsx
-│   ├── pestanas-equipo.tsx # Plantilla, estadísticas y votaciones
+│   ├── pestanas.tsx       # Pestañas de Equipo y de Club
 │   ├── selector-temporada.tsx
 │   └── texto.tsx          # Texto escrito en la aplicación, en párrafos
 ├── lib/
 │   ├── auth.ts            # Usuario actual y comprobación de administrador
 │   ├── fechas.ts          # Fechas siempre en hora de España (y su paso a UTC)
 │   ├── formularios.ts     # Estado común de los formularios
+│   ├── fotos.ts           # Reducir una foto en el navegador antes de subirla
 │   ├── ids.ts             # Comprobación de ids
 │   ├── noticias.ts        # Borrador o publicada, párrafos y resumen
 │   ├── partidos.ts        # Estados, local y visitante, victoria, empate o derrota
@@ -211,6 +222,7 @@ src/
 │   ├── supabase/          # Clientes de Supabase y proveedores de acceso
 │   ├── temporadas.ts      # Qué temporada es y cómo se llama
 │   ├── textos.ts          # Singular y plural ("1 gol", "3 goles") y párrafos
+│   ├── tienda.ts          # Precios, dirección de las fotos y enlaces de WhatsApp y teléfono
 │   ├── utils.ts           # Función cn() que usan los componentes de shadcn/ui
 │   └── votaciones.ts      # Categorías y candidatos de las votaciones
 ├── types/
