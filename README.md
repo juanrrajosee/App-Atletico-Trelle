@@ -19,7 +19,9 @@ Cualquiera puede abrir la aplicación y ver cuándo juega el equipo, cómo qued�
 | Noticias, con borradores, y su escritura por el administrador | Hecho |
 | El club: historia, la de Trelle, directiva y contacto, y su edición por el administrador | Hecho |
 | Tienda con fotos: pedir presupuesto por WhatsApp o por teléfono | Hecho |
-| Parte de edición completa | Fase 12 |
+| Panel de gestión del administrador con lo que falta por hacer | Hecho |
+| Mi cuenta: cambiar la contraseña, salir y borrar la cuenta | Hecho |
+| Política de privacidad y aviso legal (borrador, por revisar) | Hecho |
 | Importación de los datos de la FGF | Pendiente de su autorización |
 
 ## Tecnologías
@@ -52,6 +54,8 @@ where id = (select id from auth.users where email = 'correo@ejemplo.com');
 ```
 
 **Contraseña olvidada.** Desde *Entrar → ¿Has olvidado tu contraseña?* llega un enlace por email para elegir una nueva.
+
+**Mi cuenta.** Con la sesión iniciada, *Mi cuenta* (arriba a la derecha) enseña el email y deja cambiar la contraseña, salir y **borrar la cuenta**. Al borrarla desaparecen la cuenta y el perfil; los votos siguen contando en los resultados, pero sin dueño. Una cuenta de administrador no se puede borrar desde la aplicación, para no dejar el club sin nadie que lo gestione.
 
 **En local**, los emails no salen a internet: los recoge Mailpit en `http://127.0.0.1:54324`, donde se pueden abrir los enlaces.
 
@@ -114,6 +118,16 @@ El administrador añade productos desde *Tienda → Añadir*: foto, nombre, desc
 
 La foto se hace o se elige desde el móvil y **se reduce en el propio móvil** (1600 píxeles por el lado largo, en JPEG) antes de subirla, así pesa unos cientos de KB en lugar de varios MB. Se guarda en el bucket público `productos` de Supabase Storage, que crea la migración `0018_tienda.sql`: cualquiera ve las fotos, pero solo el administrador las sube y las borra. Al cambiar la foto, quitarla o borrar el producto, la anterior se borra.
 
+### Gestión
+
+El administrador ve *Gestión* en la cabecera. Lleva a un panel con atajos para añadir un partido, una noticia o un producto, la votación abierta si la hay, y lo pendiente: partidos cuya hora ya pasó y siguen sin resultado, partidos jugados sin alineación (sin ella no hay votación ni estadísticas), lo que falta en la sección del club y lo que está sin publicar. Cada aviso lleva a donde se arregla.
+
+### Privacidad y aviso legal
+
+Las páginas *Privacidad* y *Aviso legal* se enlazan en el pie de todas las pantallas y en el registro. Explican qué datos personales trata la aplicación, para qué, quién más los trata (Supabase, Vercel, el servicio de correo y, si se usa, Google) y cómo ejercer los derechos. Como responsable aparecen los datos legales del club (nombre, CIF, domicilio y email de privacidad), que se editan en *Club → Editar historia y contacto*; se cargaron con los de su ficha en la FGF.
+
+Los textos son un **borrador** redactado para esta aplicación: antes de abrirla al público conviene que los revise alguien que conozca la normativa de protección de datos.
+
 ### Navegación
 
 La barra de abajo tiene *Inicio*, *Partidos*, *Noticias*, *Equipo* y *Club*. *Equipo* reúne con pestañas la plantilla, las estadísticas y las votaciones, y *Club* la información del club y la tienda. En un móvil caben cómodamente cinco secciones, así que lo que venga se agrupa igual.
@@ -121,18 +135,6 @@ La barra de abajo tiene *Inicio*, *Partidos*, *Noticias*, *Equipo* y *Club*. *Eq
 ### Datos de la Federación Galega de Fútbol (FGF)
 
 La web de la FGF publica el calendario, los resultados y las actas de los partidos del Trelle, pero su [aviso legal](https://www.futgal.es/pnfg/NNws_ShwNewDup?codigo=15023&cod_primaria=140&cod_secundaria=140) solo permite un uso particular: copiar o publicar sus contenidos requiere su autorización previa y por escrito. Además, la web oculta los marcadores a los programas que la leen. Por eso la aplicación no la importa: los datos se meten a mano, y la importación queda pendiente de pedirle permiso a la FGF.
-
-### Configuración del proyecto de Supabase real
-
-Cuando se despliegue, en el panel de Supabase (apartado *Authentication*):
-
-1. **URL del sitio y de retorno**: la dirección pública de la aplicación como *Site URL*, y esa misma dirección con `/**` en las *Redirect URLs*.
-2. **Servidor de correo (SMTP)**: el que trae Supabase de serie solo envía a los miembros del propio proyecto, así que para que los aficionados reciban la confirmación y la recuperación de contraseña hace falta uno propio (hay servicios gratuitos para este volumen).
-3. **Plantillas de email**: copiar el contenido de `supabase/templates/confirmacion.html` y `supabase/templates/recuperacion.html` en las plantillas de *Confirm signup* y *Reset password*, con los asuntos que figuran en `supabase/config.toml`.
-4. **Confirmación de email** activada y **registro** permitido.
-5. **Google** (opcional): crear unas credenciales OAuth de tipo *aplicación web* en Google Cloud Console, con `https://<tu-proyecto>.supabase.co/auth/v1/callback` como URI de redirección autorizada, y pegar el *Client ID* y el *Client Secret* en el proveedor de Google de Supabase. El botón aparece solo en cuanto el proveedor está activado.
-
-Para probar Google en local: poner `enabled = true` en `[auth.external.google]` de `supabase/config.toml`, definir `SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID` y `SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET` antes de `npm run db:iniciar`, y añadir `http://127.0.0.1:54321/auth/v1/callback` como URI autorizada en Google. Las credenciales **nunca** se suben al repositorio.
 
 ## Puesta en marcha
 
@@ -167,6 +169,8 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 
 En local, las muestra `npm run db:iniciar` (o `npx supabase status`). En un proyecto remoto están en el panel de Supabase, en *Project Settings → API Keys*. La clave *publishable* es pública: los permisos los controla Row Level Security en la base de datos. La aplicación no usa la clave `service_role` / *secret*, que **nunca** debe subirse al repositorio ni exponerse en el cliente.
 
+Para probar *Continuar con Google* en local: poner `enabled = true` en `[auth.external.google]` de `supabase/config.toml`, definir `SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID` y `SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET` antes de `npm run db:iniciar`, y añadir `http://127.0.0.1:54321/auth/v1/callback` como URI autorizada en Google. Las credenciales **nunca** se suben al repositorio.
+
 ### Scripts
 
 | Script | Qué hace |
@@ -177,8 +181,48 @@ En local, las muestra `npm run db:iniciar` (o `npx supabase status`). En un proy
 | `npm run typecheck` | Comprobación de tipos (TypeScript) |
 | `npm run db:iniciar` / `db:parar` | Arranca / para Supabase en local |
 | `npm run db:reset` | Recrea la base de datos local aplicando todas las migraciones |
-| `npm run db:test` | Tests de la base de datos (políticas RLS, reglas de los resultados, votaciones, estadísticas, noticias, club y tienda) |
+| `npm run db:test` | Tests de la base de datos (políticas RLS, reglas de los resultados, votaciones, estadísticas, noticias, club, tienda y borrado de cuentas) |
 | `npm run db:tipos` | Genera `src/types/database.ts` a partir del esquema local |
+
+## Publicar la aplicación
+
+La aplicación se publica en dos servicios con plan gratuito suficiente para un club: **Supabase** (base de datos, cuentas y fotos) y **Vercel** (la aplicación web). Hay que hacerlo con las cuentas del club; ninguna clave se sube al repositorio.
+
+### 1. Supabase
+
+1. Crear una cuenta en [supabase.com](https://supabase.com) y un **proyecto nuevo** en una región de la Unión Europea (por ejemplo, *Central EU (Frankfurt)*). Guardar bien la contraseña de la base de datos.
+2. **Crear la base de datos** desde este repositorio, con la CLI que ya instala `npm install`:
+   ```bash
+   npx supabase login
+   npx supabase link --project-ref <referencia-del-proyecto>
+   npx supabase db push
+   ```
+   La referencia es la parte de la dirección del proyecto: `https://<referencia>.supabase.co`. `db push` aplica todas las migraciones de `supabase/migrations/`: tablas, permisos (RLS), funciones, el bucket de fotos de la tienda y los datos legales del club.
+3. En *Authentication → URL Configuration*: la dirección pública de la aplicación (la de Vercel, paso 2) como *Site URL*, y esa misma dirección con `/**` en *Redirect URLs*.
+4. En *Authentication → Emails*:
+   - **Servidor de correo (SMTP)** propio. El que trae Supabase de serie solo envía a los miembros del proyecto, así que sin uno propio los aficionados no reciben los emails de confirmación ni de cambio de contraseña. Hay servicios con plan gratuito de sobra para este volumen.
+   - **Plantillas**: copiar `supabase/templates/confirmacion.html` en *Confirm signup* y `supabase/templates/recuperacion.html` en *Reset password*, con los asuntos que figuran en `supabase/config.toml`.
+5. En *Authentication → Sign In / Providers*: registro permitido y confirmación de email activada (así vienen por defecto).
+6. **Google** (opcional): crear unas credenciales OAuth de tipo *aplicación web* en Google Cloud Console, con `https://<referencia>.supabase.co/auth/v1/callback` como URI de redirección autorizada, y pegar el *Client ID* y el *Client Secret* en el proveedor de Google de Supabase. El botón aparece solo en cuanto el proveedor está activado.
+7. En *Project Settings → API Keys*, apuntar la **URL del proyecto** y la clave **publishable** para Vercel.
+
+### 2. Vercel
+
+1. Crear una cuenta en [vercel.com](https://vercel.com) entrando con GitHub.
+2. *Add New → Project* e importar el repositorio `App-Atletico-Trelle`. Vercel reconoce que es Next.js; no hay que cambiar nada de la compilación.
+3. En *Environment Variables*, añadir `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` con los valores del paso 1.7.
+4. *Deploy*. Vercel publica la rama principal del repositorio (`main`), así que el trabajo tiene que estar en ella. Al terminar da una dirección `https://<nombre>.vercel.app`, que es la que va en el paso 1.3. Más adelante se puede poner un dominio propio en *Settings → Domains* (y cambiarlo también en Supabase).
+5. Opcional pero recomendable: en *Settings → Functions*, elegir una región europea (por ejemplo, Fráncfort) para que la aplicación esté cerca de la base de datos.
+
+Cada vez que se sube un cambio a `main`, Vercel vuelve a publicar la aplicación sola. Si el cambio trae migraciones nuevas, hay que aplicarlas también con `npx supabase db push`.
+
+### 3. Antes de abrirla al público
+
+1. Crear la cuenta del administrador desde la propia aplicación (*Entrar → Crear cuenta*) y hacerla administradora con el SQL de [Cuentas de usuario](#cuentas-de-usuario), desde el *SQL Editor* de Supabase.
+2. Rellenar lo básico desde *Gestión*: el teléfono y la información del club, la directiva, la plantilla y el calendario.
+3. Tener la conformidad de los jugadores y de la directiva para que salgan en la aplicación.
+4. Revisar los textos de *Privacidad* y *Aviso legal*.
+5. Probar de principio a fin con un móvil: crear una cuenta con un email de verdad (que llegue la confirmación), votar y borrar la cuenta.
 
 ## Estructura del proyecto
 
@@ -186,12 +230,16 @@ En local, las muestra `npm run db:iniciar` (o `npx supabase status`). En un proy
 src/
 ├── app/                   # Rutas y páginas (App Router)
 │   ├── (auth)/            # Entrar, crear cuenta, recuperar contraseña, Google
-│   ├── (publico)/         # Parte pública: cabecera, navegación inferior e inicio
-│   │   ├── club/          # Historia, directiva y contacto, y su edición (administrador)
+│   ├── (publico)/         # Parte pública: cabecera, navegación inferior, pie e inicio
+│   │   ├── administracion/ # Panel de gestión (administrador)
+│   │   ├── aviso-legal/   # Aviso legal
+│   │   ├── club/          # Historia, directiva, contacto y datos legales, y su edición (administrador)
+│   │   ├── cuenta/        # Mi cuenta: contraseña, salir y borrar la cuenta
 │   │   ├── estadisticas/  # Balance del equipo y clasificaciones de la temporada
 │   │   ├── noticias/      # Noticias, y su escritura y publicación (administrador)
 │   │   ├── partidos/      # Calendario y resultados, y alta, edición y alineación (administrador)
 │   │   ├── plantilla/     # Plantilla y ficha de cada jugador con sus estadísticas; alta, edición y baja (administrador)
+│   │   ├── privacidad/    # Política de privacidad
 │   │   ├── tienda/        # Productos y pedir presupuesto, y su gestión con fotos (administrador)
 │   │   └── votaciones/    # Votar, resultados y ranking de la temporada
 │   └── auth/              # Vuelta de los enlaces de email y de Google
@@ -206,6 +254,7 @@ src/
 │   ├── campo-formulario.tsx
 │   ├── clasificacion.tsx  # Lista de jugadores con puestos (y empates)
 │   ├── navegacion-inferior.tsx
+│   ├── pagina-legal.tsx   # Piezas de las páginas de privacidad y aviso legal
 │   ├── pestanas.tsx       # Pestañas de Equipo y de Club
 │   ├── selector-temporada.tsx
 │   └── texto.tsx          # Texto escrito en la aplicación, en párrafos
@@ -239,7 +288,7 @@ Las escrituras se hacen con Server Actions usando la sesión del usuario, así q
 
 ## Estado
 
-En desarrollo. Primera versión prevista para la temporada 2026/27.
+Beta completa, lista para publicarse siguiendo [Publicar la aplicación](#publicar-la-aplicación). Primera versión prevista para la temporada 2026/27.
 
 ## Licencia
 
