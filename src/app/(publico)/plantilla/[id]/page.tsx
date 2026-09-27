@@ -6,8 +6,10 @@ import { EtiquetaEstado } from "@/components/plantilla/etiqueta-estado";
 import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
 import { NOMBRE_POSICION, iniciales } from "@/lib/plantilla";
+import { temporadaPedida } from "@/lib/temporadas";
 import { cargarJugador } from "../datos";
 import { SeccionBaja } from "./seccion-baja";
+import { SeccionEstadisticas } from "./seccion-estadisticas";
 
 export const metadata: Metadata = {
   title: "Jugador",
@@ -15,8 +17,10 @@ export const metadata: Metadata = {
 
 export default async function PaginaJugador({
   params,
+  searchParams,
 }: PageProps<"/plantilla/[id]">) {
   const { id } = await params;
+  const temporada = temporadaPedida((await searchParams).temporada);
   const administrador = esAdministrador(await obtenerUsuarioActual());
   const jugador = await cargarJugador(administrador, id);
 
@@ -73,6 +77,8 @@ export default async function PaginaJugador({
           />
         </>
       )}
+
+      <SeccionEstadisticas jugadorId={jugador.id} temporada={temporada} />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Clasificacion, type FilaClasificacion } from "@/components/clasificacion";
 import { SelectorTemporada } from "@/components/selector-temporada";
 import { nombreTemporada, temporadaPedida } from "@/lib/temporadas";
+import { contar } from "@/lib/textos";
 import { cargarPartidos } from "../partidos/datos";
 import { cargarNombres } from "../plantilla/datos";
 import {
@@ -14,11 +15,6 @@ import {
 export const metadata: Metadata = {
   title: "Estadísticas",
 };
-
-/** "1 gol" / "3 goles". */
-function contar(cantidad: number, singular: string, plural: string) {
-  return `${cantidad} ${cantidad === 1 ? singular : plural}`;
-}
 
 export default async function PaginaEstadisticas({
   searchParams,

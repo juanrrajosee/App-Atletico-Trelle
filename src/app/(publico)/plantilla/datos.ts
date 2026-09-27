@@ -1,6 +1,7 @@
 import "server-only";
 
 import { esIdValido } from "@/lib/ids";
+import type { Partido } from "@/lib/partidos";
 import type { EstadoJugador, Posicion } from "@/lib/plantilla";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
 
@@ -160,5 +161,40 @@ export async function cargarNombres(
     data.flatMap(({ id, nombre, apellidos }) =>
       id && nombre && apellidos ? [[id, `${nombre} ${apellidos}`]] : [],
     ),
+  );
+}
+
+export type PartidoDelJugador = {
+  partido: Partido;
+  titular: boolean;
+  minutos: number;
+  goles: number;
+  asistencias: number;
+  tarjetas_amarillas: number;
+  tarjeta_roja: boolean;
+};
+
+/**
+ * Los partidos jugados en los que un jugador estuvo en la alineación, del
+ * más reciente al más antiguo, con lo que hizo en cada uno.
+ */
+export async function cargarPartidosDelJugador(
+  jugadorId: string,
+): Promise<PartidoDelJugador[]> {
+  const supabase = await crearClienteServidor();
+  const { data, error } = await supabase
+    .from("estadisticas_partido")
+    .select(
+      "titular, minutos, goles, asistencias, tarjetas_amarillas, tarjeta_roja, partido:partidos!inner(id, rival, fecha_hora, campo, condicion, competicion, goles_favor, goles_contra, estado)",
+    )
+    .eq("jugador_id", jugadorId)
+    .eq("partido.estado", "jugado");
+
+  if (error) {
+    throw new Error(`No se han podido cargar sus partidos: ${error.message}`);
+  }
+
+  return data.sort((a, b) =>
+    b.partido.fecha_hora.localeCompare(a.partido.fecha_hora),
   );
 }
