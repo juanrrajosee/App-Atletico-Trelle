@@ -75,3 +75,18 @@ export async function exigirAcceso(): Promise<UsuarioActual> {
 
   return usuario;
 }
+
+/**
+ * Para las pantallas y acciones de gestión: como exigirAcceso(), pero un
+ * jugador vuelve al inicio. Es para no enseñarle formularios que no puede
+ * usar; aunque se saltara esta comprobación, RLS no le dejaría escribir.
+ */
+export async function exigirEntrenador(): Promise<UsuarioActual> {
+  const usuario = await exigirAcceso();
+
+  if (usuario.rol !== "entrenador") {
+    redirect("/");
+  }
+
+  return usuario;
+}

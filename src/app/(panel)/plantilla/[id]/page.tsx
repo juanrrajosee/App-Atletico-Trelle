@@ -1,8 +1,9 @@
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Pencil } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { EtiquetaEstado } from "@/components/plantilla/etiqueta-estado";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { exigirAcceso } from "@/lib/auth";
 import { calcularEdad, formatearFecha } from "@/lib/fechas";
@@ -25,6 +26,7 @@ export default async function PaginaFicha({
   }
 
   const { datosPersonales } = jugador;
+  const esEntrenador = usuario.rol === "entrenador";
 
   return (
     <div className="flex flex-col gap-6">
@@ -84,6 +86,15 @@ export default async function PaginaFicha({
             </dl>
           </CardContent>
         </Card>
+      )}
+
+      {esEntrenador && (
+        <Button asChild variant="outline" className="h-11">
+          <Link href={`/plantilla/${jugador.id}/editar`}>
+            <Pencil aria-hidden />
+            Editar datos
+          </Link>
+        </Button>
       )}
     </div>
   );

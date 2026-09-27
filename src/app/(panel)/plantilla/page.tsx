@@ -1,7 +1,8 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { EtiquetaEstado } from "@/components/plantilla/etiqueta-estado";
+import { Button } from "@/components/ui/button";
 import { exigirAcceso } from "@/lib/auth";
 import { NOMBRE_POSICION_PLURAL, POSICIONES } from "@/lib/plantilla";
 import { cargarPlantilla, type JugadorListado } from "./datos";
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
 export default async function PaginaPlantilla() {
   const usuario = await exigirAcceso();
   const plantilla = await cargarPlantilla(usuario);
+  const esEntrenador = usuario.rol === "entrenador";
 
   const activos = plantilla.filter((jugador) => jugador.estado !== "baja");
   const deBaja = plantilla.filter((jugador) => jugador.estado === "baja");
@@ -28,6 +30,14 @@ export default async function PaginaPlantilla() {
               : `${activos.length} jugadores en activo`}
           </p>
         </div>
+        {esEntrenador && (
+          <Button asChild className="h-11">
+            <Link href="/plantilla/nuevo">
+              <Plus aria-hidden />
+              Añadir
+            </Link>
+          </Button>
+        )}
       </div>
 
       {plantilla.length === 0 && (
