@@ -327,6 +327,15 @@ export type Database = {
       };
     };
     Functions: {
+      cuentas_usuario: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          email: string;
+          jugador_id: string;
+          perfil_id: string;
+          rol: Database["public"]["Enums"]["rol_usuario"];
+        }[];
+      };
       es_entrenador: { Args: Record<PropertyKey, never>; Returns: boolean };
       mi_jugador_id: { Args: Record<PropertyKey, never>; Returns: string };
       tiene_acceso: { Args: Record<PropertyKey, never>; Returns: boolean };
