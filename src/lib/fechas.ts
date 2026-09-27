@@ -38,6 +38,19 @@ const formatoFechaCortaConAno = new Intl.DateTimeFormat("es-ES", {
   year: "numeric",
 });
 
+const formatoFecha = new Intl.DateTimeFormat("es-ES", {
+  timeZone: ZONA_HORARIA,
+  day: "numeric",
+  month: "long",
+});
+
+const formatoFechaConAno = new Intl.DateTimeFormat("es-ES", {
+  timeZone: ZONA_HORARIA,
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
+
 const formatoHora = new Intl.DateTimeFormat("es-ES", {
   timeZone: ZONA_HORARIA,
   hour: "2-digit",
@@ -97,6 +110,12 @@ export function formatearFechaCorta(fechaIso: string) {
   const fecha = new Date(fechaIso);
   const formato = esDeEsteAno(fecha) ? formatoFechaCorta : formatoFechaCortaConAno;
   return conMayuscula(formato.format(fecha));
+}
+
+/** Por ejemplo: "3 de octubre", o "4 de octubre de 2025" si no es de este año. */
+export function formatearFecha(fechaIso: string) {
+  const fecha = new Date(fechaIso);
+  return (esDeEsteAno(fecha) ? formatoFecha : formatoFechaConAno).format(fecha);
 }
 
 /** Por ejemplo: "17:00". */

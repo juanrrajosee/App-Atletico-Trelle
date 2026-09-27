@@ -1,16 +1,20 @@
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { ListaNoticias } from "@/components/noticias/lista-noticias";
 import { TarjetaPartido } from "@/components/partidos/tarjeta-partido";
 import { AvisoVotacion } from "@/components/votaciones/aviso-votacion";
+import { cargarNoticias } from "./noticias/datos";
 import { cargarProximoPartido, cargarUltimoResultado } from "./partidos/datos";
 import { cargarVotacionesAbiertas } from "./votaciones/datos";
 
 export default async function PaginaInicio() {
-  const [proximoPartido, ultimoResultado, votacionesAbiertas] =
+  const [proximoPartido, ultimoResultado, votacionesAbiertas, noticias] =
     await Promise.all([
       cargarProximoPartido(),
       cargarUltimoResultado(),
       cargarVotacionesAbiertas(),
+      // Solo las publicadas, también para el administrador.
+      cargarNoticias(false, 3),
     ]);
 
   return (
@@ -50,11 +54,30 @@ export default async function PaginaInicio() {
 
       <Link
         href="/partidos"
-        className="flex h-11 items-center justify-center gap-1 text-sm font-medium underline-offset-4 hover:underline"
+        className="-mt-4 flex h-11 items-center justify-center gap-1 text-sm font-medium underline-offset-4 hover:underline"
       >
         Todos los partidos
         <ChevronRight className="size-4" aria-hidden />
       </Link>
+
+      {noticias.length > 0 && (
+        <section aria-labelledby="titulo-noticias">
+          <h2
+            id="titulo-noticias"
+            className="mb-4 text-xl font-semibold tracking-tight"
+          >
+            Últimas noticias
+          </h2>
+          <ListaNoticias noticias={noticias} />
+          <Link
+            href="/noticias"
+            className="mt-2 flex h-11 items-center justify-center gap-1 text-sm font-medium underline-offset-4 hover:underline"
+          >
+            Todas las noticias
+            <ChevronRight className="size-4" aria-hidden />
+          </Link>
+        </section>
+      )}
     </div>
   );
 }

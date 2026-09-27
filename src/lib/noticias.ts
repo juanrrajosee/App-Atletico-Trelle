@@ -1,0 +1,43 @@
+import type { Tables } from "@/types/database";
+
+/** Lo que se muestra de cada noticia. */
+export type Noticia = Pick<
+  Tables<"noticias">,
+  "id" | "titulo" | "resumen" | "cuerpo" | "publicada_en" | "actualizado_en"
+>;
+
+export type EstadoNoticia = "borrador" | "programada" | "publicada";
+
+/** Borrador (sin fecha), programada (fecha futura) o publicada. */
+export function estadoNoticia({ publicada_en }: Pick<Noticia, "publicada_en">) {
+  if (!publicada_en) {
+    return "borrador";
+  }
+  return new Date(publicada_en) > new Date() ? "programada" : "publicada";
+}
+
+/** Los párrafos del texto: se separan con una línea en blanco. */
+export function parrafos(cuerpo: string) {
+  return cuerpo
+    .split(/\n\s*\n/)
+    .map((parrafo) => parrafo.trim())
+    .filter(Boolean);
+}
+
+const LONGITUD_RESUMEN = 160;
+
+/**
+ * El resumen de la noticia o, si no tiene, el principio del texto cortado
+ * en una palabra entera.
+ */
+export function resumenDe({ resumen, cuerpo }: Pick<Noticia, "resumen" | "cuerpo">) {
+  if (resumen?.trim()) {
+    return resumen.trim();
+  }
+  const texto = cuerpo.replace(/\s+/g, " ").trim();
+  if (texto.length <= LONGITUD_RESUMEN) {
+    return texto;
+  }
+  const corte = texto.lastIndexOf(" ", LONGITUD_RESUMEN);
+  return `${texto.slice(0, corte > 0 ? corte : LONGITUD_RESUMEN)}…`;
+}
