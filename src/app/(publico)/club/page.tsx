@@ -2,6 +2,7 @@ import { ChevronRight, Mail, MapPin, Pencil, Phone, Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { PestanasClub } from "@/components/pestanas";
 import { Texto } from "@/components/texto";
 import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
@@ -24,7 +25,9 @@ export default async function PaginaClub() {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-4">
+      <PestanasClub activa="/club" />
+
+      <div className="-mt-2 flex flex-col gap-4">
         <h1 className="text-2xl font-semibold tracking-tight">
           Atlético Trelle
         </h1>

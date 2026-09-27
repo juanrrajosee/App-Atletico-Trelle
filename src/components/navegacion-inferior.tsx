@@ -32,7 +32,7 @@ const SECCIONES: Seccion[] = [
     icono: Users,
     rutas: ["/plantilla", "/estadisticas", "/votaciones"],
   },
-  { href: "/club", etiqueta: "Club", icono: Shield },
+  { href: "/club", etiqueta: "Club", icono: Shield, rutas: ["/club", "/tienda"] },
 ];
 
 function estaActiva({ href, rutas = [href] }: Seccion, rutaActual: string) {

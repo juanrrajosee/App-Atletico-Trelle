@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Clasificacion } from "@/components/clasificacion";
-import { PestanasEquipo } from "@/components/pestanas-equipo";
+import { PestanasEquipo } from "@/components/pestanas";
 import { SelectorTemporada } from "@/components/selector-temporada";
 import { AvisoVotacion } from "@/components/votaciones/aviso-votacion";
 import { nombreTemporada, temporadaPedida } from "@/lib/temporadas";
@@ -36,7 +36,7 @@ export default async function PaginaVotaciones({
 
   return (
     <div className="flex flex-col gap-6">
-      <PestanasEquipo activa="votaciones" />
+      <PestanasEquipo activa="/votaciones" />
 
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Votaciones</h1>

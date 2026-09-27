@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Clasificacion, type FilaClasificacion } from "@/components/clasificacion";
-import { PestanasEquipo } from "@/components/pestanas-equipo";
+import { PestanasEquipo } from "@/components/pestanas";
 import { SelectorTemporada } from "@/components/selector-temporada";
 import { nombreTemporada, temporadaPedida } from "@/lib/temporadas";
 import { contar } from "@/lib/textos";
@@ -58,7 +58,7 @@ export default async function PaginaEstadisticas({
 
   return (
     <div className="flex flex-col gap-6">
-      <PestanasEquipo activa="estadisticas" />
+      <PestanasEquipo activa="/estadisticas" />
 
       <div className="flex items-center justify-between gap-2">
         <div>
