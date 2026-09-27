@@ -258,7 +258,22 @@ export type Database = {
         };
         Returns: boolean;
       };
+      estadisticas_jugadores: {
+        Args: { p_temporada: number };
+        Returns: {
+          asistencias: number;
+          convocatorias: number;
+          goles: number;
+          jugador_id: string;
+          minutos: number;
+          partidos_jugados: number;
+          tarjetas_amarillas: number;
+          tarjetas_rojas: number;
+          titularidades: number;
+        }[];
+      };
       guardar_alineacion: { Args: { p_filas: Json; p_partido_id: string }; Returns: undefined };
+      inicio_temporada: { Args: { p_temporada: number }; Returns: string };
       ranking_votaciones: {
         Args: { p_temporada: number };
         Returns: {
