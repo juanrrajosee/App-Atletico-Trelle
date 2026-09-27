@@ -12,30 +12,35 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import type { EstadoBorrado } from "../acciones";
+
+/** Lo que devuelve una acción de borrar si no ha podido hacerlo. */
+export type EstadoBorrado = { error: string | null };
 
 type Props = {
   accion: (estado: EstadoBorrado) => Promise<EstadoBorrado>;
-  nombre: string;
+  /** Texto del botón, por ejemplo "Borrar jugador". */
+  texto: string;
+  /** Pregunta de confirmación, por ejemplo "¿Borrar a Ana?". */
+  pregunta: string;
+  /** Qué pasará si se confirma. */
+  consecuencias: string;
 };
 
 /** Borrar no se puede deshacer, así que se pide confirmación. */
-export function BotonBorrar({ accion, nombre }: Props) {
+export function BotonBorrar({ accion, texto, pregunta, consecuencias }: Props) {
   const [estado, enviar, pendiente] = useActionState(accion, { error: null });
 
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button variant="outline" className="h-11 w-full text-destructive">
-          Borrar jugador
+          {texto}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>¿Borrar a {nombre}?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Desaparecerá de la plantilla y no se puede deshacer.
-          </AlertDialogDescription>
+          <AlertDialogTitle>{pregunta}</AlertDialogTitle>
+          <AlertDialogDescription>{consecuencias}</AlertDialogDescription>
         </AlertDialogHeader>
         {estado.error && (
           <p role="alert" className="text-sm text-destructive">

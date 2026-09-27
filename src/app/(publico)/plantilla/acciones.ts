@@ -3,6 +3,7 @@
 import type { PostgrestError } from "@supabase/supabase-js";
 import { refresh, revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import type { EstadoBorrado } from "@/components/boton-borrar";
 import { exigirAdministrador } from "@/lib/auth";
 import { esIdValido } from "@/lib/ids";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
@@ -111,8 +112,6 @@ export async function actualizarJugador(
   revalidatePath(`/plantilla/${id}`);
   redirect(`/plantilla/${id}`);
 }
-
-export type EstadoBorrado = { error: string | null };
 
 export async function borrarJugador(
   jugadorId: string,

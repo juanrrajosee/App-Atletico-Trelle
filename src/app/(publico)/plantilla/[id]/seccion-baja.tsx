@@ -1,8 +1,8 @@
+import { BotonBorrar } from "@/components/boton-borrar";
 import { Button } from "@/components/ui/button";
 import type { EstadoJugador } from "@/lib/plantilla";
 import { borrarJugador, darDeBaja } from "../acciones";
 import { tieneHistorial } from "../datos";
-import { BotonBorrar } from "./boton-borrar";
 
 /**
  * Solo para el administrador. Un jugador sin historial se puede borrar; con
@@ -19,7 +19,12 @@ export async function SeccionBaja({
 }) {
   if (!(await tieneHistorial(jugadorId))) {
     return (
-      <BotonBorrar accion={borrarJugador.bind(null, jugadorId)} nombre={nombre} />
+      <BotonBorrar
+        accion={borrarJugador.bind(null, jugadorId)}
+        texto="Borrar jugador"
+        pregunta={`¿Borrar a ${nombre}?`}
+        consecuencias="Desaparecerá de la plantilla y no se puede deshacer."
+      />
     );
   }
 
