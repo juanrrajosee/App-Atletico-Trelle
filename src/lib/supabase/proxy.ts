@@ -4,7 +4,7 @@ import type { Database } from "@/types/database";
 import { obtenerEntornoSupabase } from "./entorno";
 
 /** Pantallas para entrar: con la sesión ya iniciada no tienen sentido. */
-const RUTAS_DE_ACCESO = ["/acceso"];
+const RUTAS_DE_ACCESO = ["/acceso", "/registro"];
 
 /**
  * Refresca la sesión de Supabase antes de renderizar la ruta. La aplicación
