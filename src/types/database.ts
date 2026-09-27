@@ -3,6 +3,60 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
+      club: {
+        Row: {
+          actualizado_en: string;
+          campo: string | null;
+          email: string | null;
+          historia_club: string | null;
+          historia_trelle: string | null;
+          id: boolean;
+          telefono: string | null;
+        };
+        Insert: {
+          actualizado_en?: string;
+          campo?: string | null;
+          email?: string | null;
+          historia_club?: string | null;
+          historia_trelle?: string | null;
+          id?: boolean;
+          telefono?: string | null;
+        };
+        Update: {
+          actualizado_en?: string;
+          campo?: string | null;
+          email?: string | null;
+          historia_club?: string | null;
+          historia_trelle?: string | null;
+          id?: boolean;
+          telefono?: string | null;
+        };
+        Relationships: [];
+      };
+      directiva: {
+        Row: {
+          cargo: string;
+          creado_en: string;
+          id: string;
+          nombre: string;
+          orden: number;
+        };
+        Insert: {
+          cargo: string;
+          creado_en?: string;
+          id?: string;
+          nombre: string;
+          orden?: number;
+        };
+        Update: {
+          cargo?: string;
+          creado_en?: string;
+          id?: string;
+          nombre?: string;
+          orden?: number;
+        };
+        Relationships: [];
+      };
       estadisticas_partido: {
         Row: {
           asistencias: number;
