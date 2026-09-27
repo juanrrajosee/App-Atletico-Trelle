@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     template: "%s · Atlético Trelle",
   },
   description:
-    "Gestión del Atlético Trelle: plantilla, partidos, convocatorias, entrenamientos y estadísticas.",
+    "La aplicación del Atlético Trelle: partidos y resultados, plantilla, estadísticas, votaciones de la afición y noticias del club.",
 };
 
 // "cover" deja que la barra de navegación inferior use el espacio de la zona
