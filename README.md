@@ -1,36 +1,23 @@
 # App Atlético Trelle
 
-Aplicación web para la gestión del Atlético Trelle: plantilla, calendario de partidos, convocatorias, asistencia a entrenamientos y estadísticas de jugadores.
+Aplicación del Atlético Trelle para todo el pueblo: calendario y resultados, plantilla y estadísticas de los jugadores, votaciones de la afición, noticias, historia del club y tienda.
 
 ## Sobre el proyecto
 
-La idea es tener en un solo sitio todo lo que ahora mismo vive repartido entre grupos de WhatsApp, capturas de pantalla y la memoria del entrenador. El cuerpo técnico gestiona convocatorias y resultados desde el panel, y los jugadores consultan desde el móvil cuándo juegan, dónde y si están convocados.
-
-Está pensada como PWA: se instala en el móvil desde el navegador y se usa como una app normal, sin pasar por ninguna tienda de aplicaciones.
+Cualquiera puede abrir la aplicación y ver cuándo juega el equipo, cómo quedó el último partido o quién está en la plantilla, sin registrarse. La cuenta sirve para participar: cada aficionado vota una vez por categoría en cada partido (MVP, mejor suplente, jugador con más compromiso) y con esas votaciones se hacen los rankings de la temporada.
 
 ## Funcionalidades
 
-**Plantilla**
-- Ficha de cada jugador: dorsal, posición, fecha de alta y foto
-- Estado del jugador (disponible, lesionado, sancionado, baja)
-
-**Calendario y partidos**
-- Próximos partidos con rival, fecha, hora y campo
-- Registro de resultados y goleadores
-- Histórico de la temporada
-
-**Convocatorias**
-- El entrenador selecciona a los convocados para cada partido
-- Los jugadores confirman o rechazan su disponibilidad
-- Vista rápida de quién falta por responder
-
-**Entrenamientos**
-- Control de asistencia por sesión
-- Porcentaje de asistencia por jugador a lo largo de la temporada
-
-**Estadísticas**
-- Partidos jugados, minutos, goles, asistencias y tarjetas
-- Clasificación interna de la plantilla
+| | Estado |
+|---|---|
+| Inicio con el próximo partido | Hecho |
+| Plantilla pública (sin datos de salud) y su gestión por el administrador | Hecho |
+| Cuentas de aficionado: registro con email confirmado o con Google, y recuperación de contraseña | Hecho |
+| Calendario y resultados, con la edición del partido (resultado, alineación y estadísticas) | Fase 6 |
+| Votaciones por partido y rankings por categoría | Fase 7 |
+| Estadísticas públicas de los jugadores | Fase 8 |
+| Noticias, historia del club y directiva, tienda (pedir presupuesto por teléfono) | Fases 9 a 11 |
+| Parte de edición completa | Fase 12 |
 
 ## Tecnologías
 
@@ -40,38 +27,42 @@ Está pensada como PWA: se instala en el móvil desde el navegador y se usa como
 | Estilos | Tailwind CSS + shadcn/ui |
 | Base de datos | Supabase (PostgreSQL) |
 | Autenticación | Supabase Auth |
-| Almacenamiento | Supabase Storage (fotos de jugadores, escudo) |
+| Almacenamiento | Supabase Storage (fotos, en fases posteriores) |
 | Despliegue | Vercel |
 
 ## Roles
 
-- **Entrenador / cuerpo técnico** — acceso completo: gestiona plantilla, crea partidos, convoca, pasa lista y registra estadísticas.
-- **Jugador** — consulta calendario y convocatorias, confirma disponibilidad y ve sus propias estadísticas.
+- **Aficionado** — cualquiera que se crea una cuenta. Ve lo mismo que sin cuenta y, además, podrá votar.
+- **Administrador** — gestiona los datos del club (de momento, la plantilla).
+
+Sin cuenta se puede consultar todo lo público. La base de datos lo impone con Row Level Security: el público solo lee, y únicamente el administrador escribe.
 
 ### Cuentas de usuario
 
-No hay registro público: la aplicación no tiene pantalla de alta y Supabase rechaza cualquier alta desde fuera. Las cuentas las crea el entrenador a mano y se las pasa a cada jugador por el canal que use ahora el equipo.
+**Crear una cuenta.** Cualquiera se registra desde la aplicación (*Entrar → Crear cuenta*): con email y contraseña (mínimo 8 caracteres), que hay que confirmar desde el enlace que llega por email, o con *Continuar con Google* si está activado. Toda cuenta nueva es de aficionado.
 
-**Crear una cuenta.** En el panel de Supabase (en local, `http://127.0.0.1:54323`): *Authentication → Users → Add user → Create new user*, con email y contraseña (mínimo 8 caracteres) y marcando *Auto Confirm User*.
-
-**Hacer entrenador a una cuenta.** Toda cuenta nueva empieza como `jugador`. El ascenso se hace por SQL, desde el *SQL Editor* del panel, nunca desde la aplicación (así nadie puede concederse a sí mismo más permisos):
+**Hacer administrador a una cuenta.** Se hace por SQL, desde el *SQL Editor* del panel de Supabase, nunca desde la aplicación (así nadie puede concederse a sí mismo más permisos):
 
 ```sql
-update perfiles set rol = 'entrenador'
+update perfiles set rol = 'administrador'
 where id = (select id from auth.users where email = 'correo@ejemplo.com');
 ```
 
-**Vincular la cuenta a su ficha.** Desde la aplicación: *Plantilla →* el jugador *→ Cuenta de la aplicación*, se elige su cuenta por el email y *Vincular cuenta*. Hasta que no está vinculada, esa cuenta solo ve una pantalla de "cuenta pendiente" y no puede leer ningún dato del equipo. Desde la misma sección se puede desvincular.
+**Contraseña olvidada.** Desde *Entrar → ¿Has olvidado tu contraseña?* llega un enlace por email para elegir una nueva.
 
-**Contraseña olvidada.** La recuperación por email necesita un servidor de correo propio, que la beta no tiene. El entrenador pone una contraseña nueva desde el *SQL Editor* y se la pasa al jugador:
+**En local**, los emails no salen a internet: los recoge Mailpit en `http://127.0.0.1:54324`, donde se pueden abrir los enlaces.
 
-```sql
-update auth.users
-set encrypted_password = extensions.crypt('contraseña-nueva', extensions.gen_salt('bf'))
-where email = 'correo@ejemplo.com';
-```
+### Configuración del proyecto de Supabase real
 
-**En el proyecto de Supabase real** (cuando se despliegue), hay que desactivar el registro en *Authentication → Sign In / Providers → Allow new users to sign up*, dejando activado el proveedor de email (si se desactiva, tampoco se puede iniciar sesión).
+Cuando se despliegue, en el panel de Supabase (apartado *Authentication*):
+
+1. **URL del sitio y de retorno**: la dirección pública de la aplicación como *Site URL*, y esa misma dirección con `/**` en las *Redirect URLs*.
+2. **Servidor de correo (SMTP)**: el que trae Supabase de serie solo envía a los miembros del propio proyecto, así que para que los aficionados reciban la confirmación y la recuperación de contraseña hace falta uno propio (hay servicios gratuitos para este volumen).
+3. **Plantillas de email**: copiar el contenido de `supabase/templates/confirmacion.html` y `supabase/templates/recuperacion.html` en las plantillas de *Confirm signup* y *Reset password*, con los asuntos que figuran en `supabase/config.toml`.
+4. **Confirmación de email** activada y **registro** permitido.
+5. **Google** (opcional): crear unas credenciales OAuth de tipo *aplicación web* en Google Cloud Console, con `https://<tu-proyecto>.supabase.co/auth/v1/callback` como URI de redirección autorizada, y pegar el *Client ID* y el *Client Secret* en el proveedor de Google de Supabase. El botón aparece solo en cuanto el proveedor está activado.
+
+Para probar Google en local: poner `enabled = true` en `[auth.external.google]` de `supabase/config.toml`, definir `SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID` y `SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET` antes de `npm run db:iniciar`, y añadir `http://127.0.0.1:54321/auth/v1/callback` como URI autorizada en Google. Las credenciales **nunca** se suben al repositorio.
 
 ## Puesta en marcha
 
@@ -124,26 +115,27 @@ En local, las muestra `npm run db:iniciar` (o `npx supabase status`). En un proy
 ```
 src/
 ├── app/                   # Rutas y páginas (App Router)
-│   ├── (auth)/            # Pantalla de acceso y acciones de sesión
-│   ├── (panel)/           # Zona privada: cabecera, navegación inferior e inicio
-│   │   └── plantilla/     # Listado, ficha, alta, edición, cuenta y baja de jugadores
-│   └── pendiente/         # Cuenta de jugador aún sin vincular a su ficha
+│   ├── (auth)/            # Entrar, crear cuenta, recuperar contraseña, Google
+│   ├── (publico)/         # Parte pública: cabecera, navegación inferior e inicio
+│   │   └── plantilla/     # Plantilla pública, y alta, edición y baja (administrador)
+│   └── auth/              # Vuelta de los enlaces de email y de Google
 ├── components/
 │   ├── plantilla/         # Piezas compartidas de la plantilla (etiqueta de estado)
 │   ├── ui/                # Componentes de shadcn/ui
 │   └── navegacion-inferior.tsx
 ├── lib/
-│   ├── auth.ts            # Usuario actual y comprobación de acceso
+│   ├── auth.ts            # Usuario actual y comprobación de administrador
 │   ├── fechas.ts          # Fechas siempre en hora de España
 │   ├── plantilla.ts       # Posiciones y estados: textos en español y colores
-│   ├── supabase/          # Clientes de Supabase (servidor y proxy)
+│   ├── supabase/          # Clientes de Supabase y proveedores de acceso
 │   └── utils.ts           # Función cn() que usan los componentes de shadcn/ui
 ├── types/
 │   └── database.ts        # Tipos generados desde el esquema (no editar a mano)
-└── proxy.ts               # Refresca la sesión y manda a /acceso si no la hay
+└── proxy.ts               # Refresca la sesión en cada petición
 supabase/
 ├── config.toml            # Configuración de Supabase en local
 ├── migrations/            # Esquema de la base de datos, en SQL numerado
+├── templates/             # Emails de confirmación y recuperación, en español
 └── tests/                 # Tests de las políticas RLS
 ```
 
