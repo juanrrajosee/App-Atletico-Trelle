@@ -1,16 +1,24 @@
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { TarjetaPartido } from "@/components/partidos/tarjeta-partido";
+import { AvisoVotacion } from "@/components/votaciones/aviso-votacion";
 import { cargarProximoPartido, cargarUltimoResultado } from "./partidos/datos";
+import { cargarVotacionesAbiertas } from "./votaciones/datos";
 
 export default async function PaginaInicio() {
-  const [proximoPartido, ultimoResultado] = await Promise.all([
-    cargarProximoPartido(),
-    cargarUltimoResultado(),
-  ]);
+  const [proximoPartido, ultimoResultado, votacionesAbiertas] =
+    await Promise.all([
+      cargarProximoPartido(),
+      cargarUltimoResultado(),
+      cargarVotacionesAbiertas(),
+    ]);
 
   return (
     <div className="flex flex-col gap-8">
+      {votacionesAbiertas.map((partido) => (
+        <AvisoVotacion key={partido.id} partido={partido} />
+      ))}
+
       <section aria-labelledby="titulo-proximo-partido">
         <h1
           id="titulo-proximo-partido"

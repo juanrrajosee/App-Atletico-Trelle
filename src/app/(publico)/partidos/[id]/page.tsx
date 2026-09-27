@@ -20,6 +20,7 @@ import { NOMBRE_POSICION } from "@/lib/plantilla";
 import { cn } from "@/lib/utils";
 import { borrarPartido } from "../acciones";
 import { cargarAlineacion, cargarPartido, type Participacion } from "../datos";
+import { SeccionVotaciones } from "./seccion-votaciones";
 
 export async function generateMetadata({
   params,
@@ -117,6 +118,8 @@ export default async function PaginaPartido({
           />
         </div>
       )}
+
+      <SeccionVotaciones partido={partido} alineacion={alineacion} />
 
       {partido.estado === "jugado" && alineacion.length === 0 && (
         <p className="rounded-xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
