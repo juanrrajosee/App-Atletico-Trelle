@@ -1,6 +1,7 @@
 import { ChevronRight, Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PestanasEquipo } from "@/components/pestanas-equipo";
 import { EtiquetaEstado } from "@/components/plantilla/etiqueta-estado";
 import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
@@ -20,6 +21,8 @@ export default async function PaginaPlantilla() {
 
   return (
     <div className="flex flex-col gap-6">
+      <PestanasEquipo activa="plantilla" />
+
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Plantilla</h1>

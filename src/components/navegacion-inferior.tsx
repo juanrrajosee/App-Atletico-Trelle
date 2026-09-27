@@ -1,30 +1,35 @@
 "use client";
 
-import {
-  CalendarDays,
-  ChartColumn,
-  House,
-  Trophy,
-  Users,
-  type LucideIcon,
-} from "lucide-react";
+import { CalendarDays, House, Users, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
-type Seccion = { href: string; etiqueta: string; icono: LucideIcon };
+type Seccion = {
+  href: string;
+  etiqueta: string;
+  icono: LucideIcon;
+  /** Rutas que cuentan como esta sección (si no, solo la de href). */
+  rutas?: string[];
+};
 
-// Cada fase añade aquí su sección cuando existe su pantalla.
+// Cada fase añade aquí su sección cuando existe su pantalla. Caben cinco
+// con comodidad en un móvil: lo demás se agrupa (como en Equipo).
 const SECCIONES: Seccion[] = [
   { href: "/", etiqueta: "Inicio", icono: House },
   { href: "/partidos", etiqueta: "Partidos", icono: CalendarDays },
-  { href: "/votaciones", etiqueta: "Votaciones", icono: Trophy },
-  { href: "/estadisticas", etiqueta: "Estadísticas", icono: ChartColumn },
-  { href: "/plantilla", etiqueta: "Plantilla", icono: Users },
+  {
+    href: "/plantilla",
+    etiqueta: "Equipo",
+    icono: Users,
+    rutas: ["/plantilla", "/estadisticas", "/votaciones"],
+  },
 ];
 
-function estaActiva(href: string, rutaActual: string) {
-  return href === "/" ? rutaActual === "/" : rutaActual.startsWith(href);
+function estaActiva({ href, rutas = [href] }: Seccion, rutaActual: string) {
+  return href === "/"
+    ? rutaActual === "/"
+    : rutas.some((ruta) => rutaActual.startsWith(ruta));
 }
 
 /** Barra de navegación fija abajo, pensada para usarse con el pulgar. */
@@ -37,8 +42,9 @@ export function NavegacionInferior() {
       className="fixed inset-x-0 bottom-0 z-10 border-t bg-background pb-[env(safe-area-inset-bottom)]"
     >
       <ul className="mx-auto flex max-w-2xl">
-        {SECCIONES.map(({ href, etiqueta, icono: Icono }) => {
-          const activa = estaActiva(href, rutaActual);
+        {SECCIONES.map((seccion) => {
+          const { href, etiqueta, icono: Icono } = seccion;
+          const activa = estaActiva(seccion, rutaActual);
           return (
             <li key={href} className="flex-1">
               <Link
