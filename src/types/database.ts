@@ -373,6 +373,7 @@ export type Database = {
       };
     };
     Functions: {
+      borrar_mi_cuenta: { Args: Record<PropertyKey, never>; Returns: undefined };
       consultar_votacion: {
         Args: { p_partido_id: string };
         Returns: {

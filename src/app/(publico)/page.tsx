@@ -7,7 +7,10 @@ import { cargarNoticias } from "./noticias/datos";
 import { cargarProximoPartido, cargarUltimoResultado } from "./partidos/datos";
 import { cargarVotacionesAbiertas } from "./votaciones/datos";
 
-export default async function PaginaInicio() {
+export default async function PaginaInicio({ searchParams }: PageProps<"/">) {
+  // Al borrar la cuenta se vuelve aquí con ?cuenta=borrada.
+  const cuentaBorrada = (await searchParams).cuenta === "borrada";
+
   const [proximoPartido, ultimoResultado, votacionesAbiertas, noticias] =
     await Promise.all([
       cargarProximoPartido(),
@@ -19,6 +22,15 @@ export default async function PaginaInicio() {
 
   return (
     <div className="flex flex-col gap-8">
+      {cuentaBorrada && (
+        <p
+          role="status"
+          className="rounded-lg border px-4 py-3 text-sm text-muted-foreground"
+        >
+          Tu cuenta se ha borrado. Gracias por haber participado.
+        </p>
+      )}
+
       {votacionesAbiertas.map((partido) => (
         <AvisoVotacion key={partido.id} partido={partido} />
       ))}

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Apartado, DatosTitular, PaginaLegal } from "@/components/pagina-legal";
 import { cargarClub } from "../club/datos";
 
@@ -112,6 +113,10 @@ export default async function PaginaPrivacidad() {
           ) : (
             " escribiendo al club"
           )}
+          . También puedes borrar tu cuenta tú mismo desde{" "}
+          <Link href="/cuenta" className="underline underline-offset-4">
+            Mi cuenta
+          </Link>
           .
         </p>
         <p>

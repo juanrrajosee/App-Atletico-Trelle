@@ -1,5 +1,5 @@
+import { CircleUser } from "lucide-react";
 import Link from "next/link";
-import { cerrarSesion } from "@/app/(auth)/acciones";
 import { NavegacionInferior } from "@/components/navegacion-inferior";
 import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
@@ -22,11 +22,12 @@ export default async function LayoutPublico({ children }: LayoutProps<"/">) {
                   Administrador
                 </span>
               )}
-              <form action={cerrarSesion}>
-                <Button type="submit" variant="ghost" className="h-10">
-                  Salir
-                </Button>
-              </form>
+              <Button asChild variant="ghost" className="h-10">
+                <Link href="/cuenta">
+                  <CircleUser aria-hidden />
+                  Mi cuenta
+                </Link>
+              </Button>
             </div>
           ) : (
             <Button asChild variant="outline" className="h-10">
