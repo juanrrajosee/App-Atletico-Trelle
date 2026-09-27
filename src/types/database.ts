@@ -154,6 +154,62 @@ export type Database = {
         };
         Relationships: [];
       };
+      votos: {
+        Row: {
+          categoria: Database["public"]["Enums"]["categoria_votacion"];
+          creado_en: string;
+          id: string;
+          jugador_id: string;
+          partido_id: string;
+          perfil_id: string | null;
+        };
+        Insert: {
+          categoria: Database["public"]["Enums"]["categoria_votacion"];
+          creado_en?: string;
+          id?: string;
+          jugador_id: string;
+          partido_id: string;
+          perfil_id?: string | null;
+        };
+        Update: {
+          categoria?: Database["public"]["Enums"]["categoria_votacion"];
+          creado_en?: string;
+          id?: string;
+          jugador_id?: string;
+          partido_id?: string;
+          perfil_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "votos_jugador_id_fkey";
+            columns: ["jugador_id"];
+            isOneToOne: false;
+            referencedRelation: "jugadores";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "votos_jugador_id_fkey";
+            columns: ["jugador_id"];
+            isOneToOne: false;
+            referencedRelation: "jugadores_publicos";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "votos_partido_id_fkey";
+            columns: ["partido_id"];
+            isOneToOne: false;
+            referencedRelation: "partidos";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "votos_perfil_id_fkey";
+            columns: ["perfil_id"];
+            isOneToOne: false;
+            referencedRelation: "perfiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       jugadores_publicos: {
@@ -185,13 +241,57 @@ export type Database = {
       };
     };
     Functions: {
+      cierre_votacion: { Args: { p_fecha_hora: string }; Returns: string };
+      consultar_votacion: {
+        Args: { p_partido_id: string };
+        Returns: {
+          cierre: string;
+          estado: Database["public"]["Enums"]["estado_votacion"];
+        }[];
+      };
       es_administrador: { Args: Record<PropertyKey, never>; Returns: boolean };
+      es_candidato: {
+        Args: {
+          p_categoria: Database["public"]["Enums"]["categoria_votacion"];
+          p_jugador_id: string;
+          p_partido_id: string;
+        };
+        Returns: boolean;
+      };
       guardar_alineacion: { Args: { p_filas: Json; p_partido_id: string }; Returns: undefined };
+      ranking_votaciones: {
+        Args: { p_temporada: number };
+        Returns: {
+          categoria: Database["public"]["Enums"]["categoria_votacion"];
+          jugador_id: string;
+          victorias: number;
+          votos: number;
+        }[];
+      };
+      resultados_votacion: {
+        Args: { p_partido_id: string };
+        Returns: {
+          categoria: Database["public"]["Enums"]["categoria_votacion"];
+          jugador_id: string;
+          votos: number;
+        }[];
+      };
+      votacion_abierta: { Args: { p_partido_id: string }; Returns: boolean };
+      votar: {
+        Args: {
+          p_categoria: Database["public"]["Enums"]["categoria_votacion"];
+          p_jugador_id: string;
+          p_partido_id: string;
+        };
+        Returns: undefined;
+      };
     };
     Enums: {
+      categoria_votacion: "mvp" | "mejor_suplente" | "compromiso";
       condicion_partido: "local" | "visitante";
       estado_jugador: "disponible" | "lesionado" | "sancionado" | "baja";
       estado_partido: "programado" | "jugado" | "aplazado";
+      estado_votacion: "pendiente" | "abierta" | "cerrada";
       posicion_jugador: "portero" | "defensa" | "centrocampista" | "delantero";
       rol_usuario: "aficionado" | "administrador";
     };
@@ -309,9 +409,11 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      categoria_votacion: ["mvp", "mejor_suplente", "compromiso"],
       condicion_partido: ["local", "visitante"],
       estado_jugador: ["disponible", "lesionado", "sancionado", "baja"],
       estado_partido: ["programado", "jugado", "aplazado"],
+      estado_votacion: ["pendiente", "abierta", "cerrada"],
       posicion_jugador: ["portero", "defensa", "centrocampista", "delantero"],
       rol_usuario: ["aficionado", "administrador"],
     },
