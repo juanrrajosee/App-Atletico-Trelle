@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { exigirEntrenador } from "@/lib/auth";
+import { exigirAdministrador } from "@/lib/auth";
 import { actualizarJugador } from "../../acciones";
-import { cargarFicha } from "../../datos";
+import { cargarJugador } from "../../datos";
 import { FormularioJugador } from "../../formulario-jugador";
 
 export const metadata: Metadata = {
@@ -13,10 +13,10 @@ export default async function PaginaEditarJugador({
   params,
 }: PageProps<"/plantilla/[id]/editar">) {
   const { id } = await params;
-  const usuario = await exigirEntrenador();
-  const jugador = await cargarFicha(usuario, id);
+  await exigirAdministrador();
+  const jugador = await cargarJugador(true, id);
 
-  if (!jugador) {
+  if (!jugador?.estado) {
     notFound();
   }
 
@@ -33,8 +33,6 @@ export default async function PaginaEditarJugador({
           dorsal: String(jugador.dorsal),
           posicion: jugador.posicion,
           estado: jugador.estado,
-          fecha_nacimiento: jugador.datosPersonales?.fechaNacimiento ?? "",
-          telefono: jugador.datosPersonales?.telefono ?? "",
         }}
         textoBoton="Guardar cambios"
         hrefCancelar={`/plantilla/${jugador.id}`}

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { obtenerUsuarioActual } from "@/lib/auth";
@@ -21,7 +22,7 @@ export default async function PaginaAcceso() {
             Atlético Trelle
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Entra con la cuenta que te ha dado el entrenador.
+            Entra con tu cuenta de aficionado.
           </p>
         </div>
 
@@ -31,10 +32,12 @@ export default async function PaginaAcceso() {
           </CardContent>
         </Card>
 
-        <p className="text-center text-sm text-muted-foreground">
-          ¿No tienes cuenta o no recuerdas la contraseña? Habla con el
-          entrenador.
-        </p>
+        <Link
+          href="/"
+          className="text-center text-sm text-muted-foreground underline-offset-4 hover:underline"
+        >
+          Volver al inicio
+        </Link>
       </div>
     </main>
   );

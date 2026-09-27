@@ -3,7 +3,7 @@
 import type { PostgrestError } from "@supabase/supabase-js";
 import { refresh, revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { exigirEntrenador } from "@/lib/auth";
+import { exigirAdministrador } from "@/lib/auth";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
 import { esIdValido } from "./datos";
 import {
@@ -54,7 +54,7 @@ export async function crearJugador(
   anterior: EstadoFormularioJugador,
   formData: FormData,
 ): Promise<EstadoFormularioJugador> {
-  await exigirEntrenador();
+  await exigirAdministrador();
 
   const validacion = validarJugador(formData);
   if (!validacion.ok) {
@@ -81,7 +81,7 @@ export async function actualizarJugador(
   anterior: EstadoFormularioJugador,
   formData: FormData,
 ): Promise<EstadoFormularioJugador> {
-  await exigirEntrenador();
+  await exigirAdministrador();
 
   const validacion = validarJugador(formData);
   if (!validacion.ok) {
@@ -112,73 +112,12 @@ export async function actualizarJugador(
   redirect(`/plantilla/${id}`);
 }
 
-export type EstadoVinculacion = { error: string | null };
-
-export async function vincularCuenta(
-  jugadorId: string,
-  _anterior: EstadoVinculacion,
-  formData: FormData,
-): Promise<EstadoVinculacion> {
-  await exigirEntrenador();
-
-  const perfilId = String(formData.get("perfil_id") ?? "");
-  if (!esIdValido(perfilId)) {
-    return { error: "Elige una cuenta." };
-  }
-  if (!esIdValido(jugadorId)) {
-    return { error: NO_ENCONTRADO };
-  }
-
-  const supabase = await crearClienteServidor();
-  const { error } = await supabase
-    .from("jugadores")
-    .update({ perfil_id: perfilId })
-    .eq("id", jugadorId)
-    .select("id")
-    .single();
-
-  if (error) {
-    if (error.code === "23505") {
-      return { error: "Esa cuenta ya está vinculada a otro jugador." };
-    }
-    if (error.code === "PGRST116") {
-      return { error: NO_ENCONTRADO };
-    }
-    return { error: "No se ha podido vincular la cuenta. Inténtalo de nuevo." };
-  }
-
-  revalidatePath("/plantilla");
-  refresh();
-  return { error: null };
-}
-
-export async function desvincularCuenta(jugadorId: string) {
-  await exigirEntrenador();
-
-  if (!esIdValido(jugadorId)) {
-    return;
-  }
-
-  const supabase = await crearClienteServidor();
-  const { error } = await supabase
-    .from("jugadores")
-    .update({ perfil_id: null })
-    .eq("id", jugadorId);
-
-  if (error) {
-    throw new Error(`No se ha podido desvincular la cuenta: ${error.message}`);
-  }
-
-  revalidatePath("/plantilla");
-  refresh();
-}
-
 export type EstadoBorrado = { error: string | null };
 
 export async function borrarJugador(
   jugadorId: string,
 ): Promise<EstadoBorrado> {
-  await exigirEntrenador();
+  await exigirAdministrador();
 
   if (!esIdValido(jugadorId)) {
     return { error: NO_ENCONTRADO };
@@ -191,10 +130,11 @@ export async function borrarJugador(
     .eq("id", jugadorId);
 
   if (error) {
-    // 23503: otras tablas (convocatorias, asistencias...) lo referencian.
+    // 23503: otras tablas (estadísticas de partidos) lo referencian.
     if (error.code === "23503") {
       return {
-        error: "Tiene historial en el equipo, así que no se puede borrar. Dale de baja.",
+        error:
+          "Tiene estadísticas registradas en algún partido, así que no se puede borrar. Dale de baja.",
       };
     }
     return { error: "No se ha podido borrar el jugador. Inténtalo de nuevo." };
@@ -208,7 +148,7 @@ export async function borrarJugador(
 }
 
 export async function darDeBaja(jugadorId: string) {
-  await exigirEntrenador();
+  await exigirAdministrador();
 
   if (!esIdValido(jugadorId)) {
     return;

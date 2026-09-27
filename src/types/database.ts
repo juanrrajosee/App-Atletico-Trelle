@@ -3,128 +3,6 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
-      asistencias: {
-        Row: {
-          creado_en: string;
-          entrenamiento_id: string;
-          estado: Database["public"]["Enums"]["estado_asistencia"];
-          id: string;
-          jugador_id: string;
-        };
-        Insert: {
-          creado_en?: string;
-          entrenamiento_id: string;
-          estado: Database["public"]["Enums"]["estado_asistencia"];
-          id?: string;
-          jugador_id: string;
-        };
-        Update: {
-          creado_en?: string;
-          entrenamiento_id?: string;
-          estado?: Database["public"]["Enums"]["estado_asistencia"];
-          id?: string;
-          jugador_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "asistencias_entrenamiento_id_fkey";
-            columns: ["entrenamiento_id"];
-            isOneToOne: false;
-            referencedRelation: "entrenamientos";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "asistencias_jugador_id_fkey";
-            columns: ["jugador_id"];
-            isOneToOne: false;
-            referencedRelation: "jugadores";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "asistencias_jugador_id_fkey";
-            columns: ["jugador_id"];
-            isOneToOne: false;
-            referencedRelation: "jugadores_roster";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
-      convocatorias: {
-        Row: {
-          confirmacion: Database["public"]["Enums"]["estado_confirmacion"];
-          convocado: boolean;
-          creado_en: string;
-          id: string;
-          jugador_id: string;
-          partido_id: string;
-          respondido_en: string | null;
-        };
-        Insert: {
-          confirmacion?: Database["public"]["Enums"]["estado_confirmacion"];
-          convocado?: boolean;
-          creado_en?: string;
-          id?: string;
-          jugador_id: string;
-          partido_id: string;
-          respondido_en?: string | null;
-        };
-        Update: {
-          confirmacion?: Database["public"]["Enums"]["estado_confirmacion"];
-          convocado?: boolean;
-          creado_en?: string;
-          id?: string;
-          jugador_id?: string;
-          partido_id?: string;
-          respondido_en?: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "convocatorias_jugador_id_fkey";
-            columns: ["jugador_id"];
-            isOneToOne: false;
-            referencedRelation: "jugadores";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "convocatorias_jugador_id_fkey";
-            columns: ["jugador_id"];
-            isOneToOne: false;
-            referencedRelation: "jugadores_roster";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "convocatorias_partido_id_fkey";
-            columns: ["partido_id"];
-            isOneToOne: false;
-            referencedRelation: "partidos";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
-      entrenamientos: {
-        Row: {
-          creado_en: string;
-          fecha_hora: string;
-          id: string;
-          lugar: string;
-          notas: string | null;
-        };
-        Insert: {
-          creado_en?: string;
-          fecha_hora: string;
-          id?: string;
-          lugar: string;
-          notas?: string | null;
-        };
-        Update: {
-          creado_en?: string;
-          fecha_hora?: string;
-          id?: string;
-          lugar?: string;
-          notas?: string | null;
-        };
-        Relationships: [];
-      };
       estadisticas_partido: {
         Row: {
           asistencias: number;
@@ -174,7 +52,7 @@ export type Database = {
             foreignKeyName: "estadisticas_partido_jugador_id_fkey";
             columns: ["jugador_id"];
             isOneToOne: false;
-            referencedRelation: "jugadores_roster";
+            referencedRelation: "jugadores_publicos";
             referencedColumns: ["id"];
           },
           {
@@ -192,49 +70,32 @@ export type Database = {
           creado_en: string;
           dorsal: number;
           estado: Database["public"]["Enums"]["estado_jugador"];
-          fecha_nacimiento: string | null;
           foto: string | null;
           id: string;
           nombre: string;
-          perfil_id: string | null;
           posicion: Database["public"]["Enums"]["posicion_jugador"];
-          telefono: string | null;
         };
         Insert: {
           apellidos: string;
           creado_en?: string;
           dorsal: number;
           estado?: Database["public"]["Enums"]["estado_jugador"];
-          fecha_nacimiento?: string | null;
           foto?: string | null;
           id?: string;
           nombre: string;
-          perfil_id?: string | null;
           posicion: Database["public"]["Enums"]["posicion_jugador"];
-          telefono?: string | null;
         };
         Update: {
           apellidos?: string;
           creado_en?: string;
           dorsal?: number;
           estado?: Database["public"]["Enums"]["estado_jugador"];
-          fecha_nacimiento?: string | null;
           foto?: string | null;
           id?: string;
           nombre?: string;
-          perfil_id?: string | null;
           posicion?: Database["public"]["Enums"]["posicion_jugador"];
-          telefono?: string | null;
         };
-        Relationships: [
-          {
-            foreignKeyName: "jugadores_perfil_id_fkey";
-            columns: ["perfil_id"];
-            isOneToOne: true;
-            referencedRelation: "perfiles";
-            referencedColumns: ["id"];
-          },
-        ];
+        Relationships: [];
       };
       partidos: {
         Row: {
@@ -295,30 +156,27 @@ export type Database = {
       };
     };
     Views: {
-      jugadores_roster: {
+      jugadores_publicos: {
         Row: {
+          activo: boolean | null;
           apellidos: string | null;
           dorsal: number | null;
-          estado: Database["public"]["Enums"]["estado_jugador"] | null;
-          foto: string | null;
           id: string | null;
           nombre: string | null;
           posicion: Database["public"]["Enums"]["posicion_jugador"] | null;
         };
         Insert: {
+          activo?: never;
           apellidos?: string | null;
           dorsal?: number | null;
-          estado?: Database["public"]["Enums"]["estado_jugador"] | null;
-          foto?: string | null;
           id?: string | null;
           nombre?: string | null;
           posicion?: Database["public"]["Enums"]["posicion_jugador"] | null;
         };
         Update: {
+          activo?: never;
           apellidos?: string | null;
           dorsal?: number | null;
-          estado?: Database["public"]["Enums"]["estado_jugador"] | null;
-          foto?: string | null;
           id?: string | null;
           nombre?: string | null;
           posicion?: Database["public"]["Enums"]["posicion_jugador"] | null;
@@ -327,27 +185,14 @@ export type Database = {
       };
     };
     Functions: {
-      cuentas_usuario: {
-        Args: Record<PropertyKey, never>;
-        Returns: {
-          email: string;
-          jugador_id: string;
-          perfil_id: string;
-          rol: Database["public"]["Enums"]["rol_usuario"];
-        }[];
-      };
-      es_entrenador: { Args: Record<PropertyKey, never>; Returns: boolean };
-      mi_jugador_id: { Args: Record<PropertyKey, never>; Returns: string };
-      tiene_acceso: { Args: Record<PropertyKey, never>; Returns: boolean };
+      es_administrador: { Args: Record<PropertyKey, never>; Returns: boolean };
     };
     Enums: {
       condicion_partido: "local" | "visitante";
-      estado_asistencia: "presente" | "ausente" | "justificado";
-      estado_confirmacion: "pendiente" | "confirmado" | "rechazado";
       estado_jugador: "disponible" | "lesionado" | "sancionado" | "baja";
       estado_partido: "programado" | "jugado" | "aplazado";
       posicion_jugador: "portero" | "defensa" | "centrocampista" | "delantero";
-      rol_usuario: "entrenador" | "jugador";
+      rol_usuario: "aficionado" | "administrador";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -464,12 +309,10 @@ export const Constants = {
   public: {
     Enums: {
       condicion_partido: ["local", "visitante"],
-      estado_asistencia: ["presente", "ausente", "justificado"],
-      estado_confirmacion: ["pendiente", "confirmado", "rechazado"],
       estado_jugador: ["disponible", "lesionado", "sancionado", "baja"],
       estado_partido: ["programado", "jugado", "aplazado"],
       posicion_jugador: ["portero", "defensa", "centrocampista", "delantero"],
-      rol_usuario: ["entrenador", "jugador"],
+      rol_usuario: ["aficionado", "administrador"],
     },
   },
 } as const;

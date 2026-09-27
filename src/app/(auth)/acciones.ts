@@ -42,5 +42,6 @@ export async function iniciarSesion(
 export async function cerrarSesion() {
   const supabase = await crearClienteServidor();
   await supabase.auth.signOut();
-  redirect("/acceso");
+  // La aplicación es pública: tras salir se sigue en ella, sin sesión.
+  redirect("/");
 }

@@ -5,9 +5,8 @@ import { tieneHistorial } from "../datos";
 import { BotonBorrar } from "./boton-borrar";
 
 /**
- * Solo para el entrenador. Un jugador sin historial se puede borrar; con
- * historial (convocatorias, asistencia o estadísticas) se le da de baja, para
- * no perder esos datos.
+ * Solo para el administrador. Un jugador sin historial se puede borrar; con
+ * estadísticas en algún partido se le da de baja, para no perder esos datos.
  */
 export async function SeccionBaja({
   jugadorId,
@@ -27,8 +26,8 @@ export async function SeccionBaja({
   return (
     <div className="flex flex-col gap-3">
       <p className="text-sm text-muted-foreground">
-        Tiene historial en el equipo (convocatorias, asistencia o
-        estadísticas), así que no se puede borrar
+        Tiene estadísticas registradas en algún partido, así que no se
+        puede borrar
         {estado === "baja" ? ". Ya está de baja." : ": puedes darle de baja."}
       </p>
       {estado !== "baja" && (

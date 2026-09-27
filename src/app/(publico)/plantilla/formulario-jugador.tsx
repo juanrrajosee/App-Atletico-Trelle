@@ -129,39 +129,6 @@ export function FormularioJugador({
         </NativeSelect>
       </Campo>
 
-      <Campo
-        id="fecha_nacimiento"
-        etiqueta="Fecha de nacimiento (opcional)"
-        error={errores.fecha_nacimiento}
-      >
-        <Input
-          id="fecha_nacimiento"
-          name="fecha_nacimiento"
-          type="date"
-          defaultValue={valores.fecha_nacimiento}
-          className="h-11"
-          {...conError("fecha_nacimiento")}
-        />
-      </Campo>
-
-      <Campo
-        id="telefono"
-        etiqueta="Teléfono (opcional)"
-        error={errores.telefono}
-        ayuda="Solo lo verán el entrenador y el propio jugador."
-      >
-        <Input
-          id="telefono"
-          name="telefono"
-          type="tel"
-          inputMode="tel"
-          autoComplete="off"
-          defaultValue={valores.telefono}
-          className="h-11"
-          {...conError("telefono")}
-        />
-      </Campo>
-
       {estado.mensaje && (
         <p role="alert" className="text-sm text-destructive">
           {estado.mensaje}
@@ -184,25 +151,21 @@ function Campo({
   id,
   etiqueta,
   error,
-  ayuda,
   children,
 }: {
   id: CampoJugador;
   etiqueta: string;
   error?: string;
-  ayuda?: string;
   children: ReactNode;
 }) {
   return (
     <div className="grid content-start gap-2 *:data-[slot=native-select-wrapper]:w-full">
       <Label htmlFor={id}>{etiqueta}</Label>
       {children}
-      {error ? (
+      {error && (
         <p id={`${id}-error`} className="text-sm text-destructive">
           {error}
         </p>
-      ) : (
-        ayuda && <p className="text-xs text-muted-foreground">{ayuda}</p>
       )}
     </div>
   );

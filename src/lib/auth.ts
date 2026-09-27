@@ -11,14 +11,13 @@ export type UsuarioActual = {
   id: string;
   email: string | null;
   rol: Rol;
-  /** Ficha de jugador vinculada a la cuenta, si la hay. */
-  jugador: { id: string; nombre: string; apellidos: string } | null;
 };
 
 /**
- * Cuenta con la sesión iniciada, con su rol y su ficha de jugador, o null si
- * no hay sesión. Se memoriza durante cada petición: el layout y la página
- * pueden llamarla a la vez sin repetir consultas.
+ * Cuenta con la sesión iniciada y su rol, o null si no hay sesión (la
+ * aplicación es pública: no tener sesión es lo normal). Se memoriza durante
+ * cada petición: el layout y la página pueden llamarla a la vez sin repetir
+ * consultas.
  */
 export const obtenerUsuarioActual = cache(
   async (): Promise<UsuarioActual | null> => {
@@ -32,7 +31,7 @@ export const obtenerUsuarioActual = cache(
 
     const { data: perfil, error } = await supabase
       .from("perfiles")
-      .select("rol, jugador:jugadores(id, nombre, apellidos)")
+      .select("rol")
       .eq("id", claims.sub)
       .single();
 
@@ -40,51 +39,28 @@ export const obtenerUsuarioActual = cache(
       throw new Error(`No se ha podido cargar el perfil: ${error.message}`);
     }
 
-    return {
-      id: claims.sub,
-      email: claims.email ?? null,
-      rol: perfil.rol,
-      jugador: perfil.jugador,
-    };
+    return { id: claims.sub, email: claims.email ?? null, rol: perfil.rol };
   },
 );
 
-/**
- * Misma regla que la función tiene_acceso() de la base de datos: el
- * entrenador, o un jugador ya vinculado a su ficha. La que manda es la de la
- * base de datos (RLS); esta solo decide a qué pantalla se envía al usuario.
- */
-export function tieneAcceso(usuario: UsuarioActual) {
-  return usuario.rol === "entrenador" || usuario.jugador !== null;
+export function esAdministrador(usuario: UsuarioActual | null) {
+  return usuario?.rol === "administrador";
 }
 
 /**
- * Para las páginas del panel: devuelve el usuario si puede ver los datos del
- * equipo; si no, lo redirige a la pantalla que le corresponde.
+ * Para las pantallas y acciones de gestión: devuelve el usuario si es
+ * administrador; si no, lo manda a entrar o al inicio. Es para no enseñar
+ * formularios que no se pueden usar; aunque se saltara esta comprobación,
+ * RLS no deja escribir a nadie más.
  */
-export async function exigirAcceso(): Promise<UsuarioActual> {
+export async function exigirAdministrador(): Promise<UsuarioActual> {
   const usuario = await obtenerUsuarioActual();
 
   if (!usuario) {
     redirect("/acceso");
   }
 
-  if (!tieneAcceso(usuario)) {
-    redirect("/pendiente");
-  }
-
-  return usuario;
-}
-
-/**
- * Para las pantallas y acciones de gestión: como exigirAcceso(), pero un
- * jugador vuelve al inicio. Es para no enseñarle formularios que no puede
- * usar; aunque se saltara esta comprobación, RLS no le dejaría escribir.
- */
-export async function exigirEntrenador(): Promise<UsuarioActual> {
-  const usuario = await exigirAcceso();
-
-  if (usuario.rol !== "entrenador") {
+  if (!esAdministrador(usuario)) {
     redirect("/");
   }
 

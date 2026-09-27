@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { exigirEntrenador } from "@/lib/auth";
+import { exigirAdministrador } from "@/lib/auth";
 import { crearJugador } from "../acciones";
 import { FormularioJugador } from "../formulario-jugador";
 
@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function PaginaNuevoJugador() {
-  await exigirEntrenador();
+  await exigirAdministrador();
 
   return (
     <div className="flex flex-col gap-6">

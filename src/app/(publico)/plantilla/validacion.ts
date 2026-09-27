@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { hoyEnEspana } from "@/lib/fechas";
 import { ESTADOS_JUGADOR, POSICIONES } from "@/lib/plantilla";
 
 export type CampoJugador =
@@ -7,9 +6,7 @@ export type CampoJugador =
   | "apellidos"
   | "dorsal"
   | "posicion"
-  | "estado"
-  | "fecha_nacimiento"
-  | "telefono";
+  | "estado";
 
 export type EstadoFormularioJugador = {
   errores: Partial<Record<CampoJugador, string>>;
@@ -25,15 +22,6 @@ export type EstadoFormularioJugador = {
 };
 
 export type RespuestaFormularioJugador = Omit<EstadoFormularioJugador, "intento">;
-
-/** Texto vacío → null; si no, se valida con el esquema dado. */
-function opcional<T extends z.ZodType<string, string>>(esquema: T) {
-  return z
-    .string()
-    .trim()
-    .transform((valor) => (valor === "" ? null : valor))
-    .pipe(esquema.nullable());
-}
 
 const esquemaJugador = z.object({
   nombre: z
@@ -60,20 +48,6 @@ const esquemaJugador = z.object({
     ),
   posicion: z.enum(POSICIONES, { error: "Elige una posición." }),
   estado: z.enum(ESTADOS_JUGADOR, { error: "Elige un estado." }),
-  fecha_nacimiento: opcional(
-    z.iso
-      .date({ error: "La fecha no es válida." })
-      .refine((fecha) => fecha <= hoyEnEspana(), "La fecha no puede ser futura.")
-      .refine((fecha) => fecha >= "1930-01-01", "Revisa el año."),
-  ),
-  telefono: opcional(
-    z
-      .string()
-      .regex(
-        /^\+?[\d ]{9,20}$/,
-        "Solo números y espacios (y un + al principio si hace falta).",
-      ),
-  ),
 });
 
 export type DatosJugador = z.infer<typeof esquemaJugador>;

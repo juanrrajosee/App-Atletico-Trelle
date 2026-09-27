@@ -1,0 +1,46 @@
+import Link from "next/link";
+import { cerrarSesion } from "@/app/(auth)/acciones";
+import { NavegacionInferior } from "@/components/navegacion-inferior";
+import { Button } from "@/components/ui/button";
+import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
+
+export default async function LayoutPublico({ children }: LayoutProps<"/">) {
+  // La aplicación es pública: sin sesión se ve todo menos votar y gestionar.
+  const usuario = await obtenerUsuarioActual();
+
+  return (
+    <div className="flex flex-1 flex-col">
+      <header className="sticky top-0 z-10 border-b bg-background">
+        <div className="mx-auto flex h-14 max-w-2xl items-center justify-between gap-4 px-4">
+          <Link href="/" className="font-semibold tracking-tight">
+            Atlético Trelle
+          </Link>
+          {usuario ? (
+            <div className="flex items-center gap-1">
+              {esAdministrador(usuario) && (
+                <span className="text-sm text-muted-foreground">
+                  Administrador
+                </span>
+              )}
+              <form action={cerrarSesion}>
+                <Button type="submit" variant="ghost" className="h-10">
+                  Salir
+                </Button>
+              </form>
+            </div>
+          ) : (
+            <Button asChild variant="outline" className="h-10">
+              <Link href="/acceso">Entrar</Link>
+            </Button>
+          )}
+        </div>
+      </header>
+
+      <main className="mx-auto w-full max-w-2xl flex-1 px-4 pt-6 pb-24">
+        {children}
+      </main>
+
+      <NavegacionInferior />
+    </div>
+  );
+}

@@ -3,16 +3,14 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/types/database";
 import { obtenerEntornoSupabase } from "./entorno";
 
-const RUTA_ACCESO = "/acceso";
+/** Pantallas para entrar: con la sesión ya iniciada no tienen sentido. */
+const RUTAS_DE_ACCESO = ["/acceso"];
 
 /**
- * Refresca la sesión de Supabase antes de renderizar la ruta y hace una
- * primera criba: sin sesión, todo lleva a /acceso; con sesión, /acceso lleva
- * al inicio.
- *
- * Es solo una comprobación optimista (lee la sesión, no la base de datos).
- * Cada página vuelve a comprobar el acceso con exigirAcceso(), y los datos
- * los protege RLS.
+ * Refresca la sesión de Supabase antes de renderizar la ruta. La aplicación
+ * es pública, así que no manda a nadie a entrar: solo saca de las pantallas
+ * de acceso a quien ya tiene la sesión iniciada. Las pantallas que la
+ * necesitan lo comprueban por su cuenta, y los datos los protege RLS.
  */
 export async function actualizarSesion(request: NextRequest) {
   const { url, clave } = obtenerEntornoSupabase();
@@ -41,16 +39,12 @@ export async function actualizarSesion(request: NextRequest) {
   // que dispara la lectura y, si hace falta, el refresco de la sesión.
   const { data } = await supabase.auth.getClaims();
   const haySesion = Boolean(data?.claims);
-  const enAcceso = request.nextUrl.pathname === RUTA_ACCESO;
+  const enAcceso = RUTAS_DE_ACCESO.includes(request.nextUrl.pathname);
 
-  let respuesta: NextResponse;
-  if (!haySesion && !enAcceso) {
-    respuesta = NextResponse.redirect(new URL(RUTA_ACCESO, request.url));
-  } else if (haySesion && enAcceso) {
-    respuesta = NextResponse.redirect(new URL("/", request.url));
-  } else {
-    respuesta = NextResponse.next({ request });
-  }
+  const respuesta =
+    haySesion && enAcceso
+      ? NextResponse.redirect(new URL("/", request.url))
+      : NextResponse.next({ request });
 
   cookiesSesion.forEach(({ name, value, options }) =>
     respuesta.cookies.set(name, value, options),

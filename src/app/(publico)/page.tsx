@@ -6,12 +6,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { exigirAcceso } from "@/lib/auth";
 import { formatearFechaHora } from "@/lib/fechas";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
 
 export default async function PaginaInicio() {
-  const usuario = await exigirAcceso();
   const supabase = await crearClienteServidor();
 
   const { data: proximoPartido, error } = await supabase
@@ -29,17 +27,13 @@ export default async function PaginaInicio() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold tracking-tight">
-        {usuario.jugador ? `Hola, ${usuario.jugador.nombre}` : "Hola"}
-      </h1>
-
       <section aria-labelledby="titulo-proximo-partido">
-        <h2
+        <h1
           id="titulo-proximo-partido"
-          className="mb-3 text-sm font-medium text-muted-foreground"
+          className="mb-4 text-2xl font-semibold tracking-tight"
         >
           Próximo partido
-        </h2>
+        </h1>
 
         {proximoPartido ? (
           <Card>
