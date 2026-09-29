@@ -1,0 +1,200 @@
+import "server-only";
+
+import { esIdValido } from "@/lib/ids";
+import type { Partido } from "@/lib/partidos";
+import type { EstadoJugador, Posicion } from "@/lib/plantilla";
+import { crearClienteServidor } from "@/lib/supabase/servidor";
+
+export type Jugador = {
+  id: string;
+  nombre: string;
+  apellidos: string;
+  dorsal: number;
+  posicion: Posicion;
+  /** False si está de baja. */
+  activo: boolean;
+  /**
+   * Estado detallado (lesionado, sancionado…): solo lo ve el administrador.
+   * Que un jugador esté lesionado es un dato de salud y no se publica; para
+   * el público es null.
+   */
+  estado: EstadoJugador | null;
+};
+
+const COLUMNAS_PUBLICAS = "id, nombre, apellidos, dorsal, posicion, activo";
+const COLUMNAS_ADMINISTRADOR = "id, nombre, apellidos, dorsal, posicion, estado";
+
+type FilaPublica = {
+  id: string | null;
+  nombre: string | null;
+  apellidos: string | null;
+  dorsal: number | null;
+  posicion: Posicion | null;
+  activo: boolean | null;
+};
+
+/**
+ * En las vistas, los tipos generados marcan todas las columnas como
+ * opcionales aunque en la tabla no lo sean: aquí se descartan esos casos.
+ */
+function desdeVistaPublica(fila: FilaPublica): Jugador | null {
+  const { id, nombre, apellidos, dorsal, posicion, activo } = fila;
+  if (!id || !nombre || !apellidos || !dorsal || !posicion || activo === null) {
+    return null;
+  }
+  return { id, nombre, apellidos, dorsal, posicion, activo, estado: null };
+}
+
+/**
+ * La plantilla, ordenada por dorsal. El administrador la lee de la tabla (con
+ * el estado); el público, de la vista jugadores_publicos.
+ */
+export async function cargarPlantilla(
+  esAdministrador: boolean,
+): Promise<Jugador[]> {
+  const supabase = await crearClienteServidor();
+
+  if (esAdministrador) {
+    const { data, error } = await supabase
+      .from("jugadores")
+      .select(COLUMNAS_ADMINISTRADOR)
+      .order("dorsal");
+
+    if (error) {
+      throw new Error(`No se ha podido cargar la plantilla: ${error.message}`);
+    }
+
+    return data.map((jugador) => ({
+      ...jugador,
+      activo: jugador.estado !== "baja",
+    }));
+  }
+
+  const { data, error } = await supabase
+    .from("jugadores_publicos")
+    .select(COLUMNAS_PUBLICAS)
+    .order("dorsal");
+
+  if (error) {
+    throw new Error(`No se ha podido cargar la plantilla: ${error.message}`);
+  }
+
+  return data.flatMap((fila) => desdeVistaPublica(fila) ?? []);
+}
+
+/** Un jugador, o null si no existe. */
+export async function cargarJugador(
+  esAdministrador: boolean,
+  id: string,
+): Promise<Jugador | null> {
+  if (!esIdValido(id)) {
+    return null;
+  }
+
+  const supabase = await crearClienteServidor();
+
+  if (esAdministrador) {
+    const { data, error } = await supabase
+      .from("jugadores")
+      .select(COLUMNAS_ADMINISTRADOR)
+      .eq("id", id)
+      .maybeSingle();
+
+    if (error) {
+      throw new Error(`No se ha podido cargar el jugador: ${error.message}`);
+    }
+
+    return data && { ...data, activo: data.estado !== "baja" };
+  }
+
+  const { data, error } = await supabase
+    .from("jugadores_publicos")
+    .select(COLUMNAS_PUBLICAS)
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(`No se ha podido cargar el jugador: ${error.message}`);
+  }
+
+  return data && desdeVistaPublica(data);
+}
+
+/**
+ * Si el jugador tiene estadísticas registradas en algún partido. Con
+ * historial no se le puede borrar (la base de datos tampoco lo permite): se
+ * le da de baja.
+ */
+export async function tieneHistorial(jugadorId: string): Promise<boolean> {
+  const supabase = await crearClienteServidor();
+  const { count, error } = await supabase
+    .from("estadisticas_partido")
+    .select("id", { count: "exact", head: true })
+    .eq("jugador_id", jugadorId);
+
+  if (error) {
+    throw new Error(`No se ha podido consultar el historial: ${error.message}`);
+  }
+
+  return (count ?? 0) > 0;
+}
+
+/** Nombre y apellidos de unos jugadores, por su id (también los de baja). */
+export async function cargarNombres(
+  ids: string[],
+): Promise<Map<string, string>> {
+  if (ids.length === 0) {
+    return new Map();
+  }
+
+  const supabase = await crearClienteServidor();
+  const { data, error } = await supabase
+    .from("jugadores_publicos")
+    .select("id, nombre, apellidos")
+    .in("id", ids);
+
+  if (error) {
+    throw new Error(`No se han podido cargar los jugadores: ${error.message}`);
+  }
+
+  return new Map(
+    data.flatMap(({ id, nombre, apellidos }) =>
+      id && nombre && apellidos ? [[id, `${nombre} ${apellidos}`]] : [],
+    ),
+  );
+}
+
+export type PartidoDelJugador = {
+  partido: Partido;
+  titular: boolean;
+  minutos: number;
+  goles: number;
+  asistencias: number;
+  tarjetas_amarillas: number;
+  tarjeta_roja: boolean;
+};
+
+/**
+ * Los partidos jugados en los que un jugador estuvo en la alineación, del
+ * más reciente al más antiguo, con lo que hizo en cada uno.
+ */
+export async function cargarPartidosDelJugador(
+  jugadorId: string,
+): Promise<PartidoDelJugador[]> {
+  const supabase = await crearClienteServidor();
+  const { data, error } = await supabase
+    .from("estadisticas_partido")
+    .select(
+      "titular, minutos, goles, asistencias, tarjetas_amarillas, tarjeta_roja, partido:partidos!inner(id, rival, fecha_hora, campo, condicion, competicion, goles_favor, goles_contra, estado)",
+    )
+    .eq("jugador_id", jugadorId)
+    .eq("partido.estado", "jugado");
+
+  if (error) {
+    throw new Error(`No se han podido cargar sus partidos: ${error.message}`);
+  }
+
+  return data.sort((a, b) =>
+    b.partido.fecha_hora.localeCompare(a.partido.fecha_hora),
+  );
+}
