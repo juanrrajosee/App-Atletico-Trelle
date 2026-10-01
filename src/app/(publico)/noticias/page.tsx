@@ -1,9 +1,13 @@
 import { Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ListaNoticias } from "@/components/noticias/lista-noticias";
+import {
+  ListaNoticias,
+  NoticiaDestacada,
+} from "@/components/noticias/lista-noticias";
 import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
+import { estadoNoticia } from "@/lib/noticias";
 import { cargarNoticias } from "./datos";
 
 export const metadata: Metadata = {
@@ -13,6 +17,11 @@ export const metadata: Metadata = {
 export default async function PaginaNoticias() {
   const administrador = esAdministrador(await obtenerUsuarioActual());
   const noticias = await cargarNoticias(administrador);
+  // La más reciente va destacada. Al administrador le pueden salir antes
+  // borradores o programadas: entonces no se destaca ninguna.
+  const [primera, ...resto] = noticias;
+  const destacada =
+    primera && estadoNoticia(primera) === "publicada" ? primera : null;
 
   return (
     <div className="flex flex-col gap-6">
@@ -32,6 +41,11 @@ export default async function PaginaNoticias() {
         <p className="rounded-xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
           Todavía no hay noticias.
         </p>
+      ) : destacada ? (
+        <>
+          <NoticiaDestacada noticia={destacada} />
+          {resto.length > 0 && <ListaNoticias noticias={resto} />}
+        </>
       ) : (
         <ListaNoticias noticias={noticias} />
       )}

@@ -35,6 +35,33 @@ export function ListaNoticias({ noticias }: { noticias: Noticia[] }) {
 }
 
 /**
+ * La noticia más reciente, en grande y con los colores del club, encima de
+ * la lista.
+ */
+export function NoticiaDestacada({ noticia }: { noticia: Noticia }) {
+  return (
+    <Link
+      href={`/noticias/${noticia.id}`}
+      className="flex flex-col gap-2 overflow-hidden rounded-2xl bg-[linear-gradient(110deg,var(--club-granate)_58%,#801b29_58%)] px-5 py-5 text-white shadow-sm active:opacity-90"
+    >
+      <span className="text-xs tracking-[0.2em] text-white/80 uppercase">
+        Lo último · <FechaNoticia noticia={noticia} />
+      </span>
+      <span className="font-display text-2xl leading-tight font-semibold">
+        {noticia.titulo}
+      </span>
+      <span className="line-clamp-3 text-sm text-white/90">
+        {resumenDe(noticia)}
+      </span>
+      <span className="mt-1 flex items-center gap-1 text-sm font-medium">
+        Leer la noticia
+        <ChevronRight className="size-4" aria-hidden />
+      </span>
+    </Link>
+  );
+}
+
+/**
  * La fecha de publicación o, para el administrador, si es un borrador o
  * está programada.
  */
