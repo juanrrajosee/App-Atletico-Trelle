@@ -51,6 +51,12 @@ const formatoFechaConAno = new Intl.DateTimeFormat("es-ES", {
   year: "numeric",
 });
 
+const formatoMes = new Intl.DateTimeFormat("es-ES", {
+  timeZone: ZONA_HORARIA,
+  month: "long",
+  year: "numeric",
+});
+
 const formatoHora = new Intl.DateTimeFormat("es-ES", {
   timeZone: ZONA_HORARIA,
   hour: "2-digit",
@@ -188,4 +194,9 @@ export function formatearCuantoFalta(fechaIso: string) {
   if (dias === 0) return "Hoy";
   if (dias === 1) return "Mañana";
   return `Faltan ${dias} días`;
+}
+
+/** El mes de una fecha en España, para agrupar: "Octubre de 2026". */
+export function formatearMes(fechaIso: string) {
+  return conMayuscula(formatoMes.format(new Date(fechaIso)));
 }
