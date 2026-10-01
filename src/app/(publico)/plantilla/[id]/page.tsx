@@ -41,7 +41,7 @@ export default async function PaginaJugador({
 
       {/* Como los carteles del club: los dos granates de la camiseta, el
           dorsal en grande y el escudo en la esquina. */}
-      <header className="relative flex flex-col gap-3 overflow-hidden rounded-2xl bg-[linear-gradient(110deg,var(--club-granate)_58%,#801b29_58%)] p-5 text-white shadow-sm">
+      <header className="relative flex flex-col gap-3 overflow-hidden rounded-2xl fondo-camiseta p-5 text-white shadow-sm">
         <Escudo tamano={44} decorativo className="absolute top-4 right-4" />
         <p className="font-display text-7xl leading-none font-semibold tabular-nums">
           <span className="sr-only">Dorsal </span>

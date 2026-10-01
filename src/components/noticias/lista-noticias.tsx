@@ -53,7 +53,7 @@ export function NoticiaDestacada({ noticia }: { noticia: Noticia }) {
   return (
     <Link
       href={`/noticias/${noticia.id}`}
-      className="flex flex-col overflow-hidden rounded-2xl bg-[linear-gradient(110deg,var(--club-granate)_58%,#801b29_58%)] text-white shadow-sm active:opacity-90"
+      className="flex flex-col overflow-hidden rounded-2xl fondo-camiseta text-white shadow-sm active:opacity-90"
     >
       {noticia.foto && (
         <FotoNoticia

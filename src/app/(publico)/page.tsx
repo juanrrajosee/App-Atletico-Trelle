@@ -110,7 +110,7 @@ export default async function PaginaInicio({ searchParams }: PageProps<"/">) {
  */
 function Portada() {
   return (
-    <section className="-mx-4 -mt-6 flex flex-col items-center gap-3 bg-[linear-gradient(110deg,var(--club-granate)_55%,#801b29_55%)] px-4 pt-6 pb-8 text-center text-white sm:rounded-b-2xl">
+    <section className="-mx-4 -mt-6 flex flex-col items-center gap-3 fondo-camiseta px-4 pt-6 pb-8 text-center text-white sm:rounded-b-2xl">
       <Escudo tamano={104} decorativo inmediato className="drop-shadow-lg" />
       <div>
         <h1 className="font-display text-3xl font-semibold tracking-wide uppercase">
