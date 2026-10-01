@@ -18,8 +18,9 @@ export type FilaClasificacion = {
 
 /**
  * Una clasificación de jugadores, ya ordenada de mejor a peor. Quien empata
- * comparte puesto, y el primero (o los primeros) llevan una copa. Cada fila
- * lleva a la ficha del jugador.
+ * comparte puesto, y el primero (o los primeros) llevan una copa y van
+ * destacados en granate (en claro y en oscuro: es el color del club). Cada
+ * fila lleva a la ficha del jugador.
  */
 export function Clasificacion({
   titulo,
@@ -45,21 +46,25 @@ export function Clasificacion({
         {filas.slice(0, maximo).map((fila) => {
           const puesto =
             filas.findIndex((otra) => otra.clave === fila.clave) + 1;
+          const lider = copa && puesto === 1;
           return (
             <li key={fila.jugadorId}>
               <Link
                 href={`/plantilla/${fila.jugadorId}`}
-                className="flex min-h-14 items-center gap-3 px-4 py-2 active:bg-accent"
+                className={cn(
+                  "flex min-h-14 items-center gap-3 px-4 py-2",
+                  lider
+                    ? "bg-granate text-white active:bg-granate/90"
+                    : "active:bg-accent",
+                )}
               >
                 <span
                   className={cn(
                     "flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold tabular-nums",
-                    copa && puesto === 1
-                      ? "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300"
-                      : "bg-muted",
+                    lider ? "bg-white text-granate" : "bg-muted",
                   )}
                 >
-                  {copa && puesto === 1 ? (
+                  {lider ? (
                     <>
                       <Trophy className="size-4" aria-hidden />
                       <span className="sr-only">1</span>
@@ -69,14 +74,33 @@ export function Clasificacion({
                   )}
                 </span>
                 <span className="flex min-w-0 flex-1 flex-col">
-                  <span className="truncate font-medium">{fila.nombre}</span>
+                  <span
+                    className={cn(
+                      "truncate",
+                      lider
+                        ? "font-display text-lg font-semibold tracking-wide uppercase"
+                        : "font-medium",
+                    )}
+                  >
+                    {fila.nombre}
+                  </span>
                   {fila.detalle && (
-                    <span className="text-xs text-muted-foreground">
+                    <span
+                      className={cn(
+                        "text-xs",
+                        lider ? "text-white/80" : "text-muted-foreground",
+                      )}
+                    >
                       {fila.detalle}
                     </span>
                   )}
                 </span>
-                <span className="text-sm text-muted-foreground tabular-nums">
+                <span
+                  className={cn(
+                    "text-sm tabular-nums",
+                    lider ? "font-medium text-white" : "text-muted-foreground",
+                  )}
+                >
                   {fila.valor}
                 </span>
               </Link>
