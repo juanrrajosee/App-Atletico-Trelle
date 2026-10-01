@@ -173,3 +173,19 @@ export function desdeHoraDeEspana(fecha: string, hora: string) {
   instante = comoSiFueraUtc - desfaseEnMinutos(instante) * 60_000;
   return new Date(instante).toISOString();
 }
+
+/**
+ * Cuánto falta para un día, contado en días de España: "Hoy", "Mañana" o
+ * "Faltan 5 días". Null si ese día ya ha pasado.
+ */
+export function formatearCuantoFalta(fechaIso: string) {
+  const dia = Date.parse(`${aHoraDeEspana(fechaIso).fecha}T00:00:00Z`);
+  const hoy = Date.parse(
+    `${aHoraDeEspana(new Date().toISOString()).fecha}T00:00:00Z`,
+  );
+  const dias = Math.round((dia - hoy) / (24 * 60 * 60 * 1000));
+  if (dias < 0) return null;
+  if (dias === 0) return "Hoy";
+  if (dias === 1) return "Mañana";
+  return `Faltan ${dias} días`;
+}
