@@ -161,7 +161,7 @@ export function EditorAlineacion({
       )}
 
       {/* Siempre a mano encima de la barra de navegación: la lista es larga. */}
-      <div className="sticky bottom-[calc(4rem+env(safe-area-inset-bottom))] -mx-4 flex flex-col gap-3 border-t bg-background px-4 py-3">
+      <div className="sticky bottom-[calc(4rem+env(safe-area-inset-bottom))] -mx-4 flex flex-col gap-3 border-t bg-background px-4 py-3 lg:bottom-0">
         <p className="text-sm text-muted-foreground">
           {titulares} {titulares === 1 ? "titular" : "titulares"} ·{" "}
           {suplentes} {suplentes === 1 ? "suplente" : "suplentes"} ·{" "}

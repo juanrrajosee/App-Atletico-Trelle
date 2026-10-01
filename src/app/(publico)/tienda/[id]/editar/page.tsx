@@ -23,7 +23,7 @@ export default async function PaginaEditarProducto({
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="pagina-estrecha flex flex-col gap-6">
       <h1 className="text-2xl font-semibold tracking-tight">
         Editar {producto.nombre}
       </h1>

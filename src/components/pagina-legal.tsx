@@ -13,7 +13,7 @@ export function PaginaLegal({
   children: ReactNode;
 }) {
   return (
-    <article className="flex flex-col gap-6 leading-relaxed">
+    <article className="pagina-estrecha flex flex-col gap-6 leading-relaxed">
       <header>
         <h1 className="text-2xl font-semibold tracking-tight">{titulo}</h1>
         <p className="text-sm text-muted-foreground">

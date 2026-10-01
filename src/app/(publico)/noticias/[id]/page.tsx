@@ -49,7 +49,7 @@ export default async function PaginaNoticia({
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="pagina-estrecha flex flex-col gap-6">
       <Link
         href="/noticias"
         className="-ml-1 flex w-fit items-center gap-1 text-sm text-muted-foreground"

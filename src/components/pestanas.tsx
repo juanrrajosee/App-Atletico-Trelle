@@ -21,7 +21,7 @@ function Pestanas({
   return (
     <nav
       aria-label={etiqueta}
-      className="grid gap-1 rounded-lg bg-muted p-1"
+      className="grid gap-1 rounded-lg bg-muted p-1 lg:max-w-md"
       style={{ gridTemplateColumns: `repeat(${pestanas.length}, 1fr)` }}
     >
       {pestanas.map(({ href, etiqueta: texto }) => (

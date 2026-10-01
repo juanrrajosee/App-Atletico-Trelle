@@ -257,7 +257,7 @@ src/
 │   ├── boton-borrar.tsx   # Botón de borrar con confirmación
 │   ├── campo-formulario.tsx
 │   ├── clasificacion.tsx  # Lista de jugadores con puestos (y empates)
-│   ├── navegacion-inferior.tsx
+│   ├── navegacion.tsx     # Secciones: abajo en el móvil, en la cabecera en el ordenador
 │   ├── pagina-legal.tsx   # Piezas de las páginas de privacidad y aviso legal
 │   ├── pestanas.tsx       # Pestañas de Equipo y de Club
 │   ├── selector-temporada.tsx

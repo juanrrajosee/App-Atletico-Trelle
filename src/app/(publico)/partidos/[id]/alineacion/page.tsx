@@ -55,7 +55,7 @@ export default async function PaginaAlineacion({
   const [local, visitante] = equipos(partido);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="pagina-estrecha flex flex-col gap-6">
       {volver}
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Alineación</h1>

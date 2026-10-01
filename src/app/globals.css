@@ -121,6 +121,12 @@
   );
 }
 
+/* En el ordenador, las páginas de leer o de rellenar (una noticia, un
+   formulario, los textos legales…) se quedan estrechas y centradas. */
+@utility pagina-estrecha {
+  @apply mx-auto w-full max-w-2xl;
+}
+
 /* Los títulos pequeños que agrupan una lista (Porteros, Goleadores,
    Próximos…). */
 @utility titulo-apartado {

@@ -22,7 +22,7 @@ export default async function PaginaEditarJugador({
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="pagina-estrecha flex flex-col gap-6">
       <h1 className="text-2xl font-semibold tracking-tight">
         Editar a {nombreVisible(jugador)}
       </h1>
