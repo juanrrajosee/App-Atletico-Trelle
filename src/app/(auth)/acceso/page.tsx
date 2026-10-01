@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Escudo } from "@/components/escudo";
 import { Card, CardContent } from "@/components/ui/card";
 import { obtenerUsuarioActual } from "@/lib/auth";
 import { rutaDeVuelta } from "@/lib/rutas";
@@ -38,6 +39,12 @@ export default async function PaginaAcceso({
     <main className="flex flex-1 flex-col items-center justify-center px-4 py-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
         <div className="text-center">
+          <Escudo
+            tamano={88}
+            className="mx-auto mb-3"
+            decorativo
+            inmediato
+          />
           <h1 className="text-2xl font-semibold tracking-tight">
             Atlético Trelle
           </h1>

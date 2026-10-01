@@ -1,5 +1,6 @@
 import { CircleUser } from "lucide-react";
 import Link from "next/link";
+import { Escudo } from "@/components/escudo";
 import { NavegacionInferior } from "@/components/navegacion-inferior";
 import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
@@ -10,19 +11,32 @@ export default async function LayoutPublico({ children }: LayoutProps<"/">) {
 
   return (
     <div className="flex flex-1 flex-col">
-      <header className="sticky top-0 z-10 border-b bg-background">
+      {/* Granate en claro y en oscuro: es el color del club. */}
+      <header className="sticky top-0 z-10 bg-granate text-white shadow-sm">
         <div className="mx-auto flex h-14 max-w-2xl items-center justify-between gap-4 px-4">
-          <Link href="/" className="font-semibold tracking-tight whitespace-nowrap">
+          <Link
+            href="/"
+            className="flex items-center gap-2 font-display text-lg font-semibold tracking-wide whitespace-nowrap uppercase"
+          >
+            <Escudo tamano={36} decorativo inmediato />
             Atlético Trelle
           </Link>
           {usuario ? (
             <div className="flex items-center gap-1">
               {esAdministrador(usuario) && (
-                <Button asChild variant="ghost" className="h-10 px-2 text-muted-foreground">
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="h-10 px-2 text-white/80 hover:bg-white/10 hover:text-white"
+                >
                   <Link href="/administracion">Gestión</Link>
                 </Button>
               )}
-              <Button asChild variant="ghost" className="h-10 px-2">
+              <Button
+                asChild
+                variant="ghost"
+                className="h-10 px-2 text-white hover:bg-white/10 hover:text-white"
+              >
                 <Link href="/cuenta">
                   <CircleUser aria-hidden />
                   Mi cuenta
@@ -30,7 +44,10 @@ export default async function LayoutPublico({ children }: LayoutProps<"/">) {
               </Button>
             </div>
           ) : (
-            <Button asChild variant="outline" className="h-10">
+            <Button
+              asChild
+              className="h-10 bg-white text-granate hover:bg-white/90"
+            >
               <Link href="/acceso">Entrar</Link>
             </Button>
           )}
