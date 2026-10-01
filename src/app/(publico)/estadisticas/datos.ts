@@ -33,6 +33,30 @@ export type Balance = {
   golesContra: number;
 };
 
+/** Los partidos jugados (con resultado) de una temporada. */
+function jugadosEn(partidos: Partido[], temporada: number) {
+  return partidos.filter(
+    (partido) =>
+      partido.estado === "jugado" &&
+      desenlace(partido) !== null &&
+      temporadaDe(partido.fecha_hora) === temporada,
+  );
+}
+
+/**
+ * Los últimos partidos jugados de una temporada, del más antiguo al más
+ * reciente.
+ */
+export function ultimosResultados(
+  partidos: Partido[],
+  temporada: number,
+  cuantos = 5,
+): Partido[] {
+  return jugadosEn(partidos, temporada)
+    .sort((a, b) => Date.parse(a.fecha_hora) - Date.parse(b.fecha_hora))
+    .slice(-cuantos);
+}
+
 /** Balance del equipo con los partidos jugados de una temporada. */
 export function calcularBalance(partidos: Partido[], temporada: number): Balance {
   const balance: Balance = {
@@ -44,15 +68,8 @@ export function calcularBalance(partidos: Partido[], temporada: number): Balance
     golesContra: 0,
   };
 
-  for (const partido of partidos) {
+  for (const partido of jugadosEn(partidos, temporada)) {
     const resultado = desenlace(partido);
-    if (
-      partido.estado !== "jugado" ||
-      !resultado ||
-      temporadaDe(partido.fecha_hora) !== temporada
-    ) {
-      continue;
-    }
     balance.jugados += 1;
     balance.golesFavor += partido.goles_favor ?? 0;
     balance.golesContra += partido.goles_contra ?? 0;

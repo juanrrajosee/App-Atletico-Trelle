@@ -146,7 +146,7 @@ function GrupoAlineacion({
 
   return (
     <section>
-      <h2 className="mb-2 text-sm font-medium text-muted-foreground">
+      <h2 className="mb-2 titulo-apartado">
         {titulo}
       </h2>
       <ul className="divide-y overflow-hidden rounded-xl border bg-card">

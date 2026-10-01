@@ -40,7 +40,7 @@ export function Clasificacion({
 
   return (
     <section className="flex flex-col gap-2">
-      <h3 className="text-sm font-medium text-muted-foreground">{titulo}</h3>
+      <h3 className="titulo-apartado">{titulo}</h3>
       <ol className="divide-y overflow-hidden rounded-xl border bg-card">
         {filas.slice(0, maximo).map((fila) => {
           const puesto =

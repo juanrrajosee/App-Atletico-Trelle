@@ -102,10 +102,18 @@
     @apply border-border outline-ring/50;
   }
 
-  /* Los títulos de cada página, con la letra de los carteles del club. */
-  h1 {
-    @apply font-display tracking-wide;
+  /* Los títulos de página y de sección, con la letra de los carteles del
+     club. */
+  h1,
+  h2 {
+    @apply font-display;
   }
+}
+
+/* Los títulos pequeños que agrupan una lista (Porteros, Goleadores,
+   Próximos…). */
+@utility titulo-apartado {
+  @apply font-display text-sm font-medium tracking-wider text-primary uppercase;
 }
 
 body {

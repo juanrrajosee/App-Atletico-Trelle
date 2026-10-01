@@ -1,14 +1,25 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Clasificacion, type FilaClasificacion } from "@/components/clasificacion";
 import { PestanasEquipo } from "@/components/pestanas";
 import { SelectorTemporada } from "@/components/selector-temporada";
+import {
+  COLOR_DESENLACE,
+  NOMBRE_DESENLACE,
+  desenlace,
+  equipos,
+  titulo,
+  type Partido,
+} from "@/lib/partidos";
 import { nombreTemporada, temporadaPedida } from "@/lib/temporadas";
 import { contar } from "@/lib/textos";
+import { cn } from "@/lib/utils";
 import { cargarPartidos } from "../partidos/datos";
 import { cargarNombres } from "../plantilla/datos";
 import {
   calcularBalance,
   cargarEstadisticas,
+  ultimosResultados,
   type Balance,
   type EstadisticasJugador,
 } from "./datos";
@@ -30,6 +41,7 @@ export default async function PaginaEstadisticas({
     estadisticas.map(({ jugador_id }) => jugador_id),
   );
   const balance = calcularBalance(partidos, temporada);
+  const racha = ultimosResultados(partidos, temporada);
 
   /**
    * Una clasificación: los jugadores con algo que contar, de más a menos (y
@@ -75,7 +87,7 @@ export default async function PaginaEstadisticas({
           Todavía no hay partidos jugados en esta temporada.
         </p>
       ) : (
-        <TarjetaBalance balance={balance} />
+        <TarjetaBalance balance={balance} racha={racha} />
       )}
 
       {estadisticas.length > 0 && (
@@ -159,7 +171,13 @@ export default async function PaginaEstadisticas({
   );
 }
 
-function TarjetaBalance({ balance }: { balance: Balance }) {
+function TarjetaBalance({
+  balance,
+  racha,
+}: {
+  balance: Balance;
+  racha: Partido[];
+}) {
   const datos = [
     { etiqueta: "Jugados", valor: balance.jugados },
     { etiqueta: "Victorias", valor: balance.victorias },
@@ -171,7 +189,7 @@ function TarjetaBalance({ balance }: { balance: Balance }) {
 
   return (
     <section aria-labelledby="titulo-balance" className="flex flex-col gap-2">
-      <h2 id="titulo-balance" className="text-sm font-medium text-muted-foreground">
+      <h2 id="titulo-balance" className="titulo-apartado">
         Atlético Trelle
       </h2>
       <dl className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border bg-border">
@@ -181,10 +199,54 @@ function TarjetaBalance({ balance }: { balance: Balance }) {
             className="flex flex-col items-center gap-1 bg-card px-2 py-3 text-center"
           >
             <dt className="text-xs text-muted-foreground">{etiqueta}</dt>
-            <dd className="text-2xl font-semibold tabular-nums">{valor}</dd>
+            <dd className="font-display text-3xl font-semibold tabular-nums">
+              {valor}
+            </dd>
           </div>
         ))}
       </dl>
+      <Racha partidos={racha} />
     </section>
+  );
+}
+
+/**
+ * Los últimos resultados, del más antiguo al más reciente: una V, una E o
+ * una D por partido, que llevan a cada uno.
+ */
+function Racha({ partidos }: { partidos: Partido[] }) {
+  return (
+    <div className="flex flex-col gap-2 rounded-xl border bg-card px-4 py-3">
+      <p className="text-xs text-muted-foreground">
+        Últimos partidos, del más antiguo al más reciente
+      </p>
+      <ol className="flex gap-2">
+        {partidos.map((partido) => {
+          // Solo llegan partidos jugados con resultado.
+          const resultado = desenlace(partido) ?? "empate";
+          const nombre = NOMBRE_DESENLACE[resultado];
+          // Los goles en el orden del título: primero los del que juega en casa.
+          const [local, visitante] = equipos(partido);
+          const marcador = `${local.goles}–${visitante.goles}`;
+          return (
+            <li key={partido.id}>
+              <Link
+                href={`/partidos/${partido.id}`}
+                title={`${titulo(partido)}: ${marcador}`}
+                className={cn(
+                  "flex size-11 items-center justify-center rounded-full font-display text-lg font-semibold",
+                  COLOR_DESENLACE[resultado],
+                )}
+              >
+                <span aria-hidden>{nombre.charAt(0)}</span>
+                <span className="sr-only">
+                  {nombre}: {titulo(partido)}, {local.goles} a {visitante.goles}
+                </span>
+              </Link>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
   );
 }
