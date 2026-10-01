@@ -12,6 +12,7 @@ import { notFound } from "next/navigation";
 import { BotonBorrar } from "@/components/boton-borrar";
 import { EtiquetaPartido } from "@/components/partidos/etiqueta-partido";
 import { Marcador } from "@/components/partidos/marcador";
+import { Dorsal } from "@/components/plantilla/dorsal";
 import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
 import { formatearFechaHora } from "@/lib/fechas";
@@ -146,9 +147,7 @@ function GrupoAlineacion({
 
   return (
     <section>
-      <h2 className="mb-2 titulo-apartado">
-        {titulo}
-      </h2>
+      <h2 className="mb-2 titulo-apartado">{titulo}</h2>
       <ul className="divide-y overflow-hidden rounded-xl border bg-card">
         {jugadores.map((jugador) => (
           <li key={jugador.jugador_id}>
@@ -156,6 +155,7 @@ function GrupoAlineacion({
               href={`/plantilla/${jugador.jugador_id}`}
               className="flex min-h-14 items-center gap-3 px-4 py-2 active:bg-accent"
             >
+              <Dorsal numero={jugador.dorsal} />
               <div className="flex min-w-0 flex-1 flex-col">
                 <span className="truncate font-medium">
                   {nombreVisible(jugador)}
