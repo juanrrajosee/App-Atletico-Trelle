@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
 import { formatearFechaHora } from "@/lib/fechas";
 import { NOMBRE_CONDICION, titulo } from "@/lib/partidos";
-import { NOMBRE_POSICION } from "@/lib/plantilla";
+import { NOMBRE_POSICION, nombreVisible } from "@/lib/plantilla";
 import { cn } from "@/lib/utils";
 import { borrarPartido } from "../acciones";
 import { cargarAlineacion, cargarPartido, type Participacion } from "../datos";
@@ -71,10 +71,10 @@ export default async function PaginaPartido({
           <p className="text-center text-sm text-muted-foreground">
             <span className="sr-only">Goles: </span>
             {goleadores
-              .map(({ nombre, apellidos, goles }) =>
-                goles > 1
-                  ? `${nombre} ${apellidos} (${goles})`
-                  : `${nombre} ${apellidos}`,
+              .map((jugador) =>
+                jugador.goles > 1
+                  ? `${nombreVisible(jugador)} (${jugador.goles})`
+                  : nombreVisible(jugador),
               )
               .join(", ")}
           </p>
@@ -158,7 +158,7 @@ function GrupoAlineacion({
             >
               <div className="flex min-w-0 flex-1 flex-col">
                 <span className="truncate font-medium">
-                  {jugador.nombre} {jugador.apellidos}
+                  {nombreVisible(jugador)}
                 </span>
                 <span className="truncate text-xs text-muted-foreground">
                   {resumen(jugador)}

@@ -6,7 +6,11 @@ import { Dorsal } from "@/components/plantilla/dorsal";
 import { EtiquetaEstado } from "@/components/plantilla/etiqueta-estado";
 import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
-import { NOMBRE_POSICION_PLURAL, POSICIONES } from "@/lib/plantilla";
+import {
+  NOMBRE_POSICION_PLURAL,
+  POSICIONES,
+  nombreVisible,
+} from "@/lib/plantilla";
 import { cargarPlantilla, type Jugador } from "./datos";
 
 export const metadata: Metadata = {
@@ -87,8 +91,15 @@ function GrupoJugadores({
               className="flex min-h-14 items-center gap-3 px-4 py-2 active:bg-accent"
             >
               <Dorsal numero={jugador.dorsal} />
-              <span className="min-w-0 flex-1 truncate font-medium">
-                {jugador.nombre} {jugador.apellidos}
+              <span className="flex min-w-0 flex-1 flex-col">
+                <span className="truncate font-medium">
+                  {nombreVisible(jugador)}
+                </span>
+                {jugador.apodo && (
+                  <span className="truncate text-xs text-muted-foreground">
+                    {jugador.nombre} {jugador.apellidos}
+                  </span>
+                )}
               </span>
               {jugador.estado === "lesionado" ||
               jugador.estado === "sancionado" ? (

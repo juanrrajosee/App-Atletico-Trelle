@@ -78,6 +78,25 @@ export function FormularioJugador({
         />
       </CampoFormulario>
 
+      <CampoFormulario id="apodo" etiqueta="Apodo (opcional)" error={errores.apodo}>
+        <Input
+          id="apodo"
+          name="apodo"
+          autoComplete="off"
+          autoCapitalize="words"
+          defaultValue={valores.apodo}
+          className="h-11"
+          aria-invalid={errores.apodo ? true : undefined}
+          aria-describedby={
+            errores.apodo ? "apodo-error apodo-ayuda" : "apodo-ayuda"
+          }
+        />
+        <p id="apodo-ayuda" className="text-xs text-muted-foreground">
+          Como se le conoce en el club. Si tiene, la aplicación le llama así, con
+          el nombre completo en su ficha.
+        </p>
+      </CampoFormulario>
+
       <div className="grid grid-cols-[6rem_1fr] gap-3">
         <CampoFormulario id="dorsal" etiqueta="Dorsal" error={errores.dorsal}>
           <Input

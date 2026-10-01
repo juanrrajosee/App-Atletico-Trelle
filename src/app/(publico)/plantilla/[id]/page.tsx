@@ -6,7 +6,7 @@ import { Escudo } from "@/components/escudo";
 import { EtiquetaEstado } from "@/components/plantilla/etiqueta-estado";
 import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
-import { NOMBRE_POSICION } from "@/lib/plantilla";
+import { NOMBRE_POSICION, nombreVisible } from "@/lib/plantilla";
 import { temporadaPedida } from "@/lib/temporadas";
 import { cargarJugador } from "../datos";
 import { SeccionBaja } from "./seccion-baja";
@@ -49,8 +49,13 @@ export default async function PaginaJugador({
         </p>
         <div className="flex min-w-0 flex-col gap-1">
           <h1 className="text-3xl leading-tight font-semibold uppercase">
-            {jugador.nombre} {jugador.apellidos}
+            {nombreVisible(jugador)}
           </h1>
+          {jugador.apodo && (
+            <p className="text-white/90">
+              {jugador.nombre} {jugador.apellidos}
+            </p>
+          )}
           <p className="text-sm tracking-[0.2em] text-white/80 uppercase">
             {NOMBRE_POSICION[jugador.posicion]}
           </p>

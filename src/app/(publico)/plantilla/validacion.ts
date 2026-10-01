@@ -5,6 +5,7 @@ import { ESTADOS_JUGADOR, POSICIONES } from "@/lib/plantilla";
 export type CampoJugador =
   | "nombre"
   | "apellidos"
+  | "apodo"
   | "dorsal"
   | "posicion"
   | "estado";
@@ -23,6 +24,12 @@ const esquemaJugador = z.object({
     .trim()
     .min(1, "Escribe los apellidos.")
     .max(80, "Como mucho 80 caracteres."),
+  // Opcional: vacío, sin apodo.
+  apodo: z
+    .string()
+    .trim()
+    .max(30, "Como mucho 30 caracteres.")
+    .transform((apodo) => apodo || null),
   dorsal: z
     .string()
     .trim()

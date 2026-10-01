@@ -105,6 +105,7 @@ export type Participacion = Pick<
 > & {
   nombre: string;
   apellidos: string;
+  apodo: string | null;
   dorsal: number;
   posicion: Posicion;
 };
@@ -136,7 +137,7 @@ export async function cargarAlineacion(
 
   const { data: jugadores, error: errorJugadores } = await supabase
     .from("jugadores_publicos")
-    .select("id, nombre, apellidos, dorsal, posicion")
+    .select("id, nombre, apellidos, apodo, dorsal, posicion")
     .in(
       "id",
       filas.map((fila) => fila.jugador_id),
@@ -167,6 +168,7 @@ export async function cargarAlineacion(
           ...fila,
           nombre: jugador.nombre,
           apellidos: jugador.apellidos,
+          apodo: jugador.apodo,
           dorsal: jugador.dorsal,
           posicion: jugador.posicion,
         },
@@ -182,7 +184,7 @@ export async function cargarAlineacion(
 
 export type JugadorAlineacion = Pick<
   Tables<"jugadores">,
-  "id" | "nombre" | "apellidos" | "dorsal" | "posicion" | "estado"
+  "id" | "nombre" | "apellidos" | "apodo" | "dorsal" | "posicion" | "estado"
 >;
 
 export type FilaGuardada = Pick<
@@ -210,7 +212,7 @@ export async function cargarEditorAlineacion(partidoId: string): Promise<{
   const [jugadores, filas] = await Promise.all([
     supabase
       .from("jugadores")
-      .select("id, nombre, apellidos, dorsal, posicion, estado")
+      .select("id, nombre, apellidos, apodo, dorsal, posicion, estado")
       .order("dorsal"),
     supabase
       .from("estadisticas_partido")

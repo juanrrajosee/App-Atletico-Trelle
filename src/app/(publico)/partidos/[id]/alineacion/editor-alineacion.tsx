@@ -13,7 +13,11 @@ import { EtiquetaEstado } from "@/components/plantilla/etiqueta-estado";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { NOMBRE_POSICION_PLURAL, POSICIONES } from "@/lib/plantilla";
+import {
+  NOMBRE_POSICION_PLURAL,
+  POSICIONES,
+  nombreVisible,
+} from "@/lib/plantilla";
 import { cn } from "@/lib/utils";
 import type { FilaGuardada, JugadorAlineacion } from "../../datos";
 import type { EstadoAlineacion, FilaAlineacion } from "./validacion";
@@ -219,7 +223,7 @@ function FilaJugador({
           {jugador.dorsal}
         </span>
         <span id={`${id}-nombre`} className="min-w-0 flex-1 truncate font-medium">
-          {jugador.nombre} {jugador.apellidos}
+          {nombreVisible(jugador)}
         </span>
         {jugador.estado !== "disponible" && (
           <EtiquetaEstado estado={jugador.estado} />

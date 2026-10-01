@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { obtenerUsuarioActual } from "@/lib/auth";
 import { formatearHasta } from "@/lib/fechas";
 import type { Partido } from "@/lib/partidos";
+import { nombreVisible } from "@/lib/plantilla";
 import {
   CANDIDATOS_CATEGORIA,
   CATEGORIAS_VOTACION,
@@ -93,7 +94,7 @@ export async function SeccionVotaciones({
   const misVotos = await cargarMisVotos(usuario, partido.id);
   const nombreDe = (jugadorId: string) => {
     const jugador = alineacion.find((fila) => fila.jugador_id === jugadorId);
-    return jugador ? `${jugador.nombre} ${jugador.apellidos}` : "un jugador";
+    return jugador ? nombreVisible(jugador) : "un jugador";
   };
 
   return (
@@ -124,9 +125,9 @@ export async function SeccionVotaciones({
         CATEGORIAS_VOTACION.map((categoria) => {
           const candidatos = alineacion
             .filter((jugador) => esCandidato(categoria, jugador))
-            .map(({ jugador_id, nombre, apellidos }) => ({
-              id: jugador_id,
-              nombre: `${nombre} ${apellidos}`,
+            .map((jugador) => ({
+              id: jugador.jugador_id,
+              nombre: nombreVisible(jugador),
             }));
           // Por ejemplo, si no salió ningún suplente.
           if (candidatos.length === 0) {
