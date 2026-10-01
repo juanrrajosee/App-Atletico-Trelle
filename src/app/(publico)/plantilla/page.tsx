@@ -53,16 +53,19 @@ export default async function PaginaPlantilla() {
         </p>
       )}
 
-      {POSICIONES.map((posicion) => (
-        <GrupoJugadores
-          key={posicion}
-          titulo={NOMBRE_POSICION_PLURAL[posicion]}
-          jugadores={activos.filter((jugador) => jugador.posicion === posicion)}
-        />
-      ))}
+      {/* En el ordenador, las posiciones en dos columnas. */}
+      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+        {POSICIONES.map((posicion) => (
+          <GrupoJugadores
+            key={posicion}
+            titulo={NOMBRE_POSICION_PLURAL[posicion]}
+            jugadores={activos.filter((jugador) => jugador.posicion === posicion)}
+          />
+        ))}
 
-      {/* Los que ya no están en la plantilla solo le interesan a quien la gestiona. */}
-      {administrador && <GrupoJugadores titulo="De baja" jugadores={deBaja} />}
+        {/* Los que ya no están en la plantilla solo le interesan a quien la gestiona. */}
+        {administrador && <GrupoJugadores titulo="De baja" jugadores={deBaja} />}
+      </div>
     </div>
   );
 }
