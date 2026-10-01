@@ -2,13 +2,20 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { Escudo } from "@/components/escudo";
 import { ListaNoticias } from "@/components/noticias/lista-noticias";
+import { Racha } from "@/components/partidos/racha";
 import { TarjetaPartido } from "@/components/partidos/tarjeta-partido";
 import { Badge } from "@/components/ui/badge";
 import { AvisoVotacion } from "@/components/votaciones/aviso-votacion";
 import { formatearCuantoFalta } from "@/lib/fechas";
+import { temporadaActual } from "@/lib/temporadas";
 import { cn } from "@/lib/utils";
+import { ultimosResultados } from "./estadisticas/datos";
 import { cargarNoticias } from "./noticias/datos";
-import { cargarProximoPartido, cargarUltimoResultado } from "./partidos/datos";
+import {
+  cargarPartidos,
+  cargarProximoPartido,
+  cargarUltimoResultado,
+} from "./partidos/datos";
 import { cargarVotacionesAbiertas } from "./votaciones/datos";
 
 const TITULO_SECCION =
@@ -18,14 +25,16 @@ export default async function PaginaInicio({ searchParams }: PageProps<"/">) {
   // Al borrar la cuenta se vuelve aquí con ?cuenta=borrada.
   const cuentaBorrada = (await searchParams).cuenta === "borrada";
 
-  const [proximoPartido, ultimoResultado, votacionesAbiertas, noticias] =
+  const [proximoPartido, ultimoResultado, votacionesAbiertas, noticias, partidos] =
     await Promise.all([
       cargarProximoPartido(),
       cargarUltimoResultado(),
       cargarVotacionesAbiertas(),
       // Solo las publicadas, también para el administrador.
       cargarNoticias(false, 3),
+      cargarPartidos(),
     ]);
+  const racha = ultimosResultados(partidos, temporadaActual());
 
   const cuantoFalta =
     proximoPartido && formatearCuantoFalta(proximoPartido.fecha_hora);
@@ -74,6 +83,12 @@ export default async function PaginaInicio({ searchParams }: PageProps<"/">) {
             Último resultado
           </h2>
           <TarjetaPartido partido={ultimoResultado} />
+          {/* Con un solo partido, la racha repetiría el último resultado. */}
+          {racha.length > 1 && (
+            <div className="mt-3">
+              <Racha partidos={racha} />
+            </div>
+          )}
         </section>
       )}
 
