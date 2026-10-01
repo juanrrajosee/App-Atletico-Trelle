@@ -48,7 +48,7 @@ export function NavegacionInferior() {
   return (
     <nav
       aria-label="Secciones"
-      className="fixed inset-x-0 bottom-0 z-10 border-t bg-background pb-[env(safe-area-inset-bottom)]"
+      className="fixed inset-x-0 bottom-0 z-10 border-t bg-card pb-[env(safe-area-inset-bottom)]"
     >
       <ul className="mx-auto flex max-w-2xl">
         {SECCIONES.map((seccion) => {
@@ -60,10 +60,11 @@ export function NavegacionInferior() {
                 href={href}
                 aria-current={activa ? "page" : undefined}
                 className={cn(
-                  "flex h-16 flex-col items-center justify-center gap-1 text-xs",
+                  // La raya de arriba marca la sección en la que se está.
+                  "flex h-16 flex-col items-center justify-center gap-1 border-t-2 text-xs",
                   activa
-                    ? "font-medium text-foreground"
-                    : "text-muted-foreground",
+                    ? "border-primary font-medium text-primary"
+                    : "border-transparent text-muted-foreground",
                 )}
               >
                 <Icono className="size-5" aria-hidden />

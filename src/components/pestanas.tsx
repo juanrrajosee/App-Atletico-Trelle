@@ -32,7 +32,7 @@ function Pestanas({
           className={cn(
             "flex h-10 items-center justify-center rounded-md text-sm",
             href === activa
-              ? "bg-background font-medium shadow-sm"
+              ? "bg-card font-medium text-primary shadow-sm"
               : "text-muted-foreground",
           )}
         >

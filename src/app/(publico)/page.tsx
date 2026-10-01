@@ -1,11 +1,18 @@
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { Escudo } from "@/components/escudo";
 import { ListaNoticias } from "@/components/noticias/lista-noticias";
 import { TarjetaPartido } from "@/components/partidos/tarjeta-partido";
+import { Badge } from "@/components/ui/badge";
 import { AvisoVotacion } from "@/components/votaciones/aviso-votacion";
+import { formatearCuantoFalta } from "@/lib/fechas";
+import { cn } from "@/lib/utils";
 import { cargarNoticias } from "./noticias/datos";
 import { cargarProximoPartido, cargarUltimoResultado } from "./partidos/datos";
 import { cargarVotacionesAbiertas } from "./votaciones/datos";
+
+const TITULO_SECCION =
+  "font-display text-xl font-semibold tracking-wide uppercase";
 
 export default async function PaginaInicio({ searchParams }: PageProps<"/">) {
   // Al borrar la cuenta se vuelve aquí con ?cuenta=borrada.
@@ -20,8 +27,13 @@ export default async function PaginaInicio({ searchParams }: PageProps<"/">) {
       cargarNoticias(false, 3),
     ]);
 
+  const cuantoFalta =
+    proximoPartido && formatearCuantoFalta(proximoPartido.fecha_hora);
+
   return (
     <div className="flex flex-col gap-8">
+      <Portada />
+
       {cuentaBorrada && (
         <p
           role="status"
@@ -36,12 +48,16 @@ export default async function PaginaInicio({ searchParams }: PageProps<"/">) {
       ))}
 
       <section aria-labelledby="titulo-proximo-partido">
-        <h1
-          id="titulo-proximo-partido"
-          className="mb-4 text-2xl font-semibold tracking-tight"
-        >
-          Próximo partido
-        </h1>
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <h2 id="titulo-proximo-partido" className={TITULO_SECCION}>
+            Próximo partido
+          </h2>
+          {cuantoFalta && (
+            <Badge className="border-transparent bg-primary text-primary-foreground">
+              {cuantoFalta}
+            </Badge>
+          )}
+        </div>
 
         {proximoPartido ? (
           <TarjetaPartido partido={proximoPartido} />
@@ -54,10 +70,7 @@ export default async function PaginaInicio({ searchParams }: PageProps<"/">) {
 
       {ultimoResultado && (
         <section aria-labelledby="titulo-ultimo-resultado">
-          <h2
-            id="titulo-ultimo-resultado"
-            className="mb-4 text-xl font-semibold tracking-tight"
-          >
+          <h2 id="titulo-ultimo-resultado" className={cn(TITULO_SECCION, "mb-4")}>
             Último resultado
           </h2>
           <TarjetaPartido partido={ultimoResultado} />
@@ -74,10 +87,7 @@ export default async function PaginaInicio({ searchParams }: PageProps<"/">) {
 
       {noticias.length > 0 && (
         <section aria-labelledby="titulo-noticias">
-          <h2
-            id="titulo-noticias"
-            className="mb-4 text-xl font-semibold tracking-tight"
-          >
+          <h2 id="titulo-noticias" className={cn(TITULO_SECCION, "mb-4")}>
             Últimas noticias
           </h2>
           <ListaNoticias noticias={noticias} />
@@ -91,5 +101,23 @@ export default async function PaginaInicio({ searchParams }: PageProps<"/">) {
         </section>
       )}
     </div>
+  );
+}
+
+/**
+ * La cabecera del inicio: el escudo sobre los dos granates de la camiseta,
+ * pegada a la barra de arriba.
+ */
+function Portada() {
+  return (
+    <section className="-mx-4 -mt-6 flex flex-col items-center gap-3 bg-[linear-gradient(110deg,var(--club-granate)_55%,#801b29_55%)] px-4 pt-6 pb-8 text-center text-white sm:rounded-b-2xl">
+      <Escudo tamano={104} decorativo inmediato className="drop-shadow-lg" />
+      <div>
+        <h1 className="font-display text-3xl font-semibold tracking-wide uppercase">
+          Atlético Trelle
+        </h1>
+        <p className="mt-1 text-sm text-white/80">#FamiliaRoxibranca</p>
+      </div>
+    </section>
   );
 }
