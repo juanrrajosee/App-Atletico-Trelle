@@ -1,3 +1,5 @@
+import { Shield } from "lucide-react";
+import { Escudo } from "@/components/escudo";
 import { formatearHora } from "@/lib/fechas";
 import { equipos, type Equipo, type Partido } from "@/lib/partidos";
 import { cn } from "@/lib/utils";
@@ -20,9 +22,9 @@ export function Marcador({
       <NombreEquipo equipo={local} grande={grande} />
       <p
         className={cn(
-          "text-center font-semibold whitespace-nowrap tabular-nums",
-          grande ? "text-4xl" : "text-2xl",
-          partido.estado !== "jugado" && "text-base text-muted-foreground",
+          "text-center font-display font-semibold whitespace-nowrap tabular-nums",
+          grande ? "text-5xl" : "text-4xl",
+          partido.estado !== "jugado" && "text-2xl text-muted-foreground",
         )}
       >
         {partido.estado === "jugado" ? (
@@ -45,16 +47,34 @@ export function Marcador({
   );
 }
 
+/**
+ * El escudo y el nombre de un equipo. Del rival no hay escudo: se pone uno
+ * genérico del mismo tamaño para que los dos lados queden iguales.
+ */
 function NombreEquipo({ equipo, grande }: { equipo: Equipo; grande: boolean }) {
+  const tamano = grande ? 64 : 48;
   return (
-    <p
-      className={cn(
-        "text-center leading-tight text-balance",
-        grande ? "text-lg" : "text-base",
-        equipo.esTrelle ? "font-semibold" : "text-muted-foreground",
+    <div className="flex flex-col items-center gap-2">
+      {equipo.esTrelle ? (
+        <Escudo tamano={tamano} decorativo />
+      ) : (
+        <span
+          className="flex items-center justify-center rounded-full bg-muted text-muted-foreground"
+          style={{ width: tamano, height: tamano }}
+          aria-hidden
+        >
+          <Shield className="size-1/2" />
+        </span>
       )}
-    >
-      {equipo.nombre}
-    </p>
+      <p
+        className={cn(
+          "text-center leading-tight text-balance",
+          grande ? "text-lg" : "text-base",
+          equipo.esTrelle ? "font-semibold" : "text-muted-foreground",
+        )}
+      >
+        {equipo.nombre}
+      </p>
+    </div>
   );
 }
