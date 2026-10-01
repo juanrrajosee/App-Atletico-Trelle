@@ -56,82 +56,90 @@ export default async function PaginaInicio({ searchParams }: PageProps<"/">) {
         <AvisoVotacion key={partido.id} partido={partido} />
       ))}
 
-      <section aria-labelledby="titulo-proximo-partido">
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <h2 id="titulo-proximo-partido" className={TITULO_SECCION}>
-            Próximo partido
-          </h2>
-          {cuantoFalta && (
-            <Badge className="border-transparent bg-primary text-primary-foreground">
-              {cuantoFalta}
-            </Badge>
-          )}
-        </div>
-
-        {proximoPartido ? (
-          <TarjetaPartido partido={proximoPartido} />
-        ) : (
-          <p className="rounded-xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
-            No hay ningún partido programado.
-          </p>
-        )}
-      </section>
-
-      {ultimoResultado && (
-        <section aria-labelledby="titulo-ultimo-resultado">
-          <h2 id="titulo-ultimo-resultado" className={cn(TITULO_SECCION, "mb-4")}>
-            Último resultado
-          </h2>
-          <TarjetaPartido partido={ultimoResultado} />
-          {/* Con un solo partido, la racha repetiría el último resultado. */}
-          {racha.length > 1 && (
-            <div className="mt-3">
-              <Racha partidos={racha} />
+      {/* En el ordenador, los partidos a un lado y las noticias al otro. */}
+      <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
+        <div className="flex flex-col gap-8">
+          <section aria-labelledby="titulo-proximo-partido">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <h2 id="titulo-proximo-partido" className={TITULO_SECCION}>
+                Próximo partido
+              </h2>
+              {cuantoFalta && (
+                <Badge className="border-transparent bg-primary text-primary-foreground">
+                  {cuantoFalta}
+                </Badge>
+              )}
             </div>
+
+            {proximoPartido ? (
+              <TarjetaPartido partido={proximoPartido} />
+            ) : (
+              <p className="rounded-xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
+                No hay ningún partido programado.
+              </p>
+            )}
+          </section>
+
+          {ultimoResultado && (
+            <section aria-labelledby="titulo-ultimo-resultado">
+              <h2 id="titulo-ultimo-resultado" className={cn(TITULO_SECCION, "mb-4")}>
+                Último resultado
+              </h2>
+              <TarjetaPartido partido={ultimoResultado} />
+              {/* Con un solo partido, la racha repetiría el último resultado. */}
+              {racha.length > 1 && (
+                <div className="mt-3">
+                  <Racha partidos={racha} />
+                </div>
+              )}
+            </section>
           )}
-        </section>
-      )}
 
-      <Link
-        href="/partidos"
-        className="-mt-4 flex h-11 items-center justify-center gap-1 text-sm font-medium underline-offset-4 hover:underline"
-      >
-        Todos los partidos
-        <ChevronRight className="size-4" aria-hidden />
-      </Link>
-
-      {noticias.length > 0 && (
-        <section aria-labelledby="titulo-noticias">
-          <h2 id="titulo-noticias" className={cn(TITULO_SECCION, "mb-4")}>
-            Últimas noticias
-          </h2>
-          <ListaNoticias noticias={noticias} />
           <Link
-            href="/noticias"
-            className="mt-2 flex h-11 items-center justify-center gap-1 text-sm font-medium underline-offset-4 hover:underline"
+            href="/partidos"
+            className="-mt-4 flex h-11 items-center justify-center gap-1 text-sm font-medium underline-offset-4 hover:underline"
           >
-            Todas las noticias
+            Todos los partidos
             <ChevronRight className="size-4" aria-hidden />
           </Link>
-        </section>
-      )}
+        </div>
+
+        {noticias.length > 0 && (
+          <section aria-labelledby="titulo-noticias">
+            <h2 id="titulo-noticias" className={cn(TITULO_SECCION, "mb-4")}>
+              Últimas noticias
+            </h2>
+            <ListaNoticias noticias={noticias} />
+            <Link
+              href="/noticias"
+              className="mt-2 flex h-11 items-center justify-center gap-1 text-sm font-medium underline-offset-4 hover:underline"
+            >
+              Todas las noticias
+              <ChevronRight className="size-4" aria-hidden />
+            </Link>
+          </section>
+        )}
+      </div>
     </div>
   );
 }
 
 /**
- * La cabecera del inicio: el escudo sobre los dos granates de la camiseta,
- * pegada a la barra de arriba.
+ * La cabecera del inicio: el escudo sobre los dos granates de la camiseta.
+ * En el móvil va pegada a la barra de arriba; en el ordenador, con el
+ * escudo al lado del nombre.
  */
 function Portada() {
   return (
-    <section className="-mx-4 -mt-6 flex flex-col items-center gap-3 fondo-camiseta px-4 pt-6 pb-8 text-center text-white sm:rounded-b-2xl">
+    <section className="fondo-camiseta -mx-4 -mt-6 flex flex-col items-center gap-3 px-4 pt-6 pb-8 text-center text-white sm:rounded-b-2xl lg:mx-0 lg:mt-0 lg:flex-row lg:justify-center lg:gap-6 lg:rounded-2xl lg:py-10 lg:text-left">
       <Escudo tamano={104} decorativo inmediato className="drop-shadow-lg" />
       <div>
-        <h1 className="font-display text-3xl font-semibold tracking-wide uppercase">
+        <h1 className="font-display text-3xl font-semibold tracking-wide uppercase lg:text-5xl">
           Atlético Trelle
         </h1>
-        <p className="mt-1 text-sm text-white/80">#FamiliaRoxibranca</p>
+        <p className="mt-1 text-sm text-white/80 lg:text-base">
+          #FamiliaRoxibranca
+        </p>
       </div>
     </section>
   );
