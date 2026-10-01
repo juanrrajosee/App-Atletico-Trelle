@@ -5,7 +5,8 @@ import { esIdValido } from "@/lib/ids";
 import type { Noticia } from "@/lib/noticias";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
 
-const COLUMNAS = "id, titulo, resumen, cuerpo, publicada_en, actualizado_en";
+const COLUMNAS =
+  "id, titulo, resumen, cuerpo, foto, publicada_en, actualizado_en";
 
 /**
  * Las noticias, de la más reciente a la más antigua. El administrador ve

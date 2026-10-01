@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { exigirAdministrador } from "@/lib/auth";
+import { urlFotoNoticia } from "@/lib/noticias";
 import { actualizarNoticia } from "../../acciones";
 import { cargarNoticia } from "../../datos";
 import { FormularioNoticia } from "../../formulario-noticia";
@@ -31,6 +32,7 @@ export default async function PaginaEditarNoticia({
           cuerpo: noticia.cuerpo,
           estado: noticia.publicada_en ? "publicada" : "borrador",
         }}
+        fotoActual={noticia.foto ? urlFotoNoticia(noticia.foto) : null}
         textoBoton="Guardar cambios"
         hrefCancelar={`/noticias/${noticia.id}`}
       />

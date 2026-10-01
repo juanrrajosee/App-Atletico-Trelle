@@ -3,11 +3,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BotonBorrar } from "@/components/boton-borrar";
+import { FotoNoticia } from "@/components/noticias/foto-noticia";
 import { FechaNoticia } from "@/components/noticias/lista-noticias";
 import { Texto } from "@/components/texto";
 import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
-import { estadoNoticia, resumenDe } from "@/lib/noticias";
+import { estadoNoticia, resumenDe, urlFotoNoticia } from "@/lib/noticias";
 import { borrarNoticia } from "../acciones";
 import { cargarNoticia } from "../datos";
 
@@ -31,6 +32,7 @@ export async function generateMetadata({
       locale: "es_ES",
       publishedTime: noticia.publicada_en ?? undefined,
       modifiedTime: noticia.actualizado_en,
+      images: noticia.foto ? [urlFotoNoticia(noticia.foto)] : undefined,
     },
   };
 }
@@ -57,6 +59,14 @@ export default async function PaginaNoticia({
       </Link>
 
       <article className="flex flex-col gap-4">
+        {noticia.foto && (
+          <FotoNoticia
+            ruta={noticia.foto}
+            tamanos="(min-width: 672px) 640px, 100vw"
+            className="aspect-video rounded-xl"
+            inmediata
+          />
+        )}
         <header className="flex flex-col gap-2">
           <p className="flex items-center gap-2 text-sm text-muted-foreground">
             <FechaNoticia noticia={noticia} />
