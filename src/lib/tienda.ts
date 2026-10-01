@@ -1,3 +1,4 @@
+import { urlFotoPublica } from "@/lib/fotos";
 import type { Tables } from "@/types/database";
 
 export type Producto = Pick<
@@ -14,13 +15,9 @@ export type Producto = Pick<
 /** El bucket de Storage donde están las fotos de los productos. */
 export const BUCKET_FOTOS = "productos";
 
-/**
- * La dirección pública de una foto del bucket (es público: se ve sin
- * sesión).
- */
+/** La dirección pública de la foto de un producto. */
 export function urlFoto(ruta: string) {
-  const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  return `${base}/storage/v1/object/public/${BUCKET_FOTOS}/${ruta}`;
+  return urlFotoPublica(BUCKET_FOTOS, ruta);
 }
 
 const formatoEuros = new Intl.NumberFormat("es-ES", {
