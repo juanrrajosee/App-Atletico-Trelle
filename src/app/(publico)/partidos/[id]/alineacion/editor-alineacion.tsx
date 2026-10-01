@@ -123,7 +123,7 @@ export function EditorAlineacion({
         }
         return (
           <section key={posicion}>
-            <h2 className="mb-2 text-sm font-medium text-muted-foreground">
+            <h2 className="mb-2 titulo-apartado">
               {NOMBRE_POSICION_PLURAL[posicion]}
             </h2>
             <ul className="divide-y overflow-hidden rounded-xl border bg-card">

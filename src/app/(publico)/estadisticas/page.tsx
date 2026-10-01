@@ -171,7 +171,7 @@ function TarjetaBalance({ balance }: { balance: Balance }) {
 
   return (
     <section aria-labelledby="titulo-balance" className="flex flex-col gap-2">
-      <h2 id="titulo-balance" className="text-sm font-medium text-muted-foreground">
+      <h2 id="titulo-balance" className="titulo-apartado">
         Atlético Trelle
       </h2>
       <dl className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border bg-border">

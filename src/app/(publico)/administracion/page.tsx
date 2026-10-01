@@ -192,7 +192,7 @@ function Grupo({ titulo, children }: { titulo?: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-2">
       {titulo && (
-        <h3 className="text-sm font-medium text-muted-foreground">{titulo}</h3>
+        <h3 className="titulo-apartado">{titulo}</h3>
       )}
       <ul className="divide-y overflow-hidden rounded-xl border bg-card">
         {children}

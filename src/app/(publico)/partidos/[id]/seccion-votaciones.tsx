@@ -162,7 +162,7 @@ function Seccion({ children }: { children: ReactNode }) {
     <section aria-labelledby="titulo-votaciones" className="flex flex-col gap-3">
       <h2
         id="titulo-votaciones"
-        className="text-sm font-medium text-muted-foreground"
+        className="titulo-apartado"
       >
         Votaciones de la afición
       </h2>

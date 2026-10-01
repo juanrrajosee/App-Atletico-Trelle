@@ -87,7 +87,7 @@ export async function SeccionEstadisticas({
 
           {premios.length > 0 && (
             <div className="flex flex-col gap-2">
-              <h3 className="text-sm font-medium text-muted-foreground">
+              <h3 className="titulo-apartado">
                 Votaciones de la afición
               </h3>
               <ul className="flex flex-col gap-1.5">
@@ -103,7 +103,7 @@ export async function SeccionEstadisticas({
 
           {partidosTemporada.length > 0 && (
             <div className="flex flex-col gap-2">
-              <h3 className="text-sm font-medium text-muted-foreground">
+              <h3 className="titulo-apartado">
                 Partidos
               </h3>
               <ul className="divide-y overflow-hidden rounded-xl border bg-card">
