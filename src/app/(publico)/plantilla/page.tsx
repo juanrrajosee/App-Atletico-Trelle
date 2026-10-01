@@ -2,6 +2,7 @@ import { ChevronRight, Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PestanasEquipo } from "@/components/pestanas";
+import { Dorsal } from "@/components/plantilla/dorsal";
 import { EtiquetaEstado } from "@/components/plantilla/etiqueta-estado";
 import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
@@ -85,9 +86,7 @@ function GrupoJugadores({
               href={`/plantilla/${jugador.id}`}
               className="flex min-h-14 items-center gap-3 px-4 py-2 active:bg-accent"
             >
-              <span className="w-8 text-center text-lg font-semibold tabular-nums">
-                {jugador.dorsal}
-              </span>
+              <Dorsal numero={jugador.dorsal} />
               <span className="min-w-0 flex-1 truncate font-medium">
                 {jugador.nombre} {jugador.apellidos}
               </span>

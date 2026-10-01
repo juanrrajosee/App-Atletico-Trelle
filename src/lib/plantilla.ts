@@ -38,8 +38,3 @@ export const COLOR_ESTADO: Record<EstadoJugador, string> = {
     "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300",
   baja: "bg-muted text-muted-foreground",
 };
-
-/** "Ana Ruiz" → "AR". Mientras no haya fotos, la plantilla usa iniciales. */
-export function iniciales(nombre: string, apellidos: string) {
-  return `${nombre.trim().charAt(0)}${apellidos.trim().charAt(0)}`.toUpperCase();
-}
