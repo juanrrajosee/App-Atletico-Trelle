@@ -80,7 +80,9 @@ export async function SeccionEstadisticas({
                 className="flex flex-col items-center gap-1 bg-card px-1 py-3 text-center"
               >
                 <dt className="text-xs text-muted-foreground">{etiqueta}</dt>
-                <dd className="text-xl font-semibold tabular-nums">{valor}</dd>
+                <dd className="font-display text-2xl font-semibold tabular-nums">
+                  {valor}
+                </dd>
               </div>
             ))}
           </dl>

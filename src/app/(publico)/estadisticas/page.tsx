@@ -181,7 +181,9 @@ function TarjetaBalance({ balance }: { balance: Balance }) {
             className="flex flex-col items-center gap-1 bg-card px-2 py-3 text-center"
           >
             <dt className="text-xs text-muted-foreground">{etiqueta}</dt>
-            <dd className="text-2xl font-semibold tabular-nums">{valor}</dd>
+            <dd className="font-display text-3xl font-semibold tabular-nums">
+              {valor}
+            </dd>
           </div>
         ))}
       </dl>
