@@ -74,91 +74,94 @@ export default async function PaginaEstadisticas({
         <SelectorTemporada temporada={temporada} ruta="/estadisticas" />
       </div>
 
-      {balance.jugados === 0 ? (
-        <p className="rounded-xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
-          Todavía no hay partidos jugados en esta temporada.
-        </p>
-      ) : (
-        <TarjetaBalance balance={balance} racha={racha} />
-      )}
+      {/* En el ordenador, el equipo a un lado y los jugadores al otro. */}
+      <div className="grid gap-6 lg:grid-cols-[2fr_3fr] lg:items-start">
+        {balance.jugados === 0 ? (
+          <p className="rounded-xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
+            Todavía no hay partidos jugados en esta temporada.
+          </p>
+        ) : (
+          <TarjetaBalance balance={balance} racha={racha} />
+        )}
 
-      {estadisticas.length > 0 && (
-        <section
-          aria-labelledby="titulo-clasificaciones"
-          className="flex flex-col gap-4"
-        >
-          <h2
-            id="titulo-clasificaciones"
-            className="text-xl font-semibold tracking-tight"
+        {estadisticas.length > 0 && (
+          <section
+            aria-labelledby="titulo-clasificaciones"
+            className="flex flex-col gap-4"
           >
-            Jugadores
-          </h2>
+            <h2
+              id="titulo-clasificaciones"
+              className="text-xl font-semibold tracking-tight"
+            >
+              Jugadores
+            </h2>
 
-          <Clasificacion
-            titulo="Goleadores"
-            filas={clasificar(
-              (fila) => fila.goles,
-              (fila) => ({
-                valor: contar(fila.goles, "gol", "goles"),
-                detalle: contar(fila.partidos_jugados, "partido jugado", "partidos jugados"),
-              }),
-            )}
-          />
-          <Clasificacion
-            titulo="Asistencias"
-            filas={clasificar(
-              (fila) => fila.asistencias,
-              (fila) => ({
-                valor: contar(fila.asistencias, "asistencia", "asistencias"),
-              }),
-            )}
-          />
-          <Clasificacion
-            titulo="Minutos jugados"
-            filas={clasificar(
-              (fila) => fila.minutos,
-              (fila) => ({
-                valor: `${fila.minutos} min`,
-                detalle: contar(fila.partidos_jugados, "partido jugado", "partidos jugados"),
-              }),
-            )}
-          />
-          <Clasificacion
-            titulo="Partidos jugados"
-            filas={clasificar(
-              (fila) => fila.partidos_jugados,
-              (fila) => ({
-                valor: contar(fila.partidos_jugados, "partido", "partidos"),
-                detalle: `${
-                  fila.titularidades === 0
-                    ? "Siempre desde el banquillo"
-                    : `${contar(fila.titularidades, "vez", "veces")} de titular`
-                } · ${contar(fila.convocatorias, "convocatoria", "convocatorias")}`,
-              }),
-            )}
-          />
-          <Clasificacion
-            titulo="Tarjetas"
-            copa={false}
-            filas={clasificar(
-              (fila) => fila.tarjetas_amarillas + fila.tarjetas_rojas,
-              (fila) => ({
-                valor: [
-                  fila.tarjetas_amarillas > 0 &&
-                    contar(fila.tarjetas_amarillas, "amarilla", "amarillas"),
-                  fila.tarjetas_rojas > 0 &&
-                    contar(fila.tarjetas_rojas, "roja", "rojas"),
-                ]
-                  .filter(Boolean)
-                  .join(" · "),
-              }),
-              // Con las mismas tarjetas, va delante quien tiene más rojas.
-              (fila) =>
-                `${fila.tarjetas_amarillas + fila.tarjetas_rojas}-${fila.tarjetas_rojas}`,
-            )}
-          />
-        </section>
-      )}
+            <Clasificacion
+              titulo="Goleadores"
+              filas={clasificar(
+                (fila) => fila.goles,
+                (fila) => ({
+                  valor: contar(fila.goles, "gol", "goles"),
+                  detalle: contar(fila.partidos_jugados, "partido jugado", "partidos jugados"),
+                }),
+              )}
+            />
+            <Clasificacion
+              titulo="Asistencias"
+              filas={clasificar(
+                (fila) => fila.asistencias,
+                (fila) => ({
+                  valor: contar(fila.asistencias, "asistencia", "asistencias"),
+                }),
+              )}
+            />
+            <Clasificacion
+              titulo="Minutos jugados"
+              filas={clasificar(
+                (fila) => fila.minutos,
+                (fila) => ({
+                  valor: `${fila.minutos} min`,
+                  detalle: contar(fila.partidos_jugados, "partido jugado", "partidos jugados"),
+                }),
+              )}
+            />
+            <Clasificacion
+              titulo="Partidos jugados"
+              filas={clasificar(
+                (fila) => fila.partidos_jugados,
+                (fila) => ({
+                  valor: contar(fila.partidos_jugados, "partido", "partidos"),
+                  detalle: `${
+                    fila.titularidades === 0
+                      ? "Siempre desde el banquillo"
+                      : `${contar(fila.titularidades, "vez", "veces")} de titular`
+                  } · ${contar(fila.convocatorias, "convocatoria", "convocatorias")}`,
+                }),
+              )}
+            />
+            <Clasificacion
+              titulo="Tarjetas"
+              copa={false}
+              filas={clasificar(
+                (fila) => fila.tarjetas_amarillas + fila.tarjetas_rojas,
+                (fila) => ({
+                  valor: [
+                    fila.tarjetas_amarillas > 0 &&
+                      contar(fila.tarjetas_amarillas, "amarilla", "amarillas"),
+                    fila.tarjetas_rojas > 0 &&
+                      contar(fila.tarjetas_rojas, "roja", "rojas"),
+                  ]
+                    .filter(Boolean)
+                    .join(" · "),
+                }),
+                // Con las mismas tarjetas, va delante quien tiene más rojas.
+                (fila) =>
+                  `${fila.tarjetas_amarillas + fila.tarjetas_rojas}-${fila.tarjetas_rojas}`,
+              )}
+            />
+          </section>
+        )}
+      </div>
     </div>
   );
 }
