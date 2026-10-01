@@ -1,7 +1,16 @@
-import { ChevronRight, Mail, MapPin, Pencil, Phone, Plus } from "lucide-react";
+import {
+  ChevronRight,
+  Mail,
+  MapPin,
+  Pencil,
+  Phone,
+  Plus,
+  UserRound,
+} from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { Escudo } from "@/components/escudo";
 import { PestanasClub } from "@/components/pestanas";
 import { Texto } from "@/components/texto";
 import { Button } from "@/components/ui/button";
@@ -28,9 +37,16 @@ export default async function PaginaClub() {
       <PestanasClub activa="/club" />
 
       <div className="-mt-2 flex flex-col gap-4">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Atlético Trelle
-        </h1>
+        {/* Como los carteles del club: el escudo sobre los dos granates. */}
+        <header className="fondo-camiseta flex items-center gap-4 rounded-2xl p-5 text-white shadow-sm">
+          <Escudo tamano={72} decorativo />
+          <div className="min-w-0">
+            <h1 className="text-3xl leading-tight font-semibold uppercase">
+              Atlético Trelle
+            </h1>
+            <p className="text-sm text-white/80">#FamiliaRoxibranca</p>
+          </div>
+        </header>
         {administrador && (
           <Button asChild variant="outline" className="h-11">
             <Link href="/club/editar">
@@ -162,12 +178,15 @@ function Directiva({
         <ul className="divide-y overflow-hidden rounded-xl border bg-card">
           {directiva.map((miembro) => {
             const contenido = (
-              <span className="flex min-w-0 flex-1 flex-col">
-                <span className="text-xs text-muted-foreground">
-                  {miembro.cargo}
+              <>
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
+                  <UserRound className="size-5" aria-hidden />
                 </span>
-                <span className="font-medium">{miembro.nombre}</span>
-              </span>
+                <span className="flex min-w-0 flex-1 flex-col">
+                  <span className="titulo-apartado text-xs">{miembro.cargo}</span>
+                  <span className="font-medium">{miembro.nombre}</span>
+                </span>
+              </>
             );
             return (
               <li key={miembro.id}>
@@ -184,7 +203,7 @@ function Directiva({
                     />
                   </Link>
                 ) : (
-                  <div className="flex min-h-14 items-center px-4 py-2">
+                  <div className="flex min-h-14 items-center gap-3 px-4 py-2">
                     {contenido}
                   </div>
                 )}
@@ -208,7 +227,9 @@ function FilaContacto({
 }) {
   const contenido = (
     <>
-      <span className="text-muted-foreground">{icono}</span>
+      <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
+        {icono}
+      </span>
       <span className="min-w-0 flex-1 truncate">{children}</span>
     </>
   );
