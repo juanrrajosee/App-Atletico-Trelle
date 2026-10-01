@@ -59,7 +59,7 @@ export default async function PaginaProducto({
       </Link>
 
       {administrador && (
-        <Button asChild variant="outline" className="h-11">
+        <Button asChild variant="outline" className="h-11 lg:w-fit">
           <Link href={`/tienda/${producto.id}/editar`}>
             <Pencil aria-hidden />
             Editar producto
@@ -73,63 +73,68 @@ export default async function PaginaProducto({
         </p>
       )}
 
-      <FotoProducto
-        producto={producto}
-        tamanos="(min-width: 42rem) 40rem, 100vw"
-        className="rounded-xl"
-        prioridad
-      />
+      {/* En el ordenador, la foto a un lado y lo demás al otro. */}
+      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+        <FotoProducto
+          producto={producto}
+          tamanos="(min-width: 64rem) 30rem, (min-width: 42rem) 40rem, 100vw"
+          className="rounded-xl"
+          prioridad
+        />
 
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {producto.nombre}
-        </h1>
-        {producto.precio_orientativo !== null && (
-          <p className="text-muted-foreground">
-            Precio orientativo:{" "}
-            <span className="font-medium text-foreground">
-              {formatearPrecio(producto.precio_orientativo)}
-            </span>
-          </p>
-        )}
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-2xl font-semibold tracking-tight">
+              {producto.nombre}
+            </h1>
+            {producto.precio_orientativo !== null && (
+              <p className="text-muted-foreground">
+                Precio orientativo:{" "}
+                <span className="font-medium text-foreground">
+                  {formatearPrecio(producto.precio_orientativo)}
+                </span>
+              </p>
+            )}
+          </div>
+
+          {producto.descripcion && <Texto texto={producto.descripcion} />}
+
+          <section
+            aria-labelledby="titulo-presupuesto"
+            className="flex flex-col gap-3 rounded-xl border bg-card px-4 py-4"
+          >
+            <h2 id="titulo-presupuesto" className="font-medium">
+              Pedir presupuesto
+            </h2>
+            {club.telefono ? (
+              <>
+                <Button asChild className="h-11">
+                  <a
+                    href={enlaceWhatsApp(club.telefono, mensajePresupuesto(producto))}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <MessageCircle aria-hidden />
+                    Por WhatsApp
+                  </a>
+                </Button>
+                <Button asChild variant="outline" className="h-11">
+                  <a href={enlaceTelefono(club.telefono)}>
+                    <Phone aria-hidden />
+                    Llamar al {club.telefono}
+                  </a>
+                </Button>
+              </>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                {administrador
+                  ? "Para que aquí salgan los botones de llamar y de WhatsApp, pon el teléfono del club en Club → Editar historia y contacto."
+                  : "Pregunta por este producto al club."}
+              </p>
+            )}
+          </section>
+        </div>
       </div>
-
-      {producto.descripcion && <Texto texto={producto.descripcion} />}
-
-      <section
-        aria-labelledby="titulo-presupuesto"
-        className="flex flex-col gap-3 rounded-xl border bg-card px-4 py-4"
-      >
-        <h2 id="titulo-presupuesto" className="font-medium">
-          Pedir presupuesto
-        </h2>
-        {club.telefono ? (
-          <>
-            <Button asChild className="h-11">
-              <a
-                href={enlaceWhatsApp(club.telefono, mensajePresupuesto(producto))}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <MessageCircle aria-hidden />
-                Por WhatsApp
-              </a>
-            </Button>
-            <Button asChild variant="outline" className="h-11">
-              <a href={enlaceTelefono(club.telefono)}>
-                <Phone aria-hidden />
-                Llamar al {club.telefono}
-              </a>
-            </Button>
-          </>
-        ) : (
-          <p className="text-sm text-muted-foreground">
-            {administrador
-              ? "Para que aquí salgan los botones de llamar y de WhatsApp, pon el teléfono del club en Club → Editar historia y contacto."
-              : "Pregunta por este producto al club."}
-          </p>
-        )}
-      </section>
     </div>
   );
 }

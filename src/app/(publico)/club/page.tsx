@@ -48,7 +48,7 @@ export default async function PaginaClub() {
           </div>
         </header>
         {administrador && (
-          <Button asChild variant="outline" className="h-11">
+          <Button asChild variant="outline" className="h-11 lg:w-fit">
             <Link href="/club/editar">
               <Pencil aria-hidden />
               Editar historia y contacto
@@ -63,53 +63,61 @@ export default async function PaginaClub() {
         </p>
       )}
 
-      <Seccion
-        titulo="Historia del club"
-        texto={club.historia_club}
-        vacio="Todavía no se ha escrito la historia del club."
-        administrador={administrador}
-      />
-      <Seccion
-        titulo="Trelle"
-        texto={club.historia_trelle}
-        vacio="Todavía no se ha escrito la historia de Trelle."
-        administrador={administrador}
-      />
+      {/* En el ordenador, la historia a un lado; la directiva y el contacto,
+          al otro. */}
+      <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
+        <div className="flex flex-col gap-8">
+          <Seccion
+            titulo="Historia del club"
+            texto={club.historia_club}
+            vacio="Todavía no se ha escrito la historia del club."
+            administrador={administrador}
+          />
+          <Seccion
+            titulo="Trelle"
+            texto={club.historia_trelle}
+            vacio="Todavía no se ha escrito la historia de Trelle."
+            administrador={administrador}
+          />
+        </div>
 
-      {(directiva.length > 0 || administrador) && (
-        <Directiva directiva={directiva} administrador={administrador} />
-      )}
+        <div className="flex flex-col gap-8">
+          {(directiva.length > 0 || administrador) && (
+            <Directiva directiva={directiva} administrador={administrador} />
+          )}
 
-      {hayContacto && (
-        <section aria-labelledby="titulo-contacto" className="flex flex-col gap-3">
-          <h2 id="titulo-contacto" className="text-xl font-semibold tracking-tight">
-            Contacto
-          </h2>
-          <ul className="divide-y overflow-hidden rounded-xl border bg-card">
-            {club.telefono && (
-              <FilaContacto
-                icono={<Phone className="size-4" aria-hidden />}
-                href={`tel:${club.telefono.replace(/\s/g, "")}`}
-              >
-                {club.telefono}
-              </FilaContacto>
-            )}
-            {club.email && (
-              <FilaContacto
-                icono={<Mail className="size-4" aria-hidden />}
-                href={`mailto:${club.email}`}
-              >
-                {club.email}
-              </FilaContacto>
-            )}
-            {club.campo && (
-              <FilaContacto icono={<MapPin className="size-4" aria-hidden />}>
-                {club.campo}
-              </FilaContacto>
-            )}
-          </ul>
-        </section>
-      )}
+          {hayContacto && (
+            <section aria-labelledby="titulo-contacto" className="flex flex-col gap-3">
+              <h2 id="titulo-contacto" className="text-xl font-semibold tracking-tight">
+                Contacto
+              </h2>
+              <ul className="divide-y overflow-hidden rounded-xl border bg-card">
+                {club.telefono && (
+                  <FilaContacto
+                    icono={<Phone className="size-4" aria-hidden />}
+                    href={`tel:${club.telefono.replace(/\s/g, "")}`}
+                  >
+                    {club.telefono}
+                  </FilaContacto>
+                )}
+                {club.email && (
+                  <FilaContacto
+                    icono={<Mail className="size-4" aria-hidden />}
+                    href={`mailto:${club.email}`}
+                  >
+                    {club.email}
+                  </FilaContacto>
+                )}
+                {club.campo && (
+                  <FilaContacto icono={<MapPin className="size-4" aria-hidden />}>
+                    {club.campo}
+                  </FilaContacto>
+                )}
+              </ul>
+            </section>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

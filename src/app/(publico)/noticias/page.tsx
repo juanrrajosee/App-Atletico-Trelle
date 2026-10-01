@@ -42,10 +42,11 @@ export default async function PaginaNoticias() {
           Todavía no hay noticias.
         </p>
       ) : destacada ? (
-        <>
+        // En el ordenador, la destacada a un lado y el resto al otro.
+        <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
           <NoticiaDestacada noticia={destacada} />
           {resto.length > 0 && <ListaNoticias noticias={resto} />}
-        </>
+        </div>
       ) : (
         <ListaNoticias noticias={noticias} />
       )}
