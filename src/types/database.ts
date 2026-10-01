@@ -171,6 +171,7 @@ export type Database = {
           actualizado_en: string;
           creado_en: string;
           cuerpo: string;
+          foto: string | null;
           id: string;
           publicada_en: string | null;
           resumen: string | null;
@@ -180,6 +181,7 @@ export type Database = {
           actualizado_en?: string;
           creado_en?: string;
           cuerpo: string;
+          foto?: string | null;
           id?: string;
           publicada_en?: string | null;
           resumen?: string | null;
@@ -189,6 +191,7 @@ export type Database = {
           actualizado_en?: string;
           creado_en?: string;
           cuerpo?: string;
+          foto?: string | null;
           id?: string;
           publicada_en?: string | null;
           resumen?: string | null;
