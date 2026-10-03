@@ -1,8 +1,10 @@
 "use client";
 
+import { Newspaper } from "lucide-react";
 import Link from "next/link";
-import { useActionState } from "react";
+import { startTransition, useActionState, type FormEvent } from "react";
 import { CampoFormulario } from "@/components/campo-formulario";
+import { SelectorFoto, useSelectorFoto } from "@/components/selector-foto";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -18,13 +20,20 @@ type Props = {
     formData: FormData,
   ) => Promise<EstadoFormularioNoticia>;
   valoresIniciales: EstadoFormularioNoticia["valores"];
+  /** Dirección de la foto de portada que ya tiene la noticia, si tiene. */
+  fotoActual?: string | null;
   textoBoton: string;
   hrefCancelar: string;
 };
 
+/**
+ * Formulario de una noticia. Se envía a mano (no con action) para mandar
+ * la foto ya reducida en lugar de la original.
+ */
 export function FormularioNoticia({
   accion,
   valoresIniciales,
+  fotoActual = null,
   textoBoton,
   hrefCancelar,
 }: Props) {
@@ -35,6 +44,17 @@ export function FormularioNoticia({
     intento: 0,
   });
   const { errores, valores } = estado;
+
+  // Fuera del <form>, que se vuelve a montar tras cada envío: así la foto
+  // elegida no se pierde si hay que corregir otro campo.
+  const selectorFoto = useSelectorFoto(fotoActual);
+
+  function guardar(evento: FormEvent<HTMLFormElement>) {
+    evento.preventDefault();
+    const datos = new FormData(evento.currentTarget);
+    selectorFoto.prepararEnvio(datos);
+    startTransition(() => enviar(datos));
+  }
 
   /**
    * Atributos comunes para marcar un campo con error y enlazarlo con su
@@ -51,7 +71,7 @@ export function FormularioNoticia({
   return (
     <form
       key={estado.intento}
-      action={enviar}
+      onSubmit={guardar}
       className="flex flex-col gap-5"
       noValidate
     >
@@ -65,6 +85,14 @@ export function FormularioNoticia({
           {...describir("titulo")}
         />
       </CampoFormulario>
+
+      <SelectorFoto
+        selector={selectorFoto}
+        error={errores.foto}
+        icono={Newspaper}
+        alt="Foto de portada"
+        apaisada
+      />
 
       <CampoFormulario
         id="resumen"
@@ -120,7 +148,11 @@ export function FormularioNoticia({
       )}
 
       <div className="flex flex-col gap-3">
-        <Button type="submit" disabled={pendiente} className="h-11 w-full">
+        <Button
+          type="submit"
+          disabled={pendiente || selectorFoto.procesando}
+          className="h-11 w-full"
+        >
           {pendiente ? "Guardando…" : textoBoton}
         </Button>
         <Button asChild variant="ghost" className="h-11 w-full">

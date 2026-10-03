@@ -38,3 +38,15 @@ export const COLOR_ESTADO: Record<EstadoJugador, string> = {
     "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300",
   baja: "bg-muted text-muted-foreground",
 };
+
+/**
+ * Cómo se llama a un jugador en la aplicación: por su apodo, que es como se
+ * le conoce en el club, o por su nombre y apellidos si no tiene.
+ */
+export function nombreVisible(jugador: {
+  nombre: string;
+  apellidos: string;
+  apodo: string | null;
+}) {
+  return jugador.apodo ?? `${jugador.nombre} ${jugador.apellidos}`;
+}

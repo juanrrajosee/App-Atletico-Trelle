@@ -12,11 +12,12 @@ import { notFound } from "next/navigation";
 import { BotonBorrar } from "@/components/boton-borrar";
 import { EtiquetaPartido } from "@/components/partidos/etiqueta-partido";
 import { Marcador } from "@/components/partidos/marcador";
+import { Dorsal } from "@/components/plantilla/dorsal";
 import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
 import { formatearFechaHora } from "@/lib/fechas";
 import { NOMBRE_CONDICION, titulo } from "@/lib/partidos";
-import { NOMBRE_POSICION } from "@/lib/plantilla";
+import { NOMBRE_POSICION, nombreVisible } from "@/lib/plantilla";
 import { cn } from "@/lib/utils";
 import { borrarPartido } from "../acciones";
 import { cargarAlineacion, cargarPartido, type Participacion } from "../datos";
@@ -47,9 +48,12 @@ export default async function PaginaPartido({
   const goleadores = alineacion
     .filter((jugador) => jugador.goles > 0)
     .sort((a, b) => b.goles - a.goles);
+  // En el ordenador, la alineación va al lado; un partido sin jugar no la
+  // tiene, y se queda en una sola columna estrecha.
+  const dosColumnas = partido.estado === "jugado";
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className={cn("flex flex-col gap-6", !dosColumnas && "pagina-estrecha")}>
       <Link
         href="/partidos"
         className="-ml-1 flex w-fit items-center gap-1 text-sm text-muted-foreground"
@@ -58,77 +62,85 @@ export default async function PaginaPartido({
         Partidos
       </Link>
 
-      <header className="flex flex-col gap-4 rounded-xl border bg-card px-4 py-5">
-        <div className="flex min-h-5 items-center justify-center gap-2 text-sm text-muted-foreground">
-          {partido.competicion && <span>{partido.competicion}</span>}
-          <EtiquetaPartido partido={partido} />
-        </div>
+      <div
+        className={cn("grid gap-6", dosColumnas && "lg:grid-cols-2 lg:items-start")}
+      >
+        <div className="flex flex-col gap-6">
+          <header className="flex flex-col gap-4 rounded-xl border bg-card px-4 py-5">
+            <div className="flex min-h-5 items-center justify-center gap-2 text-sm text-muted-foreground">
+              {partido.competicion && <span>{partido.competicion}</span>}
+              <EtiquetaPartido partido={partido} />
+            </div>
 
-        <h1 className="sr-only">{titulo(partido)}</h1>
-        <Marcador partido={partido} grande />
+            <h1 className="sr-only">{titulo(partido)}</h1>
+            <Marcador partido={partido} grande />
 
-        {goleadores.length > 0 && (
-          <p className="text-center text-sm text-muted-foreground">
-            <span className="sr-only">Goles: </span>
-            {goleadores
-              .map(({ nombre, apellidos, goles }) =>
-                goles > 1
-                  ? `${nombre} ${apellidos} (${goles})`
-                  : `${nombre} ${apellidos}`,
-              )
-              .join(", ")}
-          </p>
-        )}
-      </header>
+            {goleadores.length > 0 && (
+              <p className="text-center text-sm text-muted-foreground">
+                <span className="sr-only">Goles: </span>
+                {goleadores
+                  .map((jugador) =>
+                    jugador.goles > 1
+                      ? `${nombreVisible(jugador)} (${jugador.goles})`
+                      : nombreVisible(jugador),
+                  )
+                  .join(", ")}
+              </p>
+            )}
+          </header>
 
-      <div className="flex flex-col gap-2 text-sm">
-        <p className="flex items-center gap-2">
-          <CalendarDays className="size-4 text-muted-foreground" aria-hidden />
-          {formatearFechaHora(partido.fecha_hora)}
-        </p>
-        <p className="flex items-center gap-2">
-          <MapPin className="size-4 text-muted-foreground" aria-hidden />
-          {partido.campo
-            ? `${partido.campo} (${NOMBRE_CONDICION[partido.condicion].toLowerCase()})`
-            : NOMBRE_CONDICION[partido.condicion]}
-        </p>
-      </div>
+          <div className="flex flex-col gap-2 text-sm">
+            <p className="flex items-center gap-2">
+              <CalendarDays className="size-4 text-muted-foreground" aria-hidden />
+              {formatearFechaHora(partido.fecha_hora)}
+            </p>
+            <p className="flex items-center gap-2">
+              <MapPin className="size-4 text-muted-foreground" aria-hidden />
+              {partido.campo
+                ? `${partido.campo} (${NOMBRE_CONDICION[partido.condicion].toLowerCase()})`
+                : NOMBRE_CONDICION[partido.condicion]}
+            </p>
+          </div>
 
-      {administrador && (
-        <div className="flex flex-col gap-3">
-          <Button asChild variant="outline" className="h-11">
-            <Link href={`/partidos/${partido.id}/editar`}>
-              <Pencil aria-hidden />
-              Editar partido
-            </Link>
-          </Button>
-          {partido.estado === "jugado" && (
-            <Button asChild variant="outline" className="h-11">
-              <Link href={`/partidos/${partido.id}/alineacion`}>
-                <Users aria-hidden />
-                Alineación y estadísticas
-              </Link>
-            </Button>
+          {administrador && (
+            <div className="flex flex-col gap-3">
+              <Button asChild variant="outline" className="h-11">
+                <Link href={`/partidos/${partido.id}/editar`}>
+                  <Pencil aria-hidden />
+                  Editar partido
+                </Link>
+              </Button>
+              {partido.estado === "jugado" && (
+                <Button asChild variant="outline" className="h-11">
+                  <Link href={`/partidos/${partido.id}/alineacion`}>
+                    <Users aria-hidden />
+                    Alineación y estadísticas
+                  </Link>
+                </Button>
+              )}
+              <BotonBorrar
+                accion={borrarPartido.bind(null, partido.id)}
+                texto="Borrar partido"
+                pregunta={`¿Borrar el partido contra ${partido.rival}?`}
+                consecuencias="Se borrará del calendario junto con su alineación y sus estadísticas. No se puede deshacer."
+              />
+            </div>
           )}
-          <BotonBorrar
-            accion={borrarPartido.bind(null, partido.id)}
-            texto="Borrar partido"
-            pregunta={`¿Borrar el partido contra ${partido.rival}?`}
-            consecuencias="Se borrará del calendario junto con su alineación y sus estadísticas. No se puede deshacer."
-          />
+
+          <SeccionVotaciones partido={partido} alineacion={alineacion} />
         </div>
-      )}
 
-      <SeccionVotaciones partido={partido} alineacion={alineacion} />
+        <div className="flex flex-col gap-6">
+          {partido.estado === "jugado" && alineacion.length === 0 && (
+            <p className="rounded-xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
+              Todavía no se ha registrado la alineación.
+            </p>
+          )}
 
-      {partido.estado === "jugado" && alineacion.length === 0 && (
-        <p className="rounded-xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
-          Todavía no se ha registrado la alineación.
-        </p>
-      )}
-
-      <GrupoAlineacion titulo="Titulares" jugadores={titulares} />
-      <GrupoAlineacion titulo="Suplentes" jugadores={suplentes} />
+          <GrupoAlineacion titulo="Titulares" jugadores={titulares} />
+          <GrupoAlineacion titulo="Suplentes" jugadores={suplentes} />
+        </div>
+      </div>
     </div>
   );
 }
@@ -146,9 +158,7 @@ function GrupoAlineacion({
 
   return (
     <section>
-      <h2 className="mb-2 titulo-apartado">
-        {titulo}
-      </h2>
+      <h2 className="mb-2 titulo-apartado">{titulo}</h2>
       <ul className="divide-y overflow-hidden rounded-xl border bg-card">
         {jugadores.map((jugador) => (
           <li key={jugador.jugador_id}>
@@ -156,9 +166,10 @@ function GrupoAlineacion({
               href={`/plantilla/${jugador.jugador_id}`}
               className="flex min-h-14 items-center gap-3 px-4 py-2 active:bg-accent"
             >
+              <Dorsal numero={jugador.dorsal} />
               <div className="flex min-w-0 flex-1 flex-col">
                 <span className="truncate font-medium">
-                  {jugador.nombre} {jugador.apellidos}
+                  {nombreVisible(jugador)}
                 </span>
                 <span className="truncate text-xs text-muted-foreground">
                   {resumen(jugador)}

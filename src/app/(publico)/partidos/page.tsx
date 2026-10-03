@@ -47,8 +47,11 @@ export default async function PaginaPartidos() {
         </p>
       )}
 
-      <ListaPartidos titulo="Próximos" partidos={proximos} />
-      <ListaPartidos titulo="Resultados" partidos={pasados} />
+      {/* En el ordenador, los próximos y los resultados lado a lado. */}
+      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+        <ListaPartidos titulo="Próximos" partidos={proximos} />
+        <ListaPartidos titulo="Resultados" partidos={pasados} />
+      </div>
     </div>
   );
 }

@@ -70,7 +70,7 @@ export default async function PaginaAdministracion() {
     faltaClub.length > 0;
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="pagina-estrecha flex flex-col gap-8">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Gestión</h1>
         <p className="text-sm text-muted-foreground">

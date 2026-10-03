@@ -59,6 +59,10 @@ where id = (select id from auth.users where email = 'correo@ejemplo.com');
 
 **En local**, los emails no salen a internet: los recoge Mailpit en `http://127.0.0.1:54324`, donde se pueden abrir los enlaces.
 
+### Plantilla
+
+El administrador da de alta a cada jugador desde *Equipo → Plantilla → Añadir*: nombre, apellidos, **apodo** (opcional), dorsal, posición y estado. Si tiene apodo, la aplicación le llama así en todas partes (plantilla, partidos, votaciones y estadísticas), con el nombre completo debajo en la plantilla y en su ficha. El dorsal no se puede repetir entre los que están en la plantilla. El estado (lesionado, sancionado) solo lo ve el administrador: es un dato de salud y no se publica.
+
 ### Partidos
 
 El administrador lo hace todo desde la propia aplicación, en *Partidos*:
@@ -100,9 +104,9 @@ Solo cuentan los partidos jugados. Un jugador está *convocado* si figura en la 
 
 ### Noticias
 
-El administrador las escribe desde *Noticias → Nueva*: título, un resumen opcional (para la lista y para la vista previa al compartir el enlace; si no hay, se usa el principio del texto) y el texto, con los párrafos separados por una línea en blanco. Por ahora son solo de texto (las fotos, de momento, solo en la tienda).
+El administrador las escribe desde *Noticias → Nueva*: título, un resumen opcional (para la lista y para la vista previa al compartir el enlace; si no hay, se usa el principio del texto) y el texto, con los párrafos separados por una línea en blanco. Puede llevar una **foto de portada** opcional: como en la tienda, se reduce en el móvil antes de subirla y se guarda en el bucket público `noticias` (migración `0023_fotos_noticias.sql`), donde solo el administrador sube y borra. Sale arriba en la noticia, en la destacada, como miniatura en las listas y en la vista previa al compartir el enlace. Al cambiarla, quitarla o borrar la noticia, la anterior se borra.
 
-Una noticia se guarda como *borrador* (solo la ve el administrador) o *publicada*. Al publicarla se le pone la fecha de ese momento, que no cambia aunque se edite después. El inicio enseña las tres últimas publicadas.
+Una noticia se guarda como *borrador* (solo la ve el administrador) o *publicada*. Al publicarla se le pone la fecha de ese momento, que no cambia aunque se edite después. En *Noticias*, la más reciente sale destacada arriba; el inicio enseña las tres últimas publicadas.
 
 ### El club
 
@@ -181,7 +185,7 @@ Para probar *Continuar con Google* en local: poner `enabled = true` en `[auth.ex
 | `npm run typecheck` | Comprobación de tipos (TypeScript) |
 | `npm run db:iniciar` / `db:parar` | Arranca / para Supabase en local |
 | `npm run db:reset` | Recrea la base de datos local aplicando todas las migraciones |
-| `npm run db:test` | Tests de la base de datos (políticas RLS, reglas de los resultados, votaciones, estadísticas, noticias, club, tienda y borrado de cuentas) |
+| `npm run db:test` | Tests de la base de datos (políticas RLS, reglas de los resultados, votaciones, estadísticas, noticias y sus fotos, club, tienda, apodos y borrado de cuentas) |
 | `npm run db:tipos` | Genera `src/types/database.ts` a partir del esquema local |
 
 ## Publicar la aplicación
@@ -197,7 +201,7 @@ La aplicación se publica en dos servicios con plan gratuito suficiente para un 
    npx supabase link --project-ref <referencia-del-proyecto>
    npx supabase db push
    ```
-   La referencia es la parte de la dirección del proyecto: `https://<referencia>.supabase.co`. `db push` aplica todas las migraciones de `supabase/migrations/`: tablas, permisos (RLS), funciones, el bucket de fotos de la tienda y los datos legales del club.
+   La referencia es la parte de la dirección del proyecto: `https://<referencia>.supabase.co`. `db push` aplica todas las migraciones de `supabase/migrations/`: tablas, permisos (RLS), funciones, los buckets de fotos de la tienda y de las noticias y los datos legales del club.
 3. En *Authentication → URL Configuration*: la dirección pública de la aplicación (la de Vercel, paso 2) como *Site URL*, y esa misma dirección con `/**` en *Redirect URLs*.
 4. En *Authentication → Emails*:
    - **Servidor de correo (SMTP)** propio. El que trae Supabase de serie solo envía a los miembros del proyecto, así que sin uno propio los aficionados no reciben los emails de confirmación ni de cambio de contraseña. Hay servicios con plan gratuito de sobra para este volumen.
@@ -253,7 +257,7 @@ src/
 │   ├── boton-borrar.tsx   # Botón de borrar con confirmación
 │   ├── campo-formulario.tsx
 │   ├── clasificacion.tsx  # Lista de jugadores con puestos (y empates)
-│   ├── navegacion-inferior.tsx
+│   ├── navegacion.tsx     # Secciones: abajo en el móvil, en la cabecera en el ordenador
 │   ├── pagina-legal.tsx   # Piezas de las páginas de privacidad y aviso legal
 │   ├── pestanas.tsx       # Pestañas de Equipo y de Club
 │   ├── selector-temporada.tsx

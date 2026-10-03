@@ -133,6 +133,7 @@ export type Database = {
       jugadores: {
         Row: {
           apellidos: string;
+          apodo: string | null;
           creado_en: string;
           dorsal: number;
           estado: Database["public"]["Enums"]["estado_jugador"];
@@ -143,6 +144,7 @@ export type Database = {
         };
         Insert: {
           apellidos: string;
+          apodo?: string | null;
           creado_en?: string;
           dorsal: number;
           estado?: Database["public"]["Enums"]["estado_jugador"];
@@ -153,6 +155,7 @@ export type Database = {
         };
         Update: {
           apellidos?: string;
+          apodo?: string | null;
           creado_en?: string;
           dorsal?: number;
           estado?: Database["public"]["Enums"]["estado_jugador"];
@@ -168,6 +171,7 @@ export type Database = {
           actualizado_en: string;
           creado_en: string;
           cuerpo: string;
+          foto: string | null;
           id: string;
           publicada_en: string | null;
           resumen: string | null;
@@ -177,6 +181,7 @@ export type Database = {
           actualizado_en?: string;
           creado_en?: string;
           cuerpo: string;
+          foto?: string | null;
           id?: string;
           publicada_en?: string | null;
           resumen?: string | null;
@@ -186,6 +191,7 @@ export type Database = {
           actualizado_en?: string;
           creado_en?: string;
           cuerpo?: string;
+          foto?: string | null;
           id?: string;
           publicada_en?: string | null;
           resumen?: string | null;
@@ -348,6 +354,7 @@ export type Database = {
         Row: {
           activo: boolean | null;
           apellidos: string | null;
+          apodo: string | null;
           dorsal: number | null;
           id: string | null;
           nombre: string | null;
@@ -356,6 +363,7 @@ export type Database = {
         Insert: {
           activo?: never;
           apellidos?: string | null;
+          apodo?: string | null;
           dorsal?: number | null;
           id?: string | null;
           nombre?: string | null;
@@ -364,6 +372,7 @@ export type Database = {
         Update: {
           activo?: never;
           apellidos?: string | null;
+          apodo?: string | null;
           dorsal?: number | null;
           id?: string | null;
           nombre?: string | null;

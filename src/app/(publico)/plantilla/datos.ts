@@ -2,13 +2,19 @@ import "server-only";
 
 import { esIdValido } from "@/lib/ids";
 import type { Partido } from "@/lib/partidos";
-import type { EstadoJugador, Posicion } from "@/lib/plantilla";
+import {
+  nombreVisible,
+  type EstadoJugador,
+  type Posicion,
+} from "@/lib/plantilla";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
 
 export type Jugador = {
   id: string;
   nombre: string;
   apellidos: string;
+  /** Como se le conoce en el club, si tiene. */
+  apodo: string | null;
   dorsal: number;
   posicion: Posicion;
   /** False si está de baja. */
@@ -21,13 +27,15 @@ export type Jugador = {
   estado: EstadoJugador | null;
 };
 
-const COLUMNAS_PUBLICAS = "id, nombre, apellidos, dorsal, posicion, activo";
-const COLUMNAS_ADMINISTRADOR = "id, nombre, apellidos, dorsal, posicion, estado";
+const COLUMNAS_PUBLICAS = "id, nombre, apellidos, apodo, dorsal, posicion, activo";
+const COLUMNAS_ADMINISTRADOR =
+  "id, nombre, apellidos, apodo, dorsal, posicion, estado";
 
 type FilaPublica = {
   id: string | null;
   nombre: string | null;
   apellidos: string | null;
+  apodo: string | null;
   dorsal: number | null;
   posicion: Posicion | null;
   activo: boolean | null;
@@ -38,11 +46,11 @@ type FilaPublica = {
  * opcionales aunque en la tabla no lo sean: aquí se descartan esos casos.
  */
 function desdeVistaPublica(fila: FilaPublica): Jugador | null {
-  const { id, nombre, apellidos, dorsal, posicion, activo } = fila;
+  const { id, nombre, apellidos, apodo, dorsal, posicion, activo } = fila;
   if (!id || !nombre || !apellidos || !dorsal || !posicion || activo === null) {
     return null;
   }
-  return { id, nombre, apellidos, dorsal, posicion, activo, estado: null };
+  return { id, nombre, apellidos, apodo, dorsal, posicion, activo, estado: null };
 }
 
 /**
@@ -139,7 +147,10 @@ export async function tieneHistorial(jugadorId: string): Promise<boolean> {
   return (count ?? 0) > 0;
 }
 
-/** Nombre y apellidos de unos jugadores, por su id (también los de baja). */
+/**
+ * Cómo se llama a unos jugadores en la aplicación (el apodo, o el nombre y
+ * los apellidos), por su id. También los de baja.
+ */
 export async function cargarNombres(
   ids: string[],
 ): Promise<Map<string, string>> {
@@ -150,7 +161,7 @@ export async function cargarNombres(
   const supabase = await crearClienteServidor();
   const { data, error } = await supabase
     .from("jugadores_publicos")
-    .select("id, nombre, apellidos")
+    .select("id, nombre, apellidos, apodo")
     .in("id", ids);
 
   if (error) {
@@ -158,8 +169,10 @@ export async function cargarNombres(
   }
 
   return new Map(
-    data.flatMap(({ id, nombre, apellidos }) =>
-      id && nombre && apellidos ? [[id, `${nombre} ${apellidos}`]] : [],
+    data.flatMap(({ id, nombre, apellidos, apodo }) =>
+      id && nombre && apellidos
+        ? [[id, nombreVisible({ nombre, apellidos, apodo })]]
+        : [],
     ),
   );
 }

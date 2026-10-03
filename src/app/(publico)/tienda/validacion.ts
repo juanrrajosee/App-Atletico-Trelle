@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { fotoDelFormulario } from "@/lib/fotos";
 import type { EstadoFormulario, RespuestaFormulario } from "@/lib/formularios";
 
 export type CampoProducto =
@@ -11,12 +12,6 @@ export type CampoProducto =
 
 export type EstadoFormularioProducto = EstadoFormulario<CampoProducto>;
 export type RespuestaFormularioProducto = RespuestaFormulario<CampoProducto>;
-
-/** Tipos de foto que se aceptan (los mismos que el bucket). */
-export const TIPOS_FOTO = ["image/jpeg", "image/png", "image/webp"];
-
-/** Tamaño máximo de una foto (el mismo que el bucket). */
-export const TAMANO_MAXIMO_FOTO = 3 * 1024 * 1024;
 
 const esquemaProducto = z.object({
   nombre: z
@@ -79,12 +74,9 @@ export function validarProducto(formData: FormData):
 
   const errores: EstadoFormularioProducto["errores"] = {};
 
-  const archivo = formData.get("foto");
-  const foto = archivo instanceof File && archivo.size > 0 ? archivo : null;
-  if (foto && !TIPOS_FOTO.includes(foto.type)) {
-    errores.foto = "La foto tiene que ser JPG, PNG o WebP.";
-  } else if (foto && foto.size > TAMANO_MAXIMO_FOTO) {
-    errores.foto = "La foto pesa demasiado (más de 3 MB).";
+  const { foto, error: errorFoto } = fotoDelFormulario(formData);
+  if (errorFoto) {
+    errores.foto = errorFoto;
   }
 
   const resultado = esquemaProducto.safeParse(valores);

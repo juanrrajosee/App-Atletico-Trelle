@@ -13,7 +13,11 @@ import { EtiquetaEstado } from "@/components/plantilla/etiqueta-estado";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { NOMBRE_POSICION_PLURAL, POSICIONES } from "@/lib/plantilla";
+import {
+  NOMBRE_POSICION_PLURAL,
+  POSICIONES,
+  nombreVisible,
+} from "@/lib/plantilla";
 import { cn } from "@/lib/utils";
 import type { FilaGuardada, JugadorAlineacion } from "../../datos";
 import type { EstadoAlineacion, FilaAlineacion } from "./validacion";
@@ -157,7 +161,7 @@ export function EditorAlineacion({
       )}
 
       {/* Siempre a mano encima de la barra de navegación: la lista es larga. */}
-      <div className="sticky bottom-[calc(4rem+env(safe-area-inset-bottom))] -mx-4 flex flex-col gap-3 border-t bg-background px-4 py-3">
+      <div className="sticky bottom-[calc(4rem+env(safe-area-inset-bottom))] -mx-4 flex flex-col gap-3 border-t bg-background px-4 py-3 lg:bottom-0">
         <p className="text-sm text-muted-foreground">
           {titulares} {titulares === 1 ? "titular" : "titulares"} ·{" "}
           {suplentes} {suplentes === 1 ? "suplente" : "suplentes"} ·{" "}
@@ -219,7 +223,7 @@ function FilaJugador({
           {jugador.dorsal}
         </span>
         <span id={`${id}-nombre`} className="min-w-0 flex-1 truncate font-medium">
-          {jugador.nombre} {jugador.apellidos}
+          {nombreVisible(jugador)}
         </span>
         {jugador.estado !== "disponible" && (
           <EtiquetaEstado estado={jugador.estado} />

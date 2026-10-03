@@ -41,6 +41,7 @@
   --radius: 0.625rem;
   /* Colores del club, sacados del escudo y de la equipación roxibranca. */
   --club-granate: #6e1520;
+  --club-granate-claro: #801b29;
   --club-rojo: #bd1e30;
   --background: #f7f4f3;
   --foreground: #1c1213;
@@ -108,6 +109,22 @@
   h2 {
     @apply font-display;
   }
+}
+
+/* Los dos granates de la camiseta, partidos en diagonal: el fondo de las
+   portadas y los carteles del club. Igual en claro y en oscuro. */
+@utility fondo-camiseta {
+  background-image: linear-gradient(
+    110deg,
+    var(--club-granate) 58%,
+    var(--club-granate-claro) 58%
+  );
+}
+
+/* En el ordenador, las páginas de leer o de rellenar (una noticia, un
+   formulario, los textos legales…) se quedan estrechas y centradas. */
+@utility pagina-estrecha {
+  @apply mx-auto w-full max-w-2xl;
 }
 
 /* Los títulos pequeños que agrupan una lista (Porteros, Goleadores,

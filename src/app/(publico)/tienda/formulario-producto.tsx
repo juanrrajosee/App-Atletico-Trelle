@@ -1,26 +1,14 @@
 "use client";
 
-import { ImagePlus, ShoppingBag, X } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import Link from "next/link";
-import {
-  startTransition,
-  useActionState,
-  useEffect,
-  useState,
-  type ChangeEvent,
-  type FormEvent,
-} from "react";
+import { startTransition, useActionState, type FormEvent } from "react";
 import { CampoFormulario } from "@/components/campo-formulario";
+import { SelectorFoto, useSelectorFoto } from "@/components/selector-foto";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { reducirFoto } from "@/lib/fotos";
-import {
-  TAMANO_MAXIMO_FOTO,
-  TIPOS_FOTO,
-  type CampoProducto,
-  type EstadoFormularioProducto,
-} from "./validacion";
+import type { CampoProducto, EstadoFormularioProducto } from "./validacion";
 
 type Props = {
   accion: (
@@ -53,59 +41,12 @@ export function FormularioProducto({
   });
   const { errores } = estado;
 
-  const [foto, setFoto] = useState<File | null>(null);
-  const [vistaPrevia, setVistaPrevia] = useState<string | null>(null);
-  const [quitarFoto, setQuitarFoto] = useState(false);
-  const [procesando, setProcesando] = useState(false);
-  const [errorFoto, setErrorFoto] = useState<string | null>(null);
-
-  // La vista previa es una dirección temporal: se libera al cambiarla.
-  useEffect(
-    () => () => {
-      if (vistaPrevia) URL.revokeObjectURL(vistaPrevia);
-    },
-    [vistaPrevia],
-  );
-
-  async function elegirFoto(evento: ChangeEvent<HTMLInputElement>) {
-    const archivo = evento.target.files?.[0];
-    evento.target.value = "";
-    if (!archivo) return;
-
-    setErrorFoto(null);
-    setProcesando(true);
-    try {
-      const reducida = await reducirFoto(archivo);
-      setFoto(reducida);
-      setVistaPrevia(URL.createObjectURL(reducida));
-    } catch {
-      // Si el navegador no sabe reducirla, se sube tal cual si se puede.
-      if (TIPOS_FOTO.includes(archivo.type) && archivo.size <= TAMANO_MAXIMO_FOTO) {
-        setFoto(archivo);
-        setVistaPrevia(URL.createObjectURL(archivo));
-      } else {
-        setErrorFoto("No se ha podido preparar esa foto. Prueba con otra.");
-      }
-    } finally {
-      setProcesando(false);
-    }
-  }
-
-  function quitar() {
-    setFoto(null);
-    setVistaPrevia(null);
-    setQuitarFoto(Boolean(fotoActual));
-  }
+  const selectorFoto = useSelectorFoto(fotoActual);
 
   function guardar(evento: FormEvent<HTMLFormElement>) {
     evento.preventDefault();
     const datos = new FormData(evento.currentTarget);
-    datos.delete("foto_elegida");
-    if (foto) {
-      datos.set("foto", foto);
-    } else if (quitarFoto) {
-      datos.set("quitar_foto", "si");
-    }
+    selectorFoto.prepararEnvio(datos);
     startTransition(() => enviar(datos));
   }
 
@@ -115,62 +56,14 @@ export function FormularioProducto({
       ? { "aria-invalid": true, "aria-describedby": `${campo}-error` }
       : {};
 
-  const fotoVisible = vistaPrevia ?? (quitarFoto ? null : fotoActual);
-  const mensajeFoto = errorFoto ?? errores.foto;
-
   return (
     <form onSubmit={guardar} className="flex flex-col gap-5" noValidate>
-      <div className="flex flex-col gap-2">
-        <span className="text-sm font-medium">Foto (opcional)</span>
-        <div className="flex items-end gap-4">
-          <div className="relative flex size-32 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted text-muted-foreground">
-            {fotoVisible ? (
-              // Vista previa local o foto ya subida: no pasa por next/image.
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={fotoVisible}
-                alt="Foto del producto"
-                className="size-full object-cover"
-              />
-            ) : (
-              <ShoppingBag className="size-8" aria-hidden />
-            )}
-          </div>
-          <div className="flex flex-col gap-2">
-            <label className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-md border bg-background px-3 text-sm font-medium has-focus-visible:ring-2 has-focus-visible:ring-ring">
-              <ImagePlus className="size-4" aria-hidden />
-              {fotoVisible ? "Cambiar foto" : "Elegir foto"}
-              <input
-                type="file"
-                name="foto_elegida"
-                accept="image/*"
-                onChange={elegirFoto}
-                className="sr-only"
-                aria-describedby={mensajeFoto ? "foto-error" : undefined}
-              />
-            </label>
-            {fotoVisible && (
-              <Button
-                type="button"
-                variant="ghost"
-                className="h-10 justify-start"
-                onClick={quitar}
-              >
-                <X aria-hidden />
-                Quitar la foto
-              </Button>
-            )}
-          </div>
-        </div>
-        {procesando && (
-          <p className="text-sm text-muted-foreground">Preparando la foto…</p>
-        )}
-        {mensajeFoto && (
-          <p id="foto-error" className="text-sm text-destructive">
-            {mensajeFoto}
-          </p>
-        )}
-      </div>
+      <SelectorFoto
+        selector={selectorFoto}
+        error={errores.foto}
+        icono={ShoppingBag}
+        alt="Foto del producto"
+      />
 
       <CampoFormulario id="nombre" etiqueta="Nombre" error={errores.nombre}>
         <Input
@@ -254,7 +147,7 @@ export function FormularioProducto({
       <div className="flex flex-col gap-3">
         <Button
           type="submit"
-          disabled={pendiente || procesando}
+          disabled={pendiente || selectorFoto.procesando}
           className="h-11 w-full"
         >
           {pendiente ? "Guardando…" : textoBoton}

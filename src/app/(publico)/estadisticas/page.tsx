@@ -1,19 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Clasificacion, type FilaClasificacion } from "@/components/clasificacion";
+import { Racha } from "@/components/partidos/racha";
 import { PestanasEquipo } from "@/components/pestanas";
 import { SelectorTemporada } from "@/components/selector-temporada";
-import {
-  COLOR_DESENLACE,
-  NOMBRE_DESENLACE,
-  desenlace,
-  equipos,
-  titulo,
-  type Partido,
-} from "@/lib/partidos";
+import type { Partido } from "@/lib/partidos";
 import { nombreTemporada, temporadaPedida } from "@/lib/temporadas";
 import { contar } from "@/lib/textos";
-import { cn } from "@/lib/utils";
 import { cargarPartidos } from "../partidos/datos";
 import { cargarNombres } from "../plantilla/datos";
 import {
@@ -82,91 +74,94 @@ export default async function PaginaEstadisticas({
         <SelectorTemporada temporada={temporada} ruta="/estadisticas" />
       </div>
 
-      {balance.jugados === 0 ? (
-        <p className="rounded-xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
-          Todavía no hay partidos jugados en esta temporada.
-        </p>
-      ) : (
-        <TarjetaBalance balance={balance} racha={racha} />
-      )}
+      {/* En el ordenador, el equipo a un lado y los jugadores al otro. */}
+      <div className="grid gap-6 lg:grid-cols-[2fr_3fr] lg:items-start">
+        {balance.jugados === 0 ? (
+          <p className="rounded-xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
+            Todavía no hay partidos jugados en esta temporada.
+          </p>
+        ) : (
+          <TarjetaBalance balance={balance} racha={racha} />
+        )}
 
-      {estadisticas.length > 0 && (
-        <section
-          aria-labelledby="titulo-clasificaciones"
-          className="flex flex-col gap-4"
-        >
-          <h2
-            id="titulo-clasificaciones"
-            className="text-xl font-semibold tracking-tight"
+        {estadisticas.length > 0 && (
+          <section
+            aria-labelledby="titulo-clasificaciones"
+            className="flex flex-col gap-4"
           >
-            Jugadores
-          </h2>
+            <h2
+              id="titulo-clasificaciones"
+              className="text-xl font-semibold tracking-tight"
+            >
+              Jugadores
+            </h2>
 
-          <Clasificacion
-            titulo="Goleadores"
-            filas={clasificar(
-              (fila) => fila.goles,
-              (fila) => ({
-                valor: contar(fila.goles, "gol", "goles"),
-                detalle: contar(fila.partidos_jugados, "partido jugado", "partidos jugados"),
-              }),
-            )}
-          />
-          <Clasificacion
-            titulo="Asistencias"
-            filas={clasificar(
-              (fila) => fila.asistencias,
-              (fila) => ({
-                valor: contar(fila.asistencias, "asistencia", "asistencias"),
-              }),
-            )}
-          />
-          <Clasificacion
-            titulo="Minutos jugados"
-            filas={clasificar(
-              (fila) => fila.minutos,
-              (fila) => ({
-                valor: `${fila.minutos} min`,
-                detalle: contar(fila.partidos_jugados, "partido jugado", "partidos jugados"),
-              }),
-            )}
-          />
-          <Clasificacion
-            titulo="Partidos jugados"
-            filas={clasificar(
-              (fila) => fila.partidos_jugados,
-              (fila) => ({
-                valor: contar(fila.partidos_jugados, "partido", "partidos"),
-                detalle: `${
-                  fila.titularidades === 0
-                    ? "Siempre desde el banquillo"
-                    : `${contar(fila.titularidades, "vez", "veces")} de titular`
-                } · ${contar(fila.convocatorias, "convocatoria", "convocatorias")}`,
-              }),
-            )}
-          />
-          <Clasificacion
-            titulo="Tarjetas"
-            copa={false}
-            filas={clasificar(
-              (fila) => fila.tarjetas_amarillas + fila.tarjetas_rojas,
-              (fila) => ({
-                valor: [
-                  fila.tarjetas_amarillas > 0 &&
-                    contar(fila.tarjetas_amarillas, "amarilla", "amarillas"),
-                  fila.tarjetas_rojas > 0 &&
-                    contar(fila.tarjetas_rojas, "roja", "rojas"),
-                ]
-                  .filter(Boolean)
-                  .join(" · "),
-              }),
-              // Con las mismas tarjetas, va delante quien tiene más rojas.
-              (fila) =>
-                `${fila.tarjetas_amarillas + fila.tarjetas_rojas}-${fila.tarjetas_rojas}`,
-            )}
-          />
-        </section>
-      )}
+            <Clasificacion
+              titulo="Goleadores"
+              filas={clasificar(
+                (fila) => fila.goles,
+                (fila) => ({
+                  valor: contar(fila.goles, "gol", "goles"),
+                  detalle: contar(fila.partidos_jugados, "partido jugado", "partidos jugados"),
+                }),
+              )}
+            />
+            <Clasificacion
+              titulo="Asistencias"
+              filas={clasificar(
+                (fila) => fila.asistencias,
+                (fila) => ({
+                  valor: contar(fila.asistencias, "asistencia", "asistencias"),
+                }),
+              )}
+            />
+            <Clasificacion
+              titulo="Minutos jugados"
+              filas={clasificar(
+                (fila) => fila.minutos,
+                (fila) => ({
+                  valor: `${fila.minutos} min`,
+                  detalle: contar(fila.partidos_jugados, "partido jugado", "partidos jugados"),
+                }),
+              )}
+            />
+            <Clasificacion
+              titulo="Partidos jugados"
+              filas={clasificar(
+                (fila) => fila.partidos_jugados,
+                (fila) => ({
+                  valor: contar(fila.partidos_jugados, "partido", "partidos"),
+                  detalle: `${
+                    fila.titularidades === 0
+                      ? "Siempre desde el banquillo"
+                      : `${contar(fila.titularidades, "vez", "veces")} de titular`
+                  } · ${contar(fila.convocatorias, "convocatoria", "convocatorias")}`,
+                }),
+              )}
+            />
+            <Clasificacion
+              titulo="Tarjetas"
+              copa={false}
+              filas={clasificar(
+                (fila) => fila.tarjetas_amarillas + fila.tarjetas_rojas,
+                (fila) => ({
+                  valor: [
+                    fila.tarjetas_amarillas > 0 &&
+                      contar(fila.tarjetas_amarillas, "amarilla", "amarillas"),
+                    fila.tarjetas_rojas > 0 &&
+                      contar(fila.tarjetas_rojas, "roja", "rojas"),
+                  ]
+                    .filter(Boolean)
+                    .join(" · "),
+                }),
+                // Con las mismas tarjetas, va delante quien tiene más rojas.
+                (fila) =>
+                  `${fila.tarjetas_amarillas + fila.tarjetas_rojas}-${fila.tarjetas_rojas}`,
+              )}
+            />
+          </section>
+        )}
+      </div>
     </div>
   );
 }
@@ -207,46 +202,5 @@ function TarjetaBalance({
       </dl>
       <Racha partidos={racha} />
     </section>
-  );
-}
-
-/**
- * Los últimos resultados, del más antiguo al más reciente: una V, una E o
- * una D por partido, que llevan a cada uno.
- */
-function Racha({ partidos }: { partidos: Partido[] }) {
-  return (
-    <div className="flex flex-col gap-2 rounded-xl border bg-card px-4 py-3">
-      <p className="text-xs text-muted-foreground">
-        Últimos partidos, del más antiguo al más reciente
-      </p>
-      <ol className="flex gap-2">
-        {partidos.map((partido) => {
-          // Solo llegan partidos jugados con resultado.
-          const resultado = desenlace(partido) ?? "empate";
-          const nombre = NOMBRE_DESENLACE[resultado];
-          // Los goles en el orden del título: primero los del que juega en casa.
-          const [local, visitante] = equipos(partido);
-          const marcador = `${local.goles}–${visitante.goles}`;
-          return (
-            <li key={partido.id}>
-              <Link
-                href={`/partidos/${partido.id}`}
-                title={`${titulo(partido)}: ${marcador}`}
-                className={cn(
-                  "flex size-11 items-center justify-center rounded-full font-display text-lg font-semibold",
-                  COLOR_DESENLACE[resultado],
-                )}
-              >
-                <span aria-hidden>{nombre.charAt(0)}</span>
-                <span className="sr-only">
-                  {nombre}: {titulo(partido)}, {local.goles} a {visitante.goles}
-                </span>
-              </Link>
-            </li>
-          );
-        })}
-      </ol>
-    </div>
   );
 }

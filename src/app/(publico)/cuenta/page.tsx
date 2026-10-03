@@ -22,7 +22,7 @@ export default async function PaginaCuenta() {
   const administrador = esAdministrador(usuario);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="pagina-estrecha flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Mi cuenta</h1>
         <p className="text-sm text-muted-foreground">

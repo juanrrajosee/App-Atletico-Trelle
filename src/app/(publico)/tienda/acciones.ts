@@ -7,6 +7,7 @@ import type { EstadoBorrado } from "@/components/boton-borrar";
 import { exigirAdministrador } from "@/lib/auth";
 import { responder } from "@/lib/formularios";
 import { esIdValido } from "@/lib/ids";
+import { borrarFotos, subirFoto } from "@/lib/supabase/fotos";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
 import { BUCKET_FOTOS } from "@/lib/tienda";
 import {
@@ -17,36 +18,6 @@ import {
 const NO_ENCONTRADO = "No se ha encontrado el producto. Puede que se haya borrado.";
 const NO_GUARDADO = "No se han podido guardar los cambios. Inténtalo de nuevo.";
 const FOTO_NO_SUBIDA = "No se ha podido subir la foto. Inténtalo de nuevo.";
-
-type Supabase = Awaited<ReturnType<typeof crearClienteServidor>>;
-
-const EXTENSION: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-};
-
-/**
- * Sube una foto a la carpeta del producto con un nombre nuevo (así la
- * dirección cambia y nadie ve la anterior guardada en caché). Devuelve la
- * ruta, o null si no se ha podido. La sesión es la del administrador: lo
- * permiten las políticas de Storage.
- */
-async function subirFoto(supabase: Supabase, productoId: string, foto: File) {
-  const ruta = `${productoId}/${randomUUID()}.${EXTENSION[foto.type] ?? "jpg"}`;
-  const { error } = await supabase.storage
-    .from(BUCKET_FOTOS)
-    .upload(ruta, foto, { contentType: foto.type, upsert: false });
-  return error ? null : ruta;
-}
-
-/** Borra fotos que ya no se usan. Si falla, solo queda un archivo suelto. */
-async function borrarFotos(supabase: Supabase, rutas: (string | null)[]) {
-  const aBorrar = rutas.filter((ruta): ruta is string => Boolean(ruta));
-  if (aBorrar.length > 0) {
-    await supabase.storage.from(BUCKET_FOTOS).remove(aBorrar);
-  }
-}
 
 function revalidarTienda(id: string) {
   revalidatePath("/tienda");
@@ -69,7 +40,9 @@ export async function crearProducto(
   // El id se elige aquí para subir la foto a su carpeta antes de crear el
   // producto: así nunca queda un producto a medias.
   const id = randomUUID();
-  const rutaFoto = foto ? await subirFoto(supabase, id, foto) : null;
+  const rutaFoto = foto
+    ? await subirFoto(supabase, BUCKET_FOTOS, id, foto)
+    : null;
   if (foto && !rutaFoto) {
     return responder(anterior, {
       errores: { foto: FOTO_NO_SUBIDA },
@@ -89,7 +62,7 @@ export async function crearProducto(
   });
 
   if (error) {
-    await borrarFotos(supabase, [rutaFoto]);
+    await borrarFotos(supabase, BUCKET_FOTOS, [rutaFoto]);
     return responder(anterior, { errores: {}, mensaje: NO_GUARDADO, valores });
   }
 
@@ -132,7 +105,7 @@ export async function actualizarProducto(
   // Foto nueva, quitar la que hay, o dejarla como está.
   let rutaFoto = actual.foto;
   if (foto) {
-    rutaFoto = await subirFoto(supabase, id, foto);
+    rutaFoto = await subirFoto(supabase, BUCKET_FOTOS, id, foto);
     if (!rutaFoto) {
       return responder(anterior, {
         errores: { foto: FOTO_NO_SUBIDA },
@@ -161,7 +134,7 @@ export async function actualizarProducto(
   if (error) {
     // La foto recién subida ya no se usa.
     if (rutaFoto !== actual.foto) {
-      await borrarFotos(supabase, [rutaFoto]);
+      await borrarFotos(supabase, BUCKET_FOTOS, [rutaFoto]);
     }
     return responder(anterior, {
       errores: {},
@@ -172,7 +145,7 @@ export async function actualizarProducto(
 
   // La foto anterior ya no se usa.
   if (actual.foto !== rutaFoto) {
-    await borrarFotos(supabase, [actual.foto]);
+    await borrarFotos(supabase, BUCKET_FOTOS, [actual.foto]);
   }
 
   revalidarTienda(id);
@@ -202,6 +175,7 @@ export async function borrarProducto(id: string): Promise<EstadoBorrado> {
 
   await borrarFotos(
     supabase,
+    BUCKET_FOTOS,
     data.map(({ foto }) => foto),
   );
 

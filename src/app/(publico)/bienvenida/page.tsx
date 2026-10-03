@@ -17,7 +17,7 @@ export default async function PaginaBienvenida() {
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 py-10 text-center">
+    <div className="pagina-estrecha flex flex-col items-center gap-4 py-10 text-center">
       <h1 className="text-2xl font-semibold tracking-tight">
         ¡Cuenta activada!
       </h1>

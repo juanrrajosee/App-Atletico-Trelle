@@ -11,7 +11,7 @@ export default async function PaginaNuevoPartido() {
   await exigirAdministrador();
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="pagina-estrecha flex flex-col gap-6">
       <h1 className="text-2xl font-semibold tracking-tight">Nuevo partido</h1>
       <FormularioPartido
         accion={crearPartido}

@@ -44,7 +44,7 @@ export default async function PaginaTienda() {
           Todavía no hay productos en la tienda.
         </p>
       ) : (
-        <ul className="grid grid-cols-2 gap-3">
+        <ul className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
           {productos.map((producto) => (
             <li key={producto.id}>
               <Link
@@ -53,7 +53,7 @@ export default async function PaginaTienda() {
               >
                 <FotoProducto
                   producto={producto}
-                  tamanos="(min-width: 42rem) 20rem, 50vw"
+                  tamanos="(min-width: 64rem) 15rem, (min-width: 42rem) 20rem, 50vw"
                 />
                 <span className="flex flex-col gap-1 px-1 pb-1">
                   {!producto.visible && (

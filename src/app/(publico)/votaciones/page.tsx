@@ -40,7 +40,7 @@ export default async function PaginaVotaciones({
 
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Votaciones</h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="max-w-2xl text-sm text-muted-foreground">
           Después de cada partido, la afición vota al MVP, al mejor suplente
           y al jugador con más compromiso.
         </p>
@@ -64,26 +64,29 @@ export default async function PaginaVotaciones({
           </p>
         ) : (
           <>
-            <p className="text-sm text-muted-foreground">
+            <p className="max-w-2xl text-sm text-muted-foreground">
               Cuenta las veces que cada jugador ha ganado la votación de un
               partido (con empate, ganan todos los empatados). Si hay empate en
               el ranking, decide el total de votos.
             </p>
-            {CATEGORIAS_VOTACION.map((categoria) => (
-              <Clasificacion
-                key={categoria}
-                titulo={NOMBRE_CATEGORIA[categoria]}
-                filas={ranking
-                  .filter((fila) => fila.categoria === categoria)
-                  .map((fila) => ({
-                    jugadorId: fila.jugador_id,
-                    nombre: nombres.get(fila.jugador_id) ?? "Jugador",
-                    detalle: victorias(fila, categoria),
-                    valor: fila.votos === 1 ? "1 voto" : `${fila.votos} votos`,
-                    clave: `${fila.victorias}-${fila.votos}`,
-                  }))}
-              />
-            ))}
+            {/* En el ordenador, las tres categorías lado a lado. */}
+            <div className="grid gap-6 lg:grid-cols-3 lg:items-start">
+              {CATEGORIAS_VOTACION.map((categoria) => (
+                <Clasificacion
+                  key={categoria}
+                  titulo={NOMBRE_CATEGORIA[categoria]}
+                  filas={ranking
+                    .filter((fila) => fila.categoria === categoria)
+                    .map((fila) => ({
+                      jugadorId: fila.jugador_id,
+                      nombre: nombres.get(fila.jugador_id) ?? "Jugador",
+                      detalle: victorias(fila, categoria),
+                      valor: fila.votos === 1 ? "1 voto" : `${fila.votos} votos`,
+                      clave: `${fila.victorias}-${fila.votos}`,
+                    }))}
+                />
+              ))}
+            </div>
           </>
         )}
       </section>
