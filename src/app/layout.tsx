@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Oswald } from "next/font/google";
+import { connection } from "next/server";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -36,7 +37,12 @@ export const viewport: Viewport = {
   themeColor: "#6e1520",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // Todas las páginas se generan en cada petición: así sus scripts llevan el
+  // nonce de la Content-Security-Policy (ver src/proxy.ts). Una página
+  // generada de antemano no lo tendría y el navegador no la dejaría funcionar.
+  await connection();
+
   return (
     <html
       lang="es"
