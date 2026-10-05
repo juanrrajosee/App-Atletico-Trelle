@@ -1,6 +1,14 @@
 import type { NextConfig } from "next";
+import { CABECERAS_SEGURIDAD } from "./src/lib/seguridad";
 
 const nextConfig: NextConfig = {
+  // No decir con qué está hecha la app (cabecera X-Powered-By: Next.js).
+  poweredByHeader: false,
+  // Cabeceras de seguridad en todas las respuestas. La Content-Security-Policy
+  // la pone el proxy, porque cambia en cada petición.
+  async headers() {
+    return [{ source: "/:ruta*", headers: CABECERAS_SEGURIDAD }];
+  },
   experimental: {
     serverActions: {
       // Las fotos de la tienda se reducen en el móvil antes de enviarlas,
