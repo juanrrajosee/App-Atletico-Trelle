@@ -136,6 +136,15 @@ Los textos son un **borrador** redactado para esta aplicación: antes de abrirla
 
 - **Base de datos**: todas las tablas tienen Row Level Security; los tests de `supabase/tests/` comprueban qué puede leer y cambiar cada uno (sin cuenta, aficionado y administrador).
 - **Servidor**: el navegador nunca habla con Supabase; todo pasa por el servidor de la aplicación. Next.js rechaza los formularios (Server Actions) que llegan desde otra web.
+- **Límites de intentos** (`src/lib/limites.ts` y migración 0025): entrar, crear una cuenta y pedir el email para recuperar la contraseña tienen un tope por dirección IP y, en entrar y recuperar, también por email:
+
+  | Acción | Por email | Por IP |
+  | --- | --- | --- |
+  | Contraseñas equivocadas al entrar | 10 cada 15 minutos | 30 cada 15 minutos |
+  | Crear una cuenta | — | 10 por hora |
+  | Email para recuperar la contraseña | 3 por hora | 10 por hora |
+
+  Al pasarse, la aplicación dice que se espere unos minutos (aunque la contraseña sea la buena). Supabase tiene sus propios límites, pero ve la dirección del servidor de la aplicación, no la de cada persona; estos usan la dirección real. Se guarda solo una huella (SHA-256) de la IP y del email, en el esquema `privado`, que la API no publica, y se borra al día siguiente. Los límites se cambian en la función `privado.limite_de()`. Si la base de datos aún no tiene la migración, no se bloquea a nadie.
 - **Validación de lo que se escribe**: cada formulario se valida en el servidor (con zod, en los `validacion.ts`), y la base de datos repite las mismas reglas (longitudes, formatos, máximos), así que nada se guarda sin cumplirlas aunque llegue sin pasar por la aplicación. Además:
   - las fotos se comprueban por su contenido, no solo por el tipo que dice el navegador (`src/lib/fotos.ts`);
   - la página a la que se vuelve después de entrar (`?siguiente=`) tiene que ser de la propia aplicación (`src/lib/rutas.ts`): un enlace no puede llevar a otra web tras entrar;
@@ -201,7 +210,7 @@ Para probar *Continuar con Google* en local: poner `enabled = true` en `[auth.ex
 | `npm test` | Tests de la aplicación (`src/**/*.test.ts`, con el ejecutor de tests de Node): fotos y ruta de vuelta tras entrar |
 | `npm run db:iniciar` / `db:parar` | Arranca / para Supabase en local |
 | `npm run db:reset` | Recrea la base de datos local aplicando todas las migraciones |
-| `npm run db:test` | Tests de la base de datos (políticas RLS, reglas de los resultados, votaciones, estadísticas, noticias y sus fotos, club, tienda, apodos, borrado de cuentas y reglas de longitud y máximos) |
+| `npm run db:test` | Tests de la base de datos (políticas RLS, reglas de los resultados, votaciones, estadísticas, noticias y sus fotos, club, tienda, apodos, borrado de cuentas, reglas de longitud y máximos, y límites de intentos) |
 | `npm run db:tipos` | Genera `src/types/database.ts` a partir del esquema local |
 
 ## Publicar la aplicación
@@ -233,6 +242,10 @@ La aplicación se publica en dos servicios con plan gratuito suficiente para un 
 3. En *Environment Variables*, añadir `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` con los valores del paso 1.7.
 4. *Deploy*. Vercel publica la rama principal del repositorio (`main`), así que el trabajo tiene que estar en ella. Al terminar da una dirección `https://<nombre>.vercel.app`, que es la que va en el paso 1.3. Más adelante se puede poner un dominio propio en *Settings → Domains* (y cambiarlo también en Supabase).
 5. Opcional pero recomendable: en *Settings → Functions*, elegir una región europea (por ejemplo, Fráncfort) para que la aplicación esté cerca de la base de datos.
+6. Recomendable: una regla del cortafuegos de Vercel que frene a quien mande muchos formularios de acceso seguidos, antes de que lleguen a la aplicación. En el proyecto, *Firewall → Configure → + New Rule*:
+   - *If*: *Request Path* es una de `/acceso`, `/registro`, `/recuperar`, y *Method* es `POST`.
+   - *Then*: *Rate Limit*, 20 peticiones cada 60 segundos, contando por *IP*, y la acción por defecto (responder 429).
+   - *Review Changes → Publish*. En el plan gratuito cabe una regla de este tipo por proyecto.
 
 Cada vez que se sube un cambio a `main`, Vercel vuelve a publicar la aplicación sola. Si el cambio trae migraciones nuevas, hay que aplicarlas también con `npx supabase db push`.
 
@@ -284,6 +297,7 @@ src/
 │   ├── formularios.ts     # Estado común de los formularios
 │   ├── fotos.ts           # Reducir una foto en el navegador antes de subirla
 │   ├── ids.ts             # Comprobación de ids
+│   ├── limites.ts         # Límites de intentos al entrar, registrarse y recuperar la contraseña
 │   ├── noticias.ts        # Borrador o publicada, párrafos y resumen
 │   ├── partidos.ts        # Estados, local y visitante, victoria, empate o derrota
 │   ├── plantilla.ts       # Posiciones y estados: textos en español y colores
