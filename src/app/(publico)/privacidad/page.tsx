@@ -12,7 +12,7 @@ export default async function PaginaPrivacidad() {
   const email = club.email_privacidad;
 
   return (
-    <PaginaLegal titulo="Política de privacidad" actualizada="27 de septiembre de 2026">
+    <PaginaLegal titulo="Política de privacidad" actualizada="5 de octubre de 2026">
       <p>
         Esta aplicación es del club y la puede usar cualquiera sin cuenta. Aquí
         se explica qué datos personales trata, para qué y qué derechos tienes.
@@ -43,6 +43,13 @@ export default async function PaginaPrivacidad() {
             sigas dentro de tu cuenta.
           </li>
           <li>
+            <strong>Al entrar, crear una cuenta o pedir el email para
+            recuperar la contraseña</strong>: una huella cifrada de tu
+            dirección IP y de tu email (no la dirección ni el email tal cual),
+            para frenar a quien intente adivinar contraseñas. Se borra al día
+            siguiente.
+          </li>
+          <li>
             <strong>De los jugadores y de la directiva</strong>: nombre,
             dorsal, posición, estadísticas de los partidos y cargo, que el
             club publica con su conformidad. No se publica ningún dato de
@@ -65,6 +72,11 @@ export default async function PaginaPrivacidad() {
             Publicar la plantilla, las estadísticas y la directiva, con el
             consentimiento de cada persona (artículo 6.1.a del RGPD).
           </li>
+          <li>
+            Proteger las cuentas frente a quien intente adivinar contraseñas o
+            abusar del envío de emails, por interés legítimo (artículo 6.1.f
+            del RGPD).
+          </li>
         </ul>
       </Apartado>
 
@@ -72,7 +84,8 @@ export default async function PaginaPrivacidad() {
         <p>
           Tus datos se guardan mientras tengas la cuenta. Si la borras, tus
           votos siguen contando en los resultados, pero ya sin ninguna
-          relación contigo.
+          relación contigo. Las huellas de los intentos de entrar se borran al
+          día siguiente.
         </p>
       </Apartado>
 

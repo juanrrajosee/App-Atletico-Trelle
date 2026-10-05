@@ -3,8 +3,21 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import {
+  apuntarIntento,
+  intentosAgotados,
+  MENSAJE_LIMITE,
+} from "@/lib/limites";
 import { rutaDeVuelta } from "@/lib/rutas";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
+
+/**
+ * Cuando el límite que salta es el del propio Supabase. Supabase cuenta por
+ * la dirección del servidor de la aplicación, que es la misma para todos:
+ * puede saltar si entra mucha gente a la vez.
+ */
+const MENSAJE_SUPABASE_SATURADO =
+  "Ahora mismo hay muchos intentos de entrar a la vez. Espera un minuto y vuelve a probar.";
 
 export type EstadoAcceso = {
   error: string | null;
@@ -24,12 +37,20 @@ export async function iniciarSesion(
   }
 
   const supabase = await crearClienteServidor();
+  if (await intentosAgotados(supabase, "entrar", email)) {
+    return { error: MENSAJE_LIMITE, email };
+  }
+
   const { error } = await supabase.auth.signInWithPassword({
     email,
     password: contrasena,
   });
 
   if (error) {
+    // Solo cuentan las contraseñas equivocadas: son las que buscan adivinar.
+    if (error.code === "invalid_credentials") {
+      await apuntarIntento(supabase, "entrar", email);
+    }
     return { error: mensajeErrorAcceso(error.code), email };
   }
 
@@ -42,6 +63,8 @@ function mensajeErrorAcceso(codigo: string | undefined) {
       return "El email o la contraseña no son correctos.";
     case "email_not_confirmed":
       return "Todavía no has confirmado tu email: abre el enlace que te enviamos al crear la cuenta (mira también en la carpeta de spam).";
+    case "over_request_rate_limit":
+      return MENSAJE_SUPABASE_SATURADO;
     default:
       return "No se ha podido entrar. Inténtalo de nuevo en un momento.";
   }
@@ -86,6 +109,11 @@ export async function registrarse(
   }
 
   const supabase = await crearClienteServidor();
+  if (await intentosAgotados(supabase, "registro")) {
+    return { errores: {}, mensaje: MENSAJE_LIMITE, email, enviadoA: null };
+  }
+  await apuntarIntento(supabase, "registro");
+
   const { error } = await supabase.auth.signUp({
     email: resultado.data.email,
     password: resultado.data.contrasena,
@@ -123,6 +151,8 @@ function erroresRegistro(
         mensaje:
           "Se han enviado demasiados emails seguidos. Espera un poco y vuelve a intentarlo.",
       };
+    case "over_request_rate_limit":
+      return { errores: {}, mensaje: MENSAJE_SUPABASE_SATURADO };
     default:
       return {
         errores: {},
@@ -149,6 +179,11 @@ export async function pedirRecuperacion(
   }
 
   const supabase = await crearClienteServidor();
+  if (await intentosAgotados(supabase, "recuperar", email)) {
+    return { error: MENSAJE_LIMITE, email, enviadoA: null };
+  }
+  await apuntarIntento(supabase, "recuperar", email);
+
   const { error } = await supabase.auth.resetPasswordForEmail(email);
 
   if (error) {
@@ -156,7 +191,9 @@ export async function pedirRecuperacion(
       error:
         error.code === "over_email_send_rate_limit"
           ? "Se han enviado demasiados emails seguidos. Espera un poco y vuelve a intentarlo."
-          : "No se ha podido enviar el email. Inténtalo de nuevo en un momento.",
+          : error.code === "over_request_rate_limit"
+            ? MENSAJE_SUPABASE_SATURADO
+            : "No se ha podido enviar el email. Inténtalo de nuevo en un momento.",
       email,
       enviadoA: null,
     };
