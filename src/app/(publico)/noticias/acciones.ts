@@ -47,7 +47,7 @@ export async function crearNoticia(
 ): Promise<EstadoFormularioNoticia> {
   await exigirAdministrador();
 
-  const validacion = validarNoticia(formData);
+  const validacion = await validarNoticia(formData);
   if (!validacion.ok) {
     return responder(anterior, validacion.respuesta);
   }
@@ -93,7 +93,7 @@ export async function actualizarNoticia(
 ): Promise<EstadoFormularioNoticia> {
   await exigirAdministrador();
 
-  const validacion = validarNoticia(formData);
+  const validacion = await validarNoticia(formData);
   if (!validacion.ok) {
     return responder(anterior, validacion.respuesta);
   }
