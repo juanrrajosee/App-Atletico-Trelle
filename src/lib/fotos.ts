@@ -47,10 +47,10 @@ export const TAMANO_MAXIMO_FOTO = 3 * 1024 * 1024;
  * La foto que llega en el campo "foto" de un formulario (null si no se ha
  * elegido ninguna) y, si no vale, por qué.
  */
-export function fotoDelFormulario(formData: FormData): {
+export async function fotoDelFormulario(formData: FormData): Promise<{
   foto: File | null;
   error: string | null;
-} {
+}> {
   const archivo = formData.get("foto");
   const foto = archivo instanceof File && archivo.size > 0 ? archivo : null;
   if (foto && !TIPOS_FOTO.includes(foto.type)) {
@@ -59,7 +59,37 @@ export function fotoDelFormulario(formData: FormData): {
   if (foto && foto.size > TAMANO_MAXIMO_FOTO) {
     return { foto, error: "La foto pesa demasiado (más de 3 MB)." };
   }
+  if (foto && !(await esFotoDeVerdad(foto))) {
+    return { foto, error: "El archivo no es una foto JPG, PNG o WebP de verdad." };
+  }
   return { foto, error: null };
+}
+
+/**
+ * Si el contenido del archivo es del tipo que dice ser. El tipo lo pone el
+ * navegador según el nombre del archivo, y cualquiera puede cambiarlo: lo
+ * que no se puede disimular son los primeros bytes, la "firma" de cada
+ * formato.
+ */
+export async function esFotoDeVerdad(foto: File) {
+  const bytes = new Uint8Array(await foto.slice(0, 12).arrayBuffer());
+  const empiezaPor = (firma: number[], desde = 0) =>
+    firma.every((byte, i) => bytes[desde + i] === byte);
+
+  switch (foto.type) {
+    case "image/jpeg":
+      return empiezaPor([0xff, 0xd8, 0xff]);
+    case "image/png":
+      return empiezaPor([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+    case "image/webp":
+      // "RIFF", cuatro bytes de tamaño y "WEBP".
+      return (
+        empiezaPor([0x52, 0x49, 0x46, 0x46]) &&
+        empiezaPor([0x57, 0x45, 0x42, 0x50], 8)
+      );
+    default:
+      return false;
+  }
 }
 
 /**

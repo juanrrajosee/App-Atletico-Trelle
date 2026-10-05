@@ -30,7 +30,7 @@ export async function crearProducto(
 ): Promise<EstadoFormularioProducto> {
   await exigirAdministrador();
 
-  const validacion = validarProducto(formData);
+  const validacion = await validarProducto(formData);
   if (!validacion.ok) {
     return responder(anterior, validacion.respuesta);
   }
@@ -77,7 +77,7 @@ export async function actualizarProducto(
 ): Promise<EstadoFormularioProducto> {
   await exigirAdministrador();
 
-  const validacion = validarProducto(formData);
+  const validacion = await validarProducto(formData);
   if (!validacion.ok) {
     return responder(anterior, validacion.respuesta);
   }

@@ -58,14 +58,15 @@ const CAMPOS = Object.keys(esquemaProducto.shape) as CampoProducto[];
  * Valida los campos del producto y, si viene, la foto. Devuelve la foto
  * aparte (null si no se ha elegido ninguna).
  */
-export function validarProducto(formData: FormData):
+export async function validarProducto(formData: FormData): Promise<
   | {
       ok: true;
       datos: DatosProducto;
       foto: File | null;
       valores: EstadoFormularioProducto["valores"];
     }
-  | { ok: false; respuesta: RespuestaFormularioProducto } {
+  | { ok: false; respuesta: RespuestaFormularioProducto }
+> {
   const valores = Object.fromEntries(
     CAMPOS.map((campo) => [campo, String(formData.get(campo) ?? "")]),
   ) as Record<CampoProducto, string>;
@@ -74,7 +75,7 @@ export function validarProducto(formData: FormData):
 
   const errores: EstadoFormularioProducto["errores"] = {};
 
-  const { foto, error: errorFoto } = fotoDelFormulario(formData);
+  const { foto, error: errorFoto } = await fotoDelFormulario(formData);
   if (errorFoto) {
     errores.foto = errorFoto;
   }

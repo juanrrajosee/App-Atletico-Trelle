@@ -46,21 +46,22 @@ const CAMPOS = Object.keys(esquemaNoticia.shape) as Exclude<
  * Valida los campos de la noticia y, si viene, la foto de portada. Devuelve
  * la foto aparte (null si no se ha elegido ninguna).
  */
-export function validarNoticia(formData: FormData):
+export async function validarNoticia(formData: FormData): Promise<
   | {
       ok: true;
       datos: DatosNoticia;
       foto: File | null;
       valores: EstadoFormularioNoticia["valores"];
     }
-  | { ok: false; respuesta: RespuestaFormularioNoticia } {
+  | { ok: false; respuesta: RespuestaFormularioNoticia }
+> {
   const valores = Object.fromEntries(
     CAMPOS.map((campo) => [campo, String(formData.get(campo) ?? "")]),
   ) as EstadoFormularioNoticia["valores"];
 
   const errores: EstadoFormularioNoticia["errores"] = {};
 
-  const { foto, error: errorFoto } = fotoDelFormulario(formData);
+  const { foto, error: errorFoto } = await fotoDelFormulario(formData);
   if (errorFoto) {
     errores.foto = errorFoto;
   }
