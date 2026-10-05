@@ -382,6 +382,7 @@ export type Database = {
       };
     };
     Functions: {
+      apuntar_intento: { Args: { p_accion: string; p_clave: string }; Returns: undefined };
       borrar_mi_cuenta: { Args: Record<PropertyKey, never>; Returns: undefined };
       consultar_votacion: {
         Args: { p_partido_id: string };
@@ -415,6 +416,7 @@ export type Database = {
       };
       guardar_alineacion: { Args: { p_filas: Json; p_partido_id: string }; Returns: undefined };
       inicio_temporada: { Args: { p_temporada: number }; Returns: string };
+      intentos_agotados: { Args: { p_accion: string; p_clave: string }; Returns: boolean };
       ranking_votaciones: {
         Args: { p_temporada: number };
         Returns: {
