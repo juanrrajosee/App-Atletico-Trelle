@@ -132,6 +132,16 @@ Las páginas *Privacidad* y *Aviso legal* se enlazan en el pie de todas las pant
 
 Los textos son un **borrador** redactado para esta aplicación: antes de abrirla al público conviene que los revise alguien que conozca la normativa de protección de datos.
 
+### Seguridad
+
+- **Base de datos**: todas las tablas tienen Row Level Security; los tests de `supabase/tests/` comprueban qué puede leer y cambiar cada uno (sin cuenta, aficionado y administrador).
+- **Servidor**: el navegador nunca habla con Supabase; todo pasa por el servidor de la aplicación. Next.js rechaza los formularios (Server Actions) que llegan desde otra web.
+- **Cabeceras de seguridad** (`src/lib/seguridad.ts`), en todas las respuestas:
+  - *Content-Security-Policy*, que pone `src/proxy.ts` con un nonce nuevo en cada petición: solo se ejecutan los scripts de la propia aplicación, así que un script colado en un texto no funciona; las imágenes solo pueden venir de la aplicación y de Supabase; los formularios solo van a la aplicación (y a Supabase y Google para entrar con Google), y nadie puede meter la aplicación en un iframe. Por el nonce, todas las páginas se generan en cada petición (`connection()` en `src/app/layout.tsx`).
+  - *X-Frame-Options*, *X-Content-Type-Options*, *Referrer-Policy*, *Permissions-Policy* (sin cámara, micrófono ni ubicación), *Strict-Transport-Security* y *Cross-Origin-Opener-Policy*, en `next.config.ts`, que además quita la cabecera *X-Powered-By*.
+
+  Si algún día se añade algo de fuera (un vídeo de YouTube, estadísticas de visitas…), hay que permitirlo en la Content-Security-Policy o el navegador lo bloqueará.
+
 ### Navegación
 
 La barra de abajo tiene *Inicio*, *Partidos*, *Noticias*, *Equipo* y *Club*. *Equipo* reúne con pestañas la plantilla, las estadísticas y las votaciones, y *Club* la información del club y la tienda. En un móvil caben cómodamente cinco secciones, así que lo que venga se agrupa igual.
@@ -272,6 +282,7 @@ src/
 │   ├── partidos.ts        # Estados, local y visitante, victoria, empate o derrota
 │   ├── plantilla.ts       # Posiciones y estados: textos en español y colores
 │   ├── rutas.ts           # A qué página volver después de entrar
+│   ├── seguridad.ts       # Cabeceras de seguridad y Content-Security-Policy
 │   ├── supabase/          # Clientes de Supabase y proveedores de acceso
 │   ├── temporadas.ts      # Qué temporada es y cómo se llama
 │   ├── textos.ts          # Singular y plural ("1 gol", "3 goles") y párrafos
@@ -280,7 +291,7 @@ src/
 │   └── votaciones.ts      # Categorías y candidatos de las votaciones
 ├── types/
 │   └── database.ts        # Tipos generados desde el esquema (no editar a mano)
-└── proxy.ts               # Refresca la sesión en cada petición
+└── proxy.ts               # Refresca la sesión y pone la Content-Security-Policy en cada petición
 supabase/
 ├── config.toml            # Configuración de Supabase en local
 ├── migrations/            # Esquema de la base de datos, en SQL numerado
