@@ -136,6 +136,11 @@ Los textos son un **borrador** redactado para esta aplicación: antes de abrirla
 
 - **Base de datos**: todas las tablas tienen Row Level Security; los tests de `supabase/tests/` comprueban qué puede leer y cambiar cada uno (sin cuenta, aficionado y administrador).
 - **Servidor**: el navegador nunca habla con Supabase; todo pasa por el servidor de la aplicación. Next.js rechaza los formularios (Server Actions) que llegan desde otra web.
+- **Validación de lo que se escribe**: cada formulario se valida en el servidor (con zod, en los `validacion.ts`), y la base de datos repite las mismas reglas (longitudes, formatos, máximos), así que nada se guarda sin cumplirlas aunque llegue sin pasar por la aplicación. Además:
+  - las fotos se comprueban por su contenido, no solo por el tipo que dice el navegador (`src/lib/fotos.ts`);
+  - la página a la que se vuelve después de entrar (`?siguiente=`) tiene que ser de la propia aplicación (`src/lib/rutas.ts`): un enlace no puede llevar a otra web tras entrar;
+  - los ids de las direcciones se comprueban antes de buscarlos (`src/lib/ids.ts`);
+  - React escapa todo el texto que se enseña, y la aplicación nunca pinta HTML escrito por alguien.
 - **Cabeceras de seguridad** (`src/lib/seguridad.ts`), en todas las respuestas:
   - *Content-Security-Policy*, que pone `src/proxy.ts` con un nonce nuevo en cada petición: solo se ejecutan los scripts de la propia aplicación, así que un script colado en un texto no funciona; las imágenes solo pueden venir de la aplicación y de Supabase; los formularios solo van a la aplicación (y a Supabase y Google para entrar con Google), y nadie puede meter la aplicación en un iframe. Por el nonce, todas las páginas se generan en cada petición (`connection()` en `src/app/layout.tsx`).
   - *X-Frame-Options*, *X-Content-Type-Options*, *Referrer-Policy*, *Permissions-Policy* (sin cámara, micrófono ni ubicación), *Strict-Transport-Security* y *Cross-Origin-Opener-Policy*, en `next.config.ts`, que además quita la cabecera *X-Powered-By*.
@@ -193,9 +198,10 @@ Para probar *Continuar con Google* en local: poner `enabled = true` en `[auth.ex
 | `npm run build` | Compilación de producción |
 | `npm run lint` | ESLint |
 | `npm run typecheck` | Comprobación de tipos (TypeScript) |
+| `npm test` | Tests de la aplicación (`src/**/*.test.ts`, con el ejecutor de tests de Node): fotos y ruta de vuelta tras entrar |
 | `npm run db:iniciar` / `db:parar` | Arranca / para Supabase en local |
 | `npm run db:reset` | Recrea la base de datos local aplicando todas las migraciones |
-| `npm run db:test` | Tests de la base de datos (políticas RLS, reglas de los resultados, votaciones, estadísticas, noticias y sus fotos, club, tienda, apodos y borrado de cuentas) |
+| `npm run db:test` | Tests de la base de datos (políticas RLS, reglas de los resultados, votaciones, estadísticas, noticias y sus fotos, club, tienda, apodos, borrado de cuentas y reglas de longitud y máximos) |
 | `npm run db:tipos` | Genera `src/types/database.ts` a partir del esquema local |
 
 ## Publicar la aplicación
