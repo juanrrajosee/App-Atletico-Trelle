@@ -11,7 +11,11 @@ import { cn } from "@/lib/utils";
  * el navegador), o la orden de quitar la que había. El formulario se envía
  * a mano y, antes, `prepararEnvio` pone la foto en los datos.
  */
-export function useSelectorFoto(fotoActual: string | null) {
+export function useSelectorFoto(
+  fotoActual: string | null,
+  /** El lado más largo, en píxeles, al que se reduce la foto. */
+  ladoMaximo?: number,
+) {
   const [foto, setFoto] = useState<File | null>(null);
   const [vistaPrevia, setVistaPrevia] = useState<string | null>(null);
   const [quitarFoto, setQuitarFoto] = useState(false);
@@ -34,7 +38,7 @@ export function useSelectorFoto(fotoActual: string | null) {
     setErrorFoto(null);
     setProcesando(true);
     try {
-      const reducida = await reducirFoto(archivo);
+      const reducida = await reducirFoto(archivo, ladoMaximo);
       setFoto(reducida);
       setVistaPrevia(URL.createObjectURL(reducida));
     } catch {
@@ -93,7 +97,7 @@ export function SelectorFoto({
   /** Lo que se ve en el hueco mientras no hay foto. */
   icono: LucideIcon;
   alt: string;
-  /** Para una portada (noticias); si no, cuadrada (productos). */
+  /** Para una portada (noticias); si no, cuadrada. */
   apaisada?: boolean;
 }) {
   const { fotoVisible, procesando, errorFoto, elegirFoto, quitar } = selector;

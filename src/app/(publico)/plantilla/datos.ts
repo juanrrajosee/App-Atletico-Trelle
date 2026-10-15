@@ -17,6 +17,8 @@ export type Jugador = {
   apodo: string | null;
   dorsal: number;
   posicion: Posicion;
+  /** Ruta de su foto en Storage, si tiene (solo con su permiso). */
+  foto: string | null;
   /** False si está de baja. */
   activo: boolean;
   /**
@@ -27,9 +29,10 @@ export type Jugador = {
   estado: EstadoJugador | null;
 };
 
-const COLUMNAS_PUBLICAS = "id, nombre, apellidos, apodo, dorsal, posicion, activo";
+const COLUMNAS_PUBLICAS =
+  "id, nombre, apellidos, apodo, dorsal, posicion, activo, foto";
 const COLUMNAS_ADMINISTRADOR =
-  "id, nombre, apellidos, apodo, dorsal, posicion, estado";
+  "id, nombre, apellidos, apodo, dorsal, posicion, estado, foto";
 
 type FilaPublica = {
   id: string | null;
@@ -39,6 +42,7 @@ type FilaPublica = {
   dorsal: number | null;
   posicion: Posicion | null;
   activo: boolean | null;
+  foto: string | null;
 };
 
 /**
@@ -46,11 +50,21 @@ type FilaPublica = {
  * opcionales aunque en la tabla no lo sean: aquí se descartan esos casos.
  */
 function desdeVistaPublica(fila: FilaPublica): Jugador | null {
-  const { id, nombre, apellidos, apodo, dorsal, posicion, activo } = fila;
+  const { id, nombre, apellidos, apodo, dorsal, posicion, activo, foto } = fila;
   if (!id || !nombre || !apellidos || !dorsal || !posicion || activo === null) {
     return null;
   }
-  return { id, nombre, apellidos, apodo, dorsal, posicion, activo, estado: null };
+  return {
+    id,
+    nombre,
+    apellidos,
+    apodo,
+    dorsal,
+    posicion,
+    foto,
+    activo,
+    estado: null,
+  };
 }
 
 /**

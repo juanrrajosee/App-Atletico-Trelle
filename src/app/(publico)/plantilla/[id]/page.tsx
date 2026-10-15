@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Escudo } from "@/components/escudo";
 import { EtiquetaEstado } from "@/components/plantilla/etiqueta-estado";
+import { FotoJugador } from "@/components/plantilla/foto-jugador";
 import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
 import { NOMBRE_POSICION, nombreVisible } from "@/lib/plantilla";
@@ -44,31 +45,42 @@ export default async function PaginaJugador({
         <div className="flex flex-col gap-6">
           {/* Como los carteles del club: los dos granates de la camiseta, el
               dorsal en grande y el escudo en la esquina. */}
-          <header className="relative flex flex-col gap-3 overflow-hidden rounded-2xl fondo-camiseta p-5 text-white shadow-sm">
+          <header className="relative flex gap-4 overflow-hidden rounded-2xl fondo-camiseta p-5 text-white shadow-sm">
             <Escudo tamano={44} decorativo className="absolute top-4 right-4" />
-            <p className="font-display text-7xl leading-none font-semibold tabular-nums">
-              <span className="sr-only">Dorsal </span>
-              {jugador.dorsal}
-            </p>
-            <div className="flex min-w-0 flex-col gap-1">
-              <h1 className="text-3xl leading-tight font-semibold uppercase">
-                {nombreVisible(jugador)}
-              </h1>
-              {jugador.apodo && (
-                <p className="text-white/90">
-                  {jugador.nombre} {jugador.apellidos}
-                </p>
-              )}
-              <p className="text-sm tracking-[0.2em] text-white/80 uppercase">
-                {NOMBRE_POSICION[jugador.posicion]}
+            <div className="flex min-w-0 flex-1 flex-col gap-3">
+              <p className="font-display text-7xl leading-none font-semibold tabular-nums">
+                <span className="sr-only">Dorsal </span>
+                {jugador.dorsal}
               </p>
+              <div className="flex min-w-0 flex-col gap-1">
+                <h1 className="text-3xl leading-tight font-semibold uppercase">
+                  {nombreVisible(jugador)}
+                </h1>
+                {jugador.apodo && (
+                  <p className="text-white/90">
+                    {jugador.nombre} {jugador.apellidos}
+                  </p>
+                )}
+                <p className="text-sm tracking-[0.2em] text-white/80 uppercase">
+                  {NOMBRE_POSICION[jugador.posicion]}
+                </p>
+              </div>
+              {/* El estado detallado solo lo ve el administrador; el público
+                  solo sabe si el jugador sigue en la plantilla. */}
+              {jugador.estado ? (
+                <EtiquetaEstado estado={jugador.estado} />
+              ) : (
+                !jugador.activo && <EtiquetaEstado estado="baja" />
+              )}
             </div>
-            {/* El estado detallado solo lo ve el administrador; el público
-                solo sabe si el jugador sigue en la plantilla. */}
-            {jugador.estado ? (
-              <EtiquetaEstado estado={jugador.estado} />
-            ) : (
-              !jugador.activo && <EtiquetaEstado estado="baja" />
+            {/* La foto, debajo del escudo y al lado del nombre. */}
+            {jugador.foto && (
+              <FotoJugador
+                ruta={jugador.foto}
+                tamanos="(min-width: 1024px) 144px, 112px"
+                inmediata
+                className="mt-12 aspect-[3/4] w-28 shrink-0 self-start rounded-xl ring-2 ring-white/40 lg:w-36"
+              />
             )}
           </header>
 

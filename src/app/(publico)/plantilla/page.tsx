@@ -4,6 +4,7 @@ import Link from "next/link";
 import { PestanasEquipo } from "@/components/pestanas";
 import { Dorsal } from "@/components/plantilla/dorsal";
 import { EtiquetaEstado } from "@/components/plantilla/etiqueta-estado";
+import { FotoJugador } from "@/components/plantilla/foto-jugador";
 import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
 import {
@@ -93,7 +94,23 @@ function GrupoJugadores({
               href={`/plantilla/${jugador.id}`}
               className="flex min-h-14 items-center gap-3 px-4 py-2 active:bg-accent"
             >
-              <Dorsal numero={jugador.dorsal} />
+              {jugador.foto ? (
+                // Con foto, ocupa el hueco del dorsal y este pasa a chapa en
+                // la esquina: todas las filas siguen alineadas.
+                <span className="relative shrink-0">
+                  <FotoJugador
+                    ruta={jugador.foto}
+                    tamanos="40px"
+                    className="size-10 rounded-lg"
+                  />
+                  <span className="absolute -right-1.5 -bottom-1.5 min-w-5 rounded-md bg-primary px-1 text-center font-display text-xs leading-5 font-semibold text-primary-foreground tabular-nums ring-2 ring-card">
+                    <span className="sr-only">Dorsal </span>
+                    {jugador.dorsal}
+                  </span>
+                </span>
+              ) : (
+                <Dorsal numero={jugador.dorsal} />
+              )}
               <span className="flex min-w-0 flex-1 flex-col">
                 <span className="truncate font-medium">
                   {nombreVisible(jugador)}

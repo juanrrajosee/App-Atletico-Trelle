@@ -1,12 +1,15 @@
 "use server";
 
 import type { PostgrestError } from "@supabase/supabase-js";
+import { randomUUID } from "node:crypto";
 import { refresh, revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { EstadoBorrado } from "@/components/boton-borrar";
 import { exigirAdministrador } from "@/lib/auth";
 import { responder } from "@/lib/formularios";
 import { esIdValido } from "@/lib/ids";
+import { BUCKET_FOTOS_JUGADORES } from "@/lib/plantilla";
+import { borrarFotos, subirFoto } from "@/lib/supabase/fotos";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
 import {
   validarJugador,
@@ -15,6 +18,7 @@ import {
 } from "./validacion";
 
 const NO_ENCONTRADO = "No se ha encontrado el jugador. Puede que se haya borrado.";
+const FOTO_NO_SUBIDA = "No se ha podido subir la foto. Inténtalo de nuevo.";
 
 /** Traduce los errores de la base de datos a mensajes para el formulario. */
 function respuestaConError(
@@ -50,24 +54,38 @@ export async function crearJugador(
 ): Promise<EstadoFormularioJugador> {
   await exigirAdministrador();
 
-  const validacion = validarJugador(formData);
+  const validacion = await validarJugador(formData);
   if (!validacion.ok) {
     return responder(anterior, validacion.respuesta);
   }
+  const { datos, foto, valores } = validacion;
 
   const supabase = await crearClienteServidor();
-  const { data, error } = await supabase
+  // El id se elige aquí para subir la foto a su carpeta antes de crear al
+  // jugador: así nunca queda un jugador a medias.
+  const id = randomUUID();
+  const rutaFoto = foto
+    ? await subirFoto(supabase, BUCKET_FOTOS_JUGADORES, id, foto)
+    : null;
+  if (foto && !rutaFoto) {
+    return responder(anterior, {
+      errores: { foto: FOTO_NO_SUBIDA },
+      mensaje: "Revisa los campos marcados.",
+      valores,
+    });
+  }
+
+  const { error } = await supabase
     .from("jugadores")
-    .insert(validacion.datos)
-    .select("id")
-    .single();
+    .insert({ id, ...datos, foto: rutaFoto });
 
   if (error) {
-    return responder(anterior, respuestaConError(error, validacion.valores));
+    await borrarFotos(supabase, BUCKET_FOTOS_JUGADORES, [rutaFoto]);
+    return responder(anterior, respuestaConError(error, valores));
   }
 
   revalidatePath("/plantilla");
-  redirect(`/plantilla/${data.id}`);
+  redirect(`/plantilla/${id}`);
 }
 
 export async function actualizarJugador(
@@ -77,28 +95,64 @@ export async function actualizarJugador(
 ): Promise<EstadoFormularioJugador> {
   await exigirAdministrador();
 
-  const validacion = validarJugador(formData);
+  const validacion = await validarJugador(formData);
   if (!validacion.ok) {
     return responder(anterior, validacion.respuesta);
   }
+  const { datos, foto, valores } = validacion;
+  const quitarFoto = formData.get("quitar_foto") === "si";
+
   if (!esIdValido(id)) {
-    return responder(anterior, {
-      errores: {},
-      mensaje: NO_ENCONTRADO,
-      valores: validacion.valores,
-    });
+    return responder(anterior, { errores: {}, mensaje: NO_ENCONTRADO, valores });
   }
 
   const supabase = await crearClienteServidor();
+  const { data: actual, error: errorActual } = await supabase
+    .from("jugadores")
+    .select("foto")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (errorActual) {
+    return responder(anterior, respuestaConError(errorActual, valores));
+  }
+  if (!actual) {
+    return responder(anterior, { errores: {}, mensaje: NO_ENCONTRADO, valores });
+  }
+
+  // Foto nueva, quitar la que hay, o dejarla como está.
+  let rutaFoto = actual.foto;
+  if (foto) {
+    rutaFoto = await subirFoto(supabase, BUCKET_FOTOS_JUGADORES, id, foto);
+    if (!rutaFoto) {
+      return responder(anterior, {
+        errores: { foto: FOTO_NO_SUBIDA },
+        mensaje: "Revisa los campos marcados.",
+        valores,
+      });
+    }
+  } else if (quitarFoto) {
+    rutaFoto = null;
+  }
+
   const { error } = await supabase
     .from("jugadores")
-    .update(validacion.datos)
+    .update({ ...datos, foto: rutaFoto })
     .eq("id", id)
     .select("id")
     .single();
 
   if (error) {
-    return responder(anterior, respuestaConError(error, validacion.valores));
+    // La foto recién subida ya no se usa.
+    if (rutaFoto !== actual.foto) {
+      await borrarFotos(supabase, BUCKET_FOTOS_JUGADORES, [rutaFoto]);
+    }
+    return responder(anterior, respuestaConError(error, valores));
+  }
+
+  // La foto anterior ya no se usa.
+  if (actual.foto !== rutaFoto) {
+    await borrarFotos(supabase, BUCKET_FOTOS_JUGADORES, [actual.foto]);
   }
 
   revalidatePath("/plantilla");
@@ -116,10 +170,11 @@ export async function borrarJugador(
   }
 
   const supabase = await crearClienteServidor();
-  const { error, count } = await supabase
+  const { data, error } = await supabase
     .from("jugadores")
-    .delete({ count: "exact" })
-    .eq("id", jugadorId);
+    .delete()
+    .eq("id", jugadorId)
+    .select("foto");
 
   if (error) {
     // 23503: otras tablas (estadísticas de partidos) lo referencian.
@@ -131,9 +186,16 @@ export async function borrarJugador(
     }
     return { error: "No se ha podido borrar el jugador. Inténtalo de nuevo." };
   }
-  if (count === 0) {
+  if (data.length === 0) {
     return { error: NO_ENCONTRADO };
   }
+
+  // Su foto ya no se usa.
+  await borrarFotos(
+    supabase,
+    BUCKET_FOTOS_JUGADORES,
+    data.map(({ foto }) => foto),
+  );
 
   revalidatePath("/plantilla");
   redirect("/plantilla");

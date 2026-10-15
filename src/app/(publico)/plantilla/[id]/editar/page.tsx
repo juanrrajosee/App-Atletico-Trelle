@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { exigirAdministrador } from "@/lib/auth";
-import { nombreVisible } from "@/lib/plantilla";
+import { nombreVisible, urlFotoJugador } from "@/lib/plantilla";
 import { actualizarJugador } from "../../acciones";
 import { cargarJugador } from "../../datos";
 import { FormularioJugador } from "../../formulario-jugador";
@@ -36,6 +36,7 @@ export default async function PaginaEditarJugador({
           posicion: jugador.posicion,
           estado: jugador.estado,
         }}
+        fotoActual={jugador.foto ? urlFotoJugador(jugador.foto) : null}
         textoBoton="Guardar cambios"
         hrefCancelar={`/plantilla/${jugador.id}`}
       />
