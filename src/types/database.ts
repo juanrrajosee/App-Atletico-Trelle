@@ -356,6 +356,7 @@ export type Database = {
           apellidos: string | null;
           apodo: string | null;
           dorsal: number | null;
+          foto: string | null;
           id: string | null;
           nombre: string | null;
           posicion: Database["public"]["Enums"]["posicion_jugador"] | null;
@@ -365,6 +366,7 @@ export type Database = {
           apellidos?: string | null;
           apodo?: string | null;
           dorsal?: number | null;
+          foto?: string | null;
           id?: string | null;
           nombre?: string | null;
           posicion?: Database["public"]["Enums"]["posicion_jugador"] | null;
@@ -374,6 +376,7 @@ export type Database = {
           apellidos?: string | null;
           apodo?: string | null;
           dorsal?: number | null;
+          foto?: string | null;
           id?: string | null;
           nombre?: string | null;
           posicion?: Database["public"]["Enums"]["posicion_jugador"] | null;
