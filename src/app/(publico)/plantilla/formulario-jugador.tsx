@@ -1,8 +1,10 @@
 "use client";
 
+import { UserRound } from "lucide-react";
 import Link from "next/link";
-import { useActionState } from "react";
+import { startTransition, useActionState, type FormEvent } from "react";
 import { CampoFormulario } from "@/components/campo-formulario";
+import { SelectorFoto, useSelectorFoto } from "@/components/selector-foto";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,6 +13,7 @@ import {
 } from "@/components/ui/native-select";
 import {
   ESTADOS_JUGADOR,
+  LADO_MAXIMO_FOTO_JUGADOR,
   NOMBRE_ESTADO,
   NOMBRE_POSICION,
   POSICIONES,
@@ -23,13 +26,20 @@ type Props = {
     formData: FormData,
   ) => Promise<EstadoFormularioJugador>;
   valoresIniciales: EstadoFormularioJugador["valores"];
+  /** Dirección de la foto que ya tiene el jugador, si tiene. */
+  fotoActual?: string | null;
   textoBoton: string;
   hrefCancelar: string;
 };
 
+/**
+ * Formulario de un jugador. Se envía a mano (no con action) para mandar la
+ * foto ya reducida en lugar de la original.
+ */
 export function FormularioJugador({
   accion,
   valoresIniciales,
+  fotoActual = null,
   textoBoton,
   hrefCancelar,
 }: Props) {
@@ -41,6 +51,15 @@ export function FormularioJugador({
   });
   const { errores, valores } = estado;
 
+  const selectorFoto = useSelectorFoto(fotoActual, LADO_MAXIMO_FOTO_JUGADOR);
+
+  function guardar(evento: FormEvent<HTMLFormElement>) {
+    evento.preventDefault();
+    const datos = new FormData(evento.currentTarget);
+    selectorFoto.prepararEnvio(datos);
+    startTransition(() => enviar(datos));
+  }
+
   /** Atributos comunes para marcar un campo con error. */
   const conError = (campo: CampoJugador) =>
     errores[campo]
@@ -48,12 +67,7 @@ export function FormularioJugador({
       : {};
 
   return (
-    <form
-      key={estado.intento}
-      action={enviar}
-      className="flex flex-col gap-5"
-      noValidate
-    >
+    <form onSubmit={guardar} className="flex flex-col gap-5" noValidate>
       <CampoFormulario id="nombre" etiqueta="Nombre" error={errores.nombre}>
         <Input
           id="nombre"
@@ -147,6 +161,19 @@ export function FormularioJugador({
           ))}
         </NativeSelect>
       </CampoFormulario>
+
+      <div className="flex flex-col gap-2">
+        <SelectorFoto
+          selector={selectorFoto}
+          error={errores.foto}
+          icono={UserRound}
+          alt="Foto del jugador"
+        />
+        <p className="text-xs text-muted-foreground">
+          Es una foto de una persona: súbela solo si ha dado su permiso para
+          publicarla (si es menor de edad, el de su padre, madre o tutor).
+        </p>
+      </div>
 
       {estado.mensaje && (
         <p role="alert" className="text-sm text-destructive">

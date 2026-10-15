@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { EstadoFormulario, RespuestaFormulario } from "@/lib/formularios";
+import { fotoDelFormulario } from "@/lib/fotos";
 import { ESTADOS_JUGADOR, POSICIONES } from "@/lib/plantilla";
 
 export type CampoJugador =
@@ -8,7 +9,8 @@ export type CampoJugador =
   | "apodo"
   | "dorsal"
   | "posicion"
-  | "estado";
+  | "estado"
+  | "foto";
 
 export type EstadoFormularioJugador = EstadoFormulario<CampoJugador>;
 export type RespuestaFormularioJugador = RespuestaFormulario<CampoJugador>;
@@ -48,32 +50,48 @@ const esquemaJugador = z.object({
 
 export type DatosJugador = z.infer<typeof esquemaJugador>;
 
-const CAMPOS = Object.keys(esquemaJugador.shape) as CampoJugador[];
+/** Los campos de texto; la foto se valida aparte. */
+const CAMPOS = Object.keys(esquemaJugador.shape) as (keyof DatosJugador)[];
 
-export function validarJugador(
-  formData: FormData,
-):
-  | { ok: true; datos: DatosJugador; valores: EstadoFormularioJugador["valores"] }
-  | { ok: false; respuesta: RespuestaFormularioJugador } {
+/**
+ * Valida los campos del jugador y, si viene, su foto. Devuelve la foto aparte
+ * (null si no se ha elegido ninguna).
+ */
+export async function validarJugador(formData: FormData): Promise<
+  | {
+      ok: true;
+      datos: DatosJugador;
+      foto: File | null;
+      valores: EstadoFormularioJugador["valores"];
+    }
+  | { ok: false; respuesta: RespuestaFormularioJugador }
+> {
   const valores = Object.fromEntries(
     CAMPOS.map((campo) => [campo, String(formData.get(campo) ?? "")]),
-  ) as Record<CampoJugador, string>;
+  ) as EstadoFormularioJugador["valores"];
+
+  const errores: EstadoFormularioJugador["errores"] = {};
+
+  const { foto, error: errorFoto } = await fotoDelFormulario(formData);
+  if (errorFoto) {
+    errores.foto = errorFoto;
+  }
 
   const resultado = esquemaJugador.safeParse(valores);
-
-  if (resultado.success) {
-    return { ok: true, datos: resultado.data, valores };
+  if (!resultado.success) {
+    const porCampo = z.flattenError(resultado.error).fieldErrors;
+    for (const campo of CAMPOS) {
+      const mensaje = porCampo[campo]?.[0];
+      if (mensaje) errores[campo] = mensaje;
+    }
   }
 
-  const porCampo = z.flattenError(resultado.error).fieldErrors;
-  const errores: EstadoFormularioJugador["errores"] = {};
-  for (const campo of CAMPOS) {
-    const mensaje = porCampo[campo]?.[0];
-    if (mensaje) errores[campo] = mensaje;
+  if (!resultado.success || Object.keys(errores).length > 0) {
+    return {
+      ok: false,
+      respuesta: { errores, mensaje: "Revisa los campos marcados.", valores },
+    };
   }
 
-  return {
-    ok: false,
-    respuesta: { errores, mensaje: "Revisa los campos marcados.", valores },
-  };
+  return { ok: true, datos: resultado.data, foto, valores };
 }
