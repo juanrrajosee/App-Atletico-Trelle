@@ -63,6 +63,8 @@ where id = (select id from auth.users where email = 'correo@ejemplo.com');
 
 El administrador da de alta a cada jugador desde *Equipo → Plantilla → Añadir*: nombre, apellidos, **apodo** (opcional), dorsal, posición y estado. Si tiene apodo, la aplicación le llama así en todas partes (plantilla, partidos, votaciones y estadísticas), con el nombre completo debajo en la plantilla y en su ficha. El dorsal no se puede repetir entre los que están en la plantilla. El estado (lesionado, sancionado) solo lo ve el administrador: es un dato de salud y no se publica.
 
+Cada jugador puede tener una **foto** (opcional), que se sube desde su formulario. Es una imagen de una persona, así que solo se sube la de quien ha dado su permiso para publicarla (y, si es menor, el de su padre, madre o tutor); quitarla es igual de fácil. Se reduce en el móvil a 640 píxeles por el lado largo antes de subirla, y se guarda en el bucket público `jugadores`. En la lista ocupa el hueco del dorsal (que pasa a una chapa en la esquina) y en su ficha va junto al nombre; sin foto, todo se ve como antes.
+
 ### Partidos
 
 El administrador lo hace todo desde la propia aplicación, en *Partidos*:
@@ -226,7 +228,7 @@ La aplicación se publica en dos servicios con plan gratuito suficiente para un 
    npx supabase link --project-ref <referencia-del-proyecto>
    npx supabase db push
    ```
-   La referencia es la parte de la dirección del proyecto: `https://<referencia>.supabase.co`. `db push` aplica todas las migraciones de `supabase/migrations/`: tablas, permisos (RLS), funciones, los buckets de fotos de la tienda y de las noticias y los datos legales del club.
+   La referencia es la parte de la dirección del proyecto: `https://<referencia>.supabase.co`. `db push` aplica todas las migraciones de `supabase/migrations/`: tablas, permisos (RLS), funciones, los buckets de fotos de la tienda, de las noticias y de los jugadores y los datos legales del club.
 3. En *Authentication → URL Configuration*: la dirección pública de la aplicación (la de Vercel, paso 2) como *Site URL*, y esa misma dirección con `/**` en *Redirect URLs*.
 4. En *Authentication → Emails*:
    - **Servidor de correo (SMTP)** propio. El que trae Supabase de serie solo envía a los miembros del proyecto, así que sin uno propio los aficionados no reciben los emails de confirmación ni de cambio de contraseña. Hay servicios con plan gratuito de sobra para este volumen.
@@ -271,7 +273,7 @@ src/
 │   │   ├── estadisticas/  # Balance del equipo y clasificaciones de la temporada
 │   │   ├── noticias/      # Noticias, y su escritura y publicación (administrador)
 │   │   ├── partidos/      # Calendario y resultados, y alta, edición y alineación (administrador)
-│   │   ├── plantilla/     # Plantilla y ficha de cada jugador con sus estadísticas; alta, edición y baja (administrador)
+│   │   ├── plantilla/     # Plantilla y ficha de cada jugador con sus estadísticas y foto; alta, edición y baja (administrador)
 │   │   ├── privacidad/    # Política de privacidad
 │   │   ├── tienda/        # Productos y pedir presupuesto, y su gestión con fotos (administrador)
 │   │   └── votaciones/    # Votar, resultados y ranking de la temporada
@@ -279,7 +281,7 @@ src/
 ├── components/
 │   ├── noticias/          # Lista de noticias
 │   ├── partidos/          # Marcador, tarjeta, lista y etiqueta de los partidos
-│   ├── plantilla/         # Piezas compartidas de la plantilla (etiqueta de estado)
+│   ├── plantilla/         # Piezas compartidas de la plantilla (dorsal, foto del jugador y etiqueta de estado)
 │   ├── tienda/            # Foto de un producto
 │   ├── ui/                # Componentes de shadcn/ui
 │   ├── votaciones/        # Formulario de voto y aviso de votación abierta
