@@ -17,7 +17,7 @@ Cualquiera puede abrir la aplicación y ver cuándo juega el equipo, cómo qued�
 | Votaciones por partido y rankings por categoría | Hecho |
 | Estadísticas de la temporada: balance del equipo, clasificaciones y ficha de cada jugador | Hecho |
 | Noticias, con borradores, y su escritura por el administrador | Hecho |
-| El club: historia, la de Trelle, directiva y contacto, y su edición por el administrador | Hecho |
+| El club: historia, la de Trelle, directiva, cuerpo técnico y contacto, y su edición por el administrador | Hecho |
 | Tienda con fotos: pedir presupuesto por WhatsApp o por teléfono | Hecho |
 | Panel de gestión del administrador con lo que falta por hacer | Hecho |
 | Mi cuenta: cambiar la contraseña, salir y borrar la cuenta | Hecho |
@@ -112,9 +112,9 @@ Una noticia se guarda como *borrador* (solo la ve el administrador) o *publicada
 
 ### El club
 
-La sección *Club* enseña la historia del club, la de Trelle, la directiva y el contacto (teléfono y email que se pueden pulsar, y el campo). El administrador lo rellena todo desde la propia sección: *Editar historia y contacto* para los textos y el contacto, y *Añadir* (o tocar a una persona) para la directiva, con su cargo y su posición en la lista. Lo que no se ha escrito no sale.
+La sección *Club* enseña la historia del club, la de Trelle, la directiva, el cuerpo técnico y el contacto (teléfono y email que se pueden pulsar, y el campo). El administrador lo rellena todo desde la propia sección: *Editar historia y contacto* para los textos y el contacto, y *Añadir* (o tocar a una persona) para la directiva y para el cuerpo técnico, con su cargo y su posición en la lista. Lo que no se ha escrito no sale.
 
-La directiva son datos de personas que se publican: se añade solo a quien esté de acuerdo.
+La directiva y el cuerpo técnico (entrenador, delegado…) son dos listas iguales, cada una con su tabla (`directiva` y `cuerpo_tecnico`, esta desde la migración `0027_cuerpo_tecnico.sql`): cualquiera las lee y solo el administrador las cambia. Son datos de personas que se publican: se añade solo a quien esté de acuerdo.
 
 ### Tienda
 
@@ -268,7 +268,7 @@ src/
 │   ├── (publico)/         # Parte pública: cabecera, navegación inferior, pie e inicio
 │   │   ├── administracion/ # Panel de gestión (administrador)
 │   │   ├── aviso-legal/   # Aviso legal
-│   │   ├── club/          # Historia, directiva, contacto y datos legales, y su edición (administrador)
+│   │   ├── club/          # Historia, directiva, cuerpo técnico, contacto y datos legales, y su edición (administrador)
 │   │   ├── cuenta/        # Mi cuenta: contraseña, salir y borrar la cuenta
 │   │   ├── estadisticas/  # Balance del equipo y clasificaciones de la temporada
 │   │   ├── noticias/      # Noticias, y su escritura y publicación (administrador)

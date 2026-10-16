@@ -12,7 +12,7 @@ export default async function PaginaPrivacidad() {
   const email = club.email_privacidad;
 
   return (
-    <PaginaLegal titulo="Política de privacidad" actualizada="22 de octubre de 2026">
+    <PaginaLegal titulo="Política de privacidad" actualizada="16 de octubre de 2026">
       <p>
         Esta aplicación es del club y la puede usar cualquiera sin cuenta. Aquí
         se explica qué datos personales trata, para qué y qué derechos tienes.
@@ -50,9 +50,9 @@ export default async function PaginaPrivacidad() {
             siguiente.
           </li>
           <li>
-            <strong>De los jugadores y de la directiva</strong>: nombre,
-            dorsal, posición, estadísticas de los partidos y cargo, que el
-            club publica con su conformidad. De los jugadores, también su
+            <strong>De los jugadores, de la directiva y del cuerpo técnico</strong>:
+            nombre, dorsal, posición, estadísticas de los partidos y cargo,
+            que el club publica con su conformidad. De los jugadores, también su
             foto, solo si la ha autorizado (si es menor de edad, su padre,
             madre o tutor). No se publica ningún dato de salud (por ejemplo,
             si un jugador está lesionado).
@@ -72,7 +72,8 @@ export default async function PaginaPrivacidad() {
           </li>
           <li>
             Publicar la plantilla, las estadísticas, las fotos de los
-            jugadores y la directiva, con el consentimiento de cada persona
+            jugadores, la directiva y el cuerpo técnico, con el consentimiento
+            de cada persona
             (artículo 6.1.a del RGPD). Se puede retirar cuando se quiera, y
             la foto se quita.
           </li>

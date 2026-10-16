@@ -15,7 +15,12 @@ import { PestanasClub } from "@/components/pestanas";
 import { Texto } from "@/components/texto";
 import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
-import { cargarClub, cargarDirectiva, type MiembroDirectiva } from "./datos";
+import {
+  cargarClub,
+  cargarCuerpoTecnico,
+  cargarDirectiva,
+  type MiembroDirectiva,
+} from "./datos";
 
 export const metadata: Metadata = {
   title: "El club",
@@ -23,13 +28,18 @@ export const metadata: Metadata = {
 
 export default async function PaginaClub() {
   const administrador = esAdministrador(await obtenerUsuarioActual());
-  const [club, directiva] = await Promise.all([cargarClub(), cargarDirectiva()]);
+  const [club, directiva, cuerpoTecnico] = await Promise.all([
+    cargarClub(),
+    cargarDirectiva(),
+    cargarCuerpoTecnico(),
+  ]);
 
   const hayContacto = Boolean(club.email || club.telefono || club.campo);
   const vacio =
     !club.historia_club &&
     !club.historia_trelle &&
     directiva.length === 0 &&
+    cuerpoTecnico.length === 0 &&
     !hayContacto;
 
   return (
@@ -63,8 +73,8 @@ export default async function PaginaClub() {
         </p>
       )}
 
-      {/* En el ordenador, la historia a un lado; la directiva y el contacto,
-          al otro. */}
+      {/* En el ordenador, la historia a un lado; la directiva, el cuerpo
+          técnico y el contacto, al otro. */}
       <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
         <div className="flex flex-col gap-8">
           <Seccion
@@ -83,7 +93,27 @@ export default async function PaginaClub() {
 
         <div className="flex flex-col gap-8">
           {(directiva.length > 0 || administrador) && (
-            <Directiva directiva={directiva} administrador={administrador} />
+            <ListaPersonas
+              id="directiva"
+              titulo="Directiva"
+              personas={directiva}
+              administrador={administrador}
+              rutaBase="/club/directiva"
+              vacio="Todavía no se ha añadido a nadie de la directiva."
+              paraQuien="a la directiva"
+            />
+          )}
+
+          {(cuerpoTecnico.length > 0 || administrador) && (
+            <ListaPersonas
+              id="cuerpo-tecnico"
+              titulo="Cuerpo técnico"
+              personas={cuerpoTecnico}
+              administrador={administrador}
+              rutaBase="/club/cuerpo-tecnico"
+              vacio="Todavía no se ha añadido a nadie del cuerpo técnico."
+              paraQuien="al cuerpo técnico"
+            />
           )}
 
           {hayContacto && (
@@ -155,53 +185,69 @@ function Seccion({
   );
 }
 
-function Directiva({
-  directiva,
+/**
+ * Una lista de personas con su cargo (la directiva o el cuerpo técnico). El
+ * administrador añade y entra a editar a cada una; el público solo la lee.
+ */
+function ListaPersonas({
+  id,
+  titulo,
+  personas,
   administrador,
+  rutaBase,
+  vacio,
+  paraQuien,
 }: {
-  directiva: MiembroDirectiva[];
+  id: string;
+  titulo: string;
+  personas: MiembroDirectiva[];
   administrador: boolean;
+  /** Dónde se añade (rutaBase/nuevo) y se edita (rutaBase/<id>/editar). */
+  rutaBase: string;
+  vacio: string;
+  /** Para el nombre accesible del botón: "Añadir a la directiva". */
+  paraQuien: string;
 }) {
   return (
-    <section aria-labelledby="titulo-directiva" className="flex flex-col gap-3">
+    <section aria-labelledby={`titulo-${id}`} className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-4">
-        <h2 id="titulo-directiva" className="text-xl font-semibold tracking-tight">
-          Directiva
+        <h2 id={`titulo-${id}`} className="text-xl font-semibold tracking-tight">
+          {titulo}
         </h2>
         {administrador && (
           <Button asChild variant="outline" className="h-10">
-            <Link href="/club/directiva/nuevo">
+            <Link href={`${rutaBase}/nuevo`}>
               <Plus aria-hidden />
-              Añadir
+              Añadir<span className="sr-only"> {paraQuien}</span>
             </Link>
           </Button>
         )}
       </div>
 
-      {directiva.length === 0 ? (
+      {personas.length === 0 ? (
         <p className="rounded-xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
-          Todavía no se ha añadido a nadie de la directiva.
+          {vacio}
         </p>
       ) : (
         <ul className="divide-y overflow-hidden rounded-xl border bg-card">
-          {directiva.map((miembro) => {
+          {personas.map((persona) => {
             const contenido = (
               <>
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
                   <UserRound className="size-5" aria-hidden />
                 </span>
                 <span className="flex min-w-0 flex-1 flex-col">
-                  <span className="titulo-apartado text-xs">{miembro.cargo}</span>
-                  <span className="font-medium">{miembro.nombre}</span>
+                  <span className="titulo-apartado text-xs">{persona.cargo}</span>
+                  <span className="font-medium">{persona.nombre}</span>
                 </span>
               </>
             );
             return (
-              <li key={miembro.id}>
+              <li key={persona.id}>
                 {/* El administrador entra a editar; el público solo lo lee. */}
                 {administrador ? (
                   <Link
-                    href={`/club/directiva/${miembro.id}/editar`}
+                    href={`${rutaBase}/${persona.id}/editar`}
                     className="flex min-h-14 items-center gap-3 px-4 py-2 active:bg-accent"
                   >
                     {contenido}

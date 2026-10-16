@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { exigirAdministrador } from "@/lib/auth";
 import { cargarDirectiva } from "../../datos";
 import { crearMiembro } from "../acciones";
-import { FormularioMiembro } from "../formulario-miembro";
+import { FormularioMiembro } from "../../miembros/formulario-miembro";
+import { CARGOS_DIRECTIVA } from "../../miembros/cargos";
 
 export const metadata: Metadata = {
   title: "Añadir a la directiva",
@@ -26,6 +27,7 @@ export default async function PaginaNuevoMiembro() {
         accion={crearMiembro}
         valoresIniciales={{ orden: String(siguiente) }}
         textoBoton="Añadir"
+        cargosHabituales={CARGOS_DIRECTIVA}
       />
     </div>
   );

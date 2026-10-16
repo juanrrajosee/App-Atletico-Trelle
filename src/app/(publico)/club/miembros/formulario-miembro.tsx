@@ -7,19 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { CampoMiembro, EstadoFormularioMiembro } from "./validacion";
 
-/** Cargos habituales, como sugerencia al escribir (se puede poner otro). */
-const CARGOS_HABITUALES = [
-  "Presidente",
-  "Presidenta",
-  "Vicepresidente",
-  "Vicepresidenta",
-  "Secretario",
-  "Secretaria",
-  "Tesorero",
-  "Tesorera",
-  "Vocal",
-];
-
 type Props = {
   accion: (
     estado: EstadoFormularioMiembro,
@@ -27,12 +14,15 @@ type Props = {
   ) => Promise<EstadoFormularioMiembro>;
   valoresIniciales: EstadoFormularioMiembro["valores"];
   textoBoton: string;
+  /** Cargos habituales de la lista, como sugerencia al escribir (se puede poner otro). */
+  cargosHabituales: string[];
 };
 
 export function FormularioMiembro({
   accion,
   valoresIniciales,
   textoBoton,
+  cargosHabituales,
 }: Props) {
   const [estado, enviar, pendiente] = useActionState(accion, {
     errores: {},
@@ -84,7 +74,7 @@ export function FormularioMiembro({
             {...conError("cargo")}
           />
           <datalist id="cargos-habituales">
-            {CARGOS_HABITUALES.map((cargo) => (
+            {cargosHabituales.map((cargo) => (
               <option key={cargo} value={cargo} />
             ))}
           </datalist>

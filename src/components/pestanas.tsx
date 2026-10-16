@@ -63,7 +63,7 @@ const PESTANAS_CLUB = [
   { href: "/tienda", etiqueta: "Tienda" },
 ];
 
-/** Club: la historia, la directiva y el contacto, y la tienda. */
+/** Club: la historia, la directiva, el cuerpo técnico y el contacto, y la tienda. */
 export function PestanasClub({ activa }: { activa: "/club" | "/tienda" }) {
   return <Pestanas etiqueta="Club" pestanas={PESTANAS_CLUB} activa={activa} />;
 }

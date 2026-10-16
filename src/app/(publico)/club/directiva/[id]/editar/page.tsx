@@ -4,7 +4,8 @@ import { BotonBorrar } from "@/components/boton-borrar";
 import { exigirAdministrador } from "@/lib/auth";
 import { cargarDirectiva } from "../../../datos";
 import { actualizarMiembro, borrarMiembro } from "../../acciones";
-import { FormularioMiembro } from "../../formulario-miembro";
+import { CARGOS_DIRECTIVA } from "../../../miembros/cargos";
+import { FormularioMiembro } from "../../../miembros/formulario-miembro";
 
 export const metadata: Metadata = {
   title: "Editar la directiva",
@@ -34,6 +35,7 @@ export default async function PaginaEditarMiembro({
           orden: String(miembro.orden),
         }}
         textoBoton="Guardar cambios"
+        cargosHabituales={CARGOS_DIRECTIVA}
       />
       <BotonBorrar
         accion={borrarMiembro.bind(null, miembro.id)}
