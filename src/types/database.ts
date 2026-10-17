@@ -45,6 +45,30 @@ export type Database = {
         };
         Relationships: [];
       };
+      cuerpo_tecnico: {
+        Row: {
+          cargo: string;
+          creado_en: string;
+          id: string;
+          nombre: string;
+          orden: number;
+        };
+        Insert: {
+          cargo: string;
+          creado_en?: string;
+          id?: string;
+          nombre: string;
+          orden?: number;
+        };
+        Update: {
+          cargo?: string;
+          creado_en?: string;
+          id?: string;
+          nombre?: string;
+          orden?: number;
+        };
+        Relationships: [];
+      };
       directiva: {
         Row: {
           cargo: string;

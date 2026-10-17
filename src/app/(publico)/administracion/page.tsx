@@ -15,7 +15,7 @@ import { exigirAdministrador } from "@/lib/auth";
 import { formatearFechaCorta } from "@/lib/fechas";
 import { titulo, type Partido } from "@/lib/partidos";
 import { contar } from "@/lib/textos";
-import { cargarClub, cargarDirectiva } from "../club/datos";
+import { cargarClub, cargarCuerpoTecnico, cargarDirectiva } from "../club/datos";
 import { cargarVotacionesAbiertas } from "../votaciones/datos";
 import { cargarPendientes } from "./datos";
 
@@ -28,11 +28,12 @@ type Aviso = { texto: string; href: string };
 export default async function PaginaAdministracion() {
   await exigirAdministrador();
 
-  const [pendientes, abiertas, club, directiva] = await Promise.all([
+  const [pendientes, abiertas, club, directiva, cuerpoTecnico] = await Promise.all([
     cargarPendientes(),
     cargarVotacionesAbiertas(),
     cargarClub(),
     cargarDirectiva(),
+    cargarCuerpoTecnico(),
   ]);
 
   // Lo que le falta a la sección del club.
@@ -52,6 +53,10 @@ export default async function PaginaAdministracion() {
     directiva.length === 0 && {
       texto: "No hay nadie en la directiva.",
       href: "/club/directiva/nuevo",
+    },
+    cuerpoTecnico.length === 0 && {
+      texto: "No hay nadie en el cuerpo técnico.",
+      href: "/club/cuerpo-tecnico/nuevo",
     },
     !(
       club.titular_nombre &&
