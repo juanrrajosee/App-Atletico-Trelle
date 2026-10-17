@@ -1,7 +1,7 @@
 import "server-only";
 
-import { createHash } from "node:crypto";
 import { headers } from "next/headers";
+import { hayHuellaSecreta, huella } from "@/lib/huella";
 import type { crearClienteServidor } from "@/lib/supabase/servidor";
 
 type Supabase = Awaited<ReturnType<typeof crearClienteServidor>>;
@@ -27,14 +27,17 @@ async function direccion() {
   return reenviada?.split(",")[0]?.trim() || "sin-direccion";
 }
 
-/** Huella de una IP o de un email: es lo único que se guarda. */
-function huella(valor: string) {
-  return createHash("sha256")
-    .update(`atletico-trelle:${valor.trim().toLowerCase()}`)
-    .digest("hex");
-}
+let avisadoSinSecreto = false;
 
 async function claves(accion: Accion, email?: string) {
+  // Sin LIMITES_SECRETO los límites funcionan, pero alguien podría apuntar
+  // intentos a nombre de otro llamando directamente a la base de datos.
+  if (!hayHuellaSecreta() && !avisadoSinSecreto && process.env.NODE_ENV === "production") {
+    avisadoSinSecreto = true;
+    console.warn(
+      "Falta la variable LIMITES_SECRETO: las huellas de los límites de intentos se pueden calcular desde fuera.",
+    );
+  }
   const lista = [{ accion: `${accion}_ip`, clave: huella(await direccion()) }];
   if (email) {
     lista.push({ accion: `${accion}_email`, clave: huella(email) });
