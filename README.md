@@ -137,6 +137,8 @@ Los textos son un **borrador** redactado para esta aplicación: antes de abrirla
 ### Seguridad
 
 - **Base de datos**: todas las tablas tienen Row Level Security; los tests de `supabase/tests/` comprueban qué puede leer y cambiar cada uno (sin cuenta, aficionado y administrador).
+- **Funciones de la base de datos**: las que usan los disparadores (`gestionar_nuevo_usuario`, `marcar_actualizacion`, `comprobar_resultado_con_alineacion`) no se pueden ejecutar desde la API (migración 0028). Las que sí se llaman desde fuera lo hacen a propósito: `es_administrador` (la usan las reglas de RLS), los resultados públicos de las votaciones, los límites de intentos, y, solo con cuenta, votar, guardar la alineación y borrar la cuenta. Todas las `security definer` fijan su `search_path`. El *Security Advisor* de Supabase lista las `security definer` como avisos y la vista `jugadores_publicos` como error: es lo esperado, y los tests de `supabase/tests/18_funciones_internas.sql` fijan cuáles son.
+- **Dependencias**: `npm audit --omit=dev` sin vulnerabilidades. Dependabot (`.github/dependabot.yml`) abre cada lunes un pull request con las actualizaciones pequeñas; las de versión mayor se hacen a mano.
 - **Servidor**: el navegador nunca habla con Supabase; todo pasa por el servidor de la aplicación. Next.js rechaza los formularios (Server Actions) que llegan desde otra web.
 - **Límites de intentos** (`src/lib/limites.ts` y migración 0025): entrar, crear una cuenta y pedir el email para recuperar la contraseña tienen un tope por dirección IP y, en entrar y recuperar, también por email:
 
