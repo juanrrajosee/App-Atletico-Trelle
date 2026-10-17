@@ -1,0 +1,27 @@
+# Dependabot: avisa con un pull request cuando salen versiones nuevas de las
+# librerías (las de seguridad, por supuesto, y el resto una vez por semana).
+#
+# Para que no llegue un pull request por cada librería, las actualizaciones
+# pequeñas (menores y parches) llegan juntas en uno solo. Las de versión
+# mayor no se piden: pueden cambiar cosas (Next.js, sobre todo) y se hacen a
+# mano, cuando toque, mirando antes qué cambian.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Europe/Madrid
+    open-pull-requests-limit: 3
+    groups:
+      librerias:
+        update-types:
+          - minor
+          - patch
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
+    commit-message:
+      prefix: "Dependencias"
