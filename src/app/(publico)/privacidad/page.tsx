@@ -12,7 +12,7 @@ export default async function PaginaPrivacidad() {
   const email = club.email_privacidad;
 
   return (
-    <PaginaLegal titulo="Política de privacidad" actualizada="16 de octubre de 2026">
+    <PaginaLegal titulo="Política de privacidad" actualizada="17 de octubre de 2026">
       <p>
         Esta aplicación es del club y la puede usar cualquiera sin cuenta. Aquí
         se explica qué datos personales trata, para qué y qué derechos tienes.
@@ -104,8 +104,8 @@ export default async function PaginaPrivacidad() {
           <li>Supabase: base de datos, cuentas y fotos de la tienda.</li>
           <li>Vercel: alojamiento de la aplicación.</li>
           <li>
-            El servicio de correo que envía los emails de confirmación y de
-            cambio de contraseña.
+            Google (Gmail): envía, desde la cuenta de correo del club, los
+            emails de confirmación y de cambio de contraseña.
           </li>
         </ul>
         <p>
