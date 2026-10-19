@@ -28,6 +28,14 @@ export const metadata: Metadata = {
   },
   description:
     "La aplicación del Atlético Trelle: partidos y resultados, plantilla, estadísticas, votaciones de la afición y noticias del club.",
+  // Al instalarla en el móvil (ver src/app/manifest.ts): el nombre bajo el
+  // icono y la barra de estado negra en el iPhone, que no tapa la cabecera.
+  applicationName: "Atlético Trelle",
+  appleWebApp: {
+    capable: true,
+    title: "Atlético Trelle",
+    statusBarStyle: "black",
+  },
 };
 
 // "cover" deja que la barra de navegación inferior use el espacio de la zona
