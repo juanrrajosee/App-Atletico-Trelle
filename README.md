@@ -128,6 +128,12 @@ La foto se hace o se elige desde el móvil y **se reduce en el propio móvil** (
 
 El administrador ve *Gestión* en la cabecera. Lleva a un panel con atajos para añadir un partido, una noticia o un producto, la votación abierta si la hay, y lo pendiente: partidos cuya hora ya pasó y siguen sin resultado, partidos jugados sin alineación (sin ella no hay votación ni estadísticas), lo que falta en la sección del club y lo que está sin publicar. Cada aviso lleva a donde se arregla.
 
+#### Copia de seguridad
+
+El plan gratuito de Supabase no hace copias automáticas (*Database → Backups* lo avisa), así que *Gestión* tiene un botón **Descargar copia**. Baja un único archivo `.sql` (`/administracion/copia`, solo para el administrador) con los datos de las tablas del club: jugadores, partidos, estadísticas de los partidos, noticias, directiva, cuerpo técnico, tienda y la información del club. **No** lleva las fotos (solo su ruta: hay que guardar los originales aparte), ni las cuentas de los aficionados ni sus votos. Lleva datos personales, incluido el estado de salud de los jugadores: se guarda en un sitio privado y no se comparte. Conviene bajar una después de cada partido, o al menos una vez al mes.
+
+Para restaurarla en un proyecto de Supabase con las migraciones ya aplicadas (`npx supabase db push`), se pega entera en el *SQL Editor* y se pulsa *Run*. Va en una transacción (si algo falla, no se cambia nada), y si una fila ya existe no se toca, así que se puede ejecutar encima de datos que ya estén. Los textos con comillas, barras o saltos de línea viajan escapados (`src/lib/copia.ts`, con tests). Se probó la ida y vuelta: copia, vaciar las tablas, restaurar con el archivo, y las ocho tablas quedan idénticas.
+
 ### Privacidad y aviso legal
 
 Las páginas *Privacidad* y *Aviso legal* se enlazan en el pie de todas las pantallas y en el registro. Explican qué datos personales trata la aplicación, para qué, quién más los trata (Supabase, Vercel, Google —que envía los correos desde la cuenta de Gmail del club— y, si se usa, el acceso con Google) y cómo ejercer los derechos. Como responsable aparecen los datos legales del club (nombre, CIF, domicilio y email de privacidad), que se editan en *Club → Editar historia y contacto*; se cargaron con los de su ficha en la FGF.
@@ -260,6 +266,7 @@ Cada vez que se sube un cambio a `main`, Vercel vuelve a publicar la aplicación
 3. Tener la conformidad de los jugadores y de la directiva para que salgan en la aplicación.
 4. Revisar los textos de *Privacidad* y *Aviso legal*.
 5. Probar de principio a fin con un móvil: crear una cuenta con un email de verdad (que llegue la confirmación), votar y borrar la cuenta.
+6. Bajar una copia de seguridad desde *Gestión* y guardarla fuera de aquí (el plan gratuito de Supabase no hace copias).
 
 ## Estructura del proyecto
 
