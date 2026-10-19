@@ -171,6 +171,8 @@ Los textos son un **borrador** redactado para esta aplicación: antes de abrirla
 
 La barra de abajo tiene *Inicio*, *Partidos*, *Noticias*, *Equipo* y *Club*. *Equipo* reúne con pestañas la plantilla, las estadísticas y las votaciones, y *Club* la información del club y la tienda. En un móvil caben cómodamente cinco secciones, así que lo que venga se agrupa igual.
 
+**Instalarla en el móvil.** La web lleva la ficha de una app instalable (`src/app/manifest.ts`, que Next sirve en `/manifest.webmanifest`) y los iconos con el escudo en `public/iconos/` (192, 512 y uno adaptable de 512). En Android, Chrome ofrece *Instalar aplicación*; en el iPhone, desde Safari, *Compartir → Añadir a pantalla de inicio*. Se abre a pantalla completa, con su nombre y el escudo, sin la barra del navegador. No funciona sin internet ni manda notificaciones. Un enlace abierto desde WhatsApp u otra app se abre en su navegador interno, que no deja instalarla: hay que abrirlo en Safari o en Chrome. La app instalada guarda su propia sesión, aparte de la del navegador. El escudo original es de 150 píxeles; con uno de más resolución, los iconos grandes saldrían más nítidos.
+
 ### Datos de la Federación Galega de Fútbol (FGF)
 
 La web de la FGF publica el calendario, los resultados y las actas de los partidos del Trelle, pero su [aviso legal](https://www.futgal.es/pnfg/NNws_ShwNewDup?codigo=15023&cod_primaria=140&cod_secundaria=140) solo permite un uso particular: copiar o publicar sus contenidos requiere su autorización previa y por escrito. Además, la web oculta los marcadores a los programas que la leen. Por eso la aplicación no la importa: los datos se meten a mano, y la importación queda pendiente de pedirle permiso a la FGF.
