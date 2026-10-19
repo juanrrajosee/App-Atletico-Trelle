@@ -12,7 +12,7 @@ export default async function PaginaPrivacidad() {
   const email = club.email_privacidad;
 
   return (
-    <PaginaLegal titulo="Política de privacidad" actualizada="17 de octubre de 2026">
+    <PaginaLegal titulo="Política de privacidad" actualizada="19 de octubre de 2026">
       <p>
         Esta aplicación es del club y la puede usar cualquiera sin cuenta. Aquí
         se explica qué datos personales trata, para qué y qué derechos tienes.
@@ -25,8 +25,12 @@ export default async function PaginaPrivacidad() {
       <Apartado titulo="Qué datos tratamos">
         <ul>
           <li>
-            <strong>Si usas la aplicación sin cuenta</strong>, ninguno: no
-            usamos cookies de análisis ni de publicidad.
+            <strong>Si usas la aplicación sin cuenta</strong>, ninguno que te
+            identifique: no usamos cookies de análisis ni de publicidad. Sí
+            contamos las visitas con Vercel Web Analytics, que no usa cookies,
+            no te sigue de un día para otro y solo da al club totales (páginas
+            vistas, país, navegador y tipo de dispositivo). No se cuentan las
+            pantallas de entrar, de tu cuenta ni de gestión.
           </li>
           <li>
             <strong>Si creas una cuenta</strong>: tu email y tu contraseña
@@ -102,7 +106,7 @@ export default async function PaginaPrivacidad() {
         </p>
         <ul>
           <li>Supabase: base de datos, cuentas y fotos de la tienda.</li>
-          <li>Vercel: alojamiento de la aplicación.</li>
+          <li>Vercel: alojamiento de la aplicación y contador de visitas.</li>
           <li>
             Google (Gmail): envía, desde la cuenta de correo del club, los
             emails de confirmación y de cambio de contraseña.
