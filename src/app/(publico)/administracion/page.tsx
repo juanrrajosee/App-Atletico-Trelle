@@ -3,6 +3,7 @@ import {
   ChevronRight,
   CircleAlert,
   CircleCheck,
+  Download,
   Newspaper,
   ShoppingBag,
 } from "lucide-react";
@@ -167,6 +168,24 @@ export default async function PaginaAdministracion() {
           </Grupo>
         </section>
       )}
+
+      <section aria-labelledby="titulo-copia" className="flex flex-col gap-3">
+        <h2 id="titulo-copia" className="text-xl font-semibold tracking-tight">
+          Copia de seguridad
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          El plan gratuito de Supabase no hace copias automáticas. Descarga una
+          de vez en cuando (por ejemplo, después de cada partido) y guárdala
+          fuera de aquí. Lleva datos personales: no la compartas. Las fotos
+          no van en la copia, solo sus rutas.
+        </p>
+        <Button asChild variant="outline" className="h-11 lg:w-fit">
+          <a href="/administracion/copia" download>
+            <Download aria-hidden />
+            Descargar copia
+          </a>
+        </Button>
+      </section>
     </div>
   );
 }
