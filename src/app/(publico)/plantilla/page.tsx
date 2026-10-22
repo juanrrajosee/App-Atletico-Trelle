@@ -87,12 +87,12 @@ function GrupoJugadores({
       <h2 className="mb-2 titulo-apartado">
         {titulo}
       </h2>
-      <ul className="divide-y overflow-hidden rounded-xl border bg-card">
+      <ul className="flex flex-col gap-2">
         {jugadores.map((jugador) => (
           <li key={jugador.id}>
             <Link
               href={`/plantilla/${jugador.id}`}
-              className="flex min-h-14 items-center gap-3 px-4 py-2 active:bg-accent"
+              className="tarjeta-elevable flex min-h-14 items-center gap-3 rounded-xl border bg-card px-4 py-2 shadow-xs"
             >
               {jugador.foto ? (
                 // Con foto, ocupa el hueco del dorsal y este pasa a chapa en
