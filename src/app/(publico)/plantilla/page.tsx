@@ -8,10 +8,12 @@ import { FotoJugador } from "@/components/plantilla/foto-jugador";
 import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
 import {
+  NOMBRE_POSICION,
   NOMBRE_POSICION_PLURAL,
   POSICIONES,
   nombreVisible,
 } from "@/lib/plantilla";
+import { cn } from "@/lib/utils";
 import { cargarPlantilla, type Jugador } from "./datos";
 
 export const metadata: Metadata = {
@@ -90,49 +92,90 @@ function GrupoJugadores({
       <ul className="flex flex-col gap-2">
         {jugadores.map((jugador) => (
           <li key={jugador.id}>
-            <Link
-              href={`/plantilla/${jugador.id}`}
-              className="tarjeta-elevable flex min-h-14 items-center gap-3 rounded-xl border bg-card px-4 py-2 shadow-xs"
-            >
-              {jugador.foto ? (
-                // Con foto, ocupa el hueco del dorsal y este pasa a chapa en
-                // la esquina: todas las filas siguen alineadas.
-                <span className="relative shrink-0">
-                  <FotoJugador
-                    ruta={jugador.foto}
-                    tamanos="40px"
-                    className="size-10 rounded-lg"
-                  />
-                  <span className="absolute -right-1.5 -bottom-1.5 min-w-5 rounded-md bg-primary px-1 text-center font-display text-xs leading-5 font-semibold text-primary-foreground tabular-nums ring-2 ring-card">
-                    <span className="sr-only">Dorsal </span>
-                    {jugador.dorsal}
-                  </span>
-                </span>
-              ) : (
-                <Dorsal numero={jugador.dorsal} />
-              )}
-              <span className="flex min-w-0 flex-1 flex-col">
-                <span className="truncate font-medium">
-                  {nombreVisible(jugador)}
-                </span>
-                {jugador.apodo && (
-                  <span className="truncate text-xs text-muted-foreground">
-                    {jugador.nombre} {jugador.apellidos}
-                  </span>
-                )}
-              </span>
-              {jugador.estado === "lesionado" ||
-              jugador.estado === "sancionado" ? (
-                <EtiquetaEstado estado={jugador.estado} />
-              ) : null}
-              <ChevronRight
-                className="size-4 shrink-0 text-muted-foreground"
-                aria-hidden
-              />
-            </Link>
+            <TarjetaJugador jugador={jugador} />
           </li>
         ))}
       </ul>
     </section>
+  );
+}
+
+/**
+ * Un jugador. Con foto, en el móvil la foto es grande (con su dorsal en la
+ * esquina) y al lado van el nombre y la posición; en el ordenador vuelve a
+ * ser una fila compacta. Sin foto, siempre la fila compacta con el dorsal.
+ */
+function TarjetaJugador({ jugador }: { jugador: Jugador }) {
+  const conFoto = jugador.foto !== null;
+  // Lesionado o sancionado (solo lo ve el administrador).
+  const estado =
+    jugador.estado === "lesionado" || jugador.estado === "sancionado"
+      ? jugador.estado
+      : null;
+
+  return (
+    <Link
+      href={`/plantilla/${jugador.id}`}
+      className={cn(
+        "tarjeta-elevable flex min-h-14 items-center gap-3 rounded-xl border bg-card px-4 py-2 shadow-xs",
+        conFoto && "gap-4 py-3 lg:gap-3 lg:py-2",
+      )}
+    >
+      {jugador.foto ? (
+        // Con foto, ocupa el hueco del dorsal y este pasa a chapa en la
+        // esquina: todas las filas siguen alineadas.
+        <span className="relative shrink-0">
+          <FotoJugador
+            ruta={jugador.foto}
+            tamanos="(min-width: 64rem) 40px, 96px"
+            className="aspect-4/5 w-24 rounded-lg lg:size-10"
+          />
+          <span className="absolute -right-2 -bottom-2 min-w-7 rounded-md bg-primary px-1.5 text-center font-display text-base leading-7 font-semibold text-primary-foreground tabular-nums ring-2 ring-card lg:-right-1.5 lg:-bottom-1.5 lg:min-w-5 lg:px-1 lg:text-xs lg:leading-5">
+            <span className="sr-only">Dorsal </span>
+            {jugador.dorsal}
+          </span>
+        </span>
+      ) : (
+        <Dorsal numero={jugador.dorsal} />
+      )}
+      <span className="flex min-w-0 flex-1 flex-col">
+        <span
+          className={cn(
+            "font-medium",
+            conFoto
+              ? "line-clamp-2 text-lg leading-tight font-semibold lg:truncate lg:text-base lg:font-medium"
+              : "truncate",
+          )}
+        >
+          {nombreVisible(jugador)}
+        </span>
+        {jugador.apodo && (
+          <span className="truncate text-xs text-muted-foreground">
+            {jugador.nombre} {jugador.apellidos}
+          </span>
+        )}
+        {conFoto && (
+          <span className="mt-0.5 truncate text-sm text-muted-foreground lg:hidden">
+            {NOMBRE_POSICION[jugador.posicion]}
+          </span>
+        )}
+        {/* Con foto, en el móvil la etiqueta va debajo y no le quita sitio al
+            nombre. */}
+        {estado && conFoto && (
+          <span className="mt-1.5 flex lg:hidden">
+            <EtiquetaEstado estado={estado} />
+          </span>
+        )}
+      </span>
+      {estado && (
+        <span className={cn(conFoto && "hidden lg:block")}>
+          <EtiquetaEstado estado={estado} />
+        </span>
+      )}
+      <ChevronRight
+        className="size-4 shrink-0 text-muted-foreground"
+        aria-hidden
+      />
+    </Link>
   );
 }
