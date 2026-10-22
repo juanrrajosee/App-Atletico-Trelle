@@ -127,6 +127,42 @@
   @apply mx-auto w-full max-w-2xl;
 }
 
+/* Tarjeta que reacciona: con ratón, sube unos píxeles y gana sombra; al
+   pulsarla (en el móvil, sobre todo), se hunde un poco. Si el sistema pide
+   reducir el movimiento, no se mueve ni se anima: solo gana la sombra. */
+@utility tarjeta-elevable {
+  position: relative;
+  transition:
+    transform 250ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    box-shadow 250ms ease-out,
+    background-color 150ms ease-out;
+
+  @media (hover: hover) {
+    &:hover {
+      z-index: 1;
+      transform: translateY(-4px);
+      box-shadow:
+        0 12px 24px -10px rgb(0 0 0 / 0.28),
+        0 4px 8px -4px rgb(0 0 0 / 0.12);
+    }
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.1);
+    transition-duration: 90ms;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover,
+    &:active {
+      transform: none;
+    }
+  }
+}
+
 /* Los títulos pequeños que agrupan una lista (Porteros, Goleadores,
    Próximos…). */
 @utility titulo-apartado {
