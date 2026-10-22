@@ -44,6 +44,23 @@ export const TIPOS_FOTO = ["image/jpeg", "image/png", "image/webp"];
 export const TAMANO_MAXIMO_FOTO = 3 * 1024 * 1024;
 
 /**
+ * Por qué una foto no vale (tipo, tamaño o contenido), o null si vale. Se
+ * comprueba en el servidor: lo que hace el navegador lo puede saltar cualquiera.
+ */
+export async function errorDeFoto(foto: File): Promise<string | null> {
+  if (!TIPOS_FOTO.includes(foto.type)) {
+    return "La foto tiene que ser JPG, PNG o WebP.";
+  }
+  if (foto.size > TAMANO_MAXIMO_FOTO) {
+    return "La foto pesa demasiado (más de 3 MB).";
+  }
+  if (!(await esFotoDeVerdad(foto))) {
+    return "El archivo no es una foto JPG, PNG o WebP de verdad.";
+  }
+  return null;
+}
+
+/**
  * La foto que llega en el campo "foto" de un formulario (null si no se ha
  * elegido ninguna) y, si no vale, por qué.
  */
@@ -53,16 +70,7 @@ export async function fotoDelFormulario(formData: FormData): Promise<{
 }> {
   const archivo = formData.get("foto");
   const foto = archivo instanceof File && archivo.size > 0 ? archivo : null;
-  if (foto && !TIPOS_FOTO.includes(foto.type)) {
-    return { foto, error: "La foto tiene que ser JPG, PNG o WebP." };
-  }
-  if (foto && foto.size > TAMANO_MAXIMO_FOTO) {
-    return { foto, error: "La foto pesa demasiado (más de 3 MB)." };
-  }
-  if (foto && !(await esFotoDeVerdad(foto))) {
-    return { foto, error: "El archivo no es una foto JPG, PNG o WebP de verdad." };
-  }
-  return { foto, error: null };
+  return { foto, error: foto ? await errorDeFoto(foto) : null };
 }
 
 /**

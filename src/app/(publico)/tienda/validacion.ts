@@ -1,5 +1,11 @@
 import { z } from "zod";
-import { fotoDelFormulario } from "@/lib/fotos";
+import { errorDeFoto } from "@/lib/fotos";
+import {
+  CAMPO_FOTO_NUEVA,
+  leerOrdenFotos,
+  MAX_BYTES_FOTOS_NUEVAS,
+  type ItemFoto,
+} from "@/lib/fotos-producto";
 import type { EstadoFormulario, RespuestaFormulario } from "@/lib/formularios";
 
 export type CampoProducto =
@@ -8,7 +14,7 @@ export type CampoProducto =
   | "precio"
   | "orden"
   | "visible"
-  | "foto";
+  | "fotos";
 
 export type EstadoFormularioProducto = EstadoFormulario<CampoProducto>;
 export type RespuestaFormularioProducto = RespuestaFormulario<CampoProducto>;
@@ -54,15 +60,21 @@ export type DatosProducto = z.infer<typeof esquemaProducto>;
 
 const CAMPOS = Object.keys(esquemaProducto.shape) as CampoProducto[];
 
+/** Las fotos de un envío: su orden final, y los archivos de las nuevas. */
+export type FotosEnviadas = {
+  items: ItemFoto[];
+  nuevas: Map<number, File>;
+};
+
 /**
- * Valida los campos del producto y, si viene, la foto. Devuelve la foto
- * aparte (null si no se ha elegido ninguna).
+ * Valida los campos del producto y sus fotos: el orden (las que ya tiene y
+ * las nuevas) y cada foto nueva (tipo, tamaño y contenido).
  */
 export async function validarProducto(formData: FormData): Promise<
   | {
       ok: true;
       datos: DatosProducto;
-      foto: File | null;
+      fotos: FotosEnviadas;
       valores: EstadoFormularioProducto["valores"];
     }
   | { ok: false; respuesta: RespuestaFormularioProducto }
@@ -75,9 +87,32 @@ export async function validarProducto(formData: FormData): Promise<
 
   const errores: EstadoFormularioProducto["errores"] = {};
 
-  const { foto, error: errorFoto } = await fotoDelFormulario(formData);
-  if (errorFoto) {
-    errores.foto = errorFoto;
+  const fotos: FotosEnviadas = { items: [], nuevas: new Map() };
+  const orden = leerOrdenFotos(String(formData.get("fotos_orden") ?? ""));
+  if (!orden.ok) {
+    errores.fotos = orden.error;
+  } else {
+    fotos.items = orden.items;
+    let bytes = 0;
+    for (const item of orden.items) {
+      if (!("nueva" in item)) continue;
+      const archivo = formData.get(`${CAMPO_FOTO_NUEVA}${item.nueva}`);
+      if (!(archivo instanceof File) || archivo.size === 0) {
+        errores.fotos = "Falta una de las fotos nuevas. Vuelve a elegirla.";
+        break;
+      }
+      const error = await errorDeFoto(archivo);
+      if (error) {
+        errores.fotos = error;
+        break;
+      }
+      bytes += archivo.size;
+      fotos.nuevas.set(item.nueva, archivo);
+    }
+    if (!errores.fotos && bytes > MAX_BYTES_FOTOS_NUEVAS) {
+      errores.fotos =
+        "Las fotos nuevas pesan demasiado juntas. Guarda estas y añade el resto después.";
+    }
   }
 
   const resultado = esquemaProducto.safeParse(valores);
@@ -90,12 +125,12 @@ export async function validarProducto(formData: FormData): Promise<
   }
 
   if (!resultado.success || Object.keys(errores).length > 0) {
-    // La foto no se puede devolver al formulario: habrá que elegirla otra vez.
+    // Las fotos nuevas siguen elegidas en el formulario (no se recarga).
     return {
       ok: false,
       respuesta: { errores, mensaje: "Revisa los campos marcados.", valores },
     };
   }
 
-  return { ok: true, datos: resultado.data, foto, valores };
+  return { ok: true, datos: resultado.data, fotos, valores };
 }

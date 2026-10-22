@@ -5,12 +5,25 @@
  * probarlo.
  */
 
-export type Valor = string | number | boolean | null;
+/** Un valor de una celda: texto, número, sí/no, nada, o una lista de textos (text[]). */
+export type Valor = string | number | boolean | null | string[];
 export type Fila = Record<string, Valor>;
 
-/** Un valor como literal de SQL: texto entre comillas, números tal cual, null. */
+/**
+ * Un valor como literal de SQL: texto entre comillas, números tal cual, null,
+ * y una lista de textos como `array['a', 'b']::text[]` (`'{}'::text[]` si
+ * está vacía).
+ */
 export function literal(valor: Valor): string {
   if (valor === null) return "null";
+  if (Array.isArray(valor)) {
+    if (valor.some((elemento) => typeof elemento !== "string")) {
+      throw new Error("Solo caben en una copia las listas de textos.");
+    }
+    return valor.length === 0
+      ? "'{}'::text[]"
+      : `array[${valor.map(literal).join(", ")}]::text[]`;
+  }
   if (typeof valor === "boolean") return valor ? "true" : "false";
   if (typeof valor === "number") {
     if (!Number.isFinite(valor)) {

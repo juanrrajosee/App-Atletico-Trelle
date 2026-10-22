@@ -5,7 +5,7 @@ import { esIdValido } from "@/lib/ids";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
 import type { Producto } from "@/lib/tienda";
 
-const COLUMNAS = "id, nombre, descripcion, precio_orientativo, foto, visible, orden";
+const COLUMNAS = "id, nombre, descripcion, precio_orientativo, fotos, visible, orden";
 
 /**
  * Los productos, en su orden (y por nombre si dos tienen el mismo). El

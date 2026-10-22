@@ -7,7 +7,7 @@ export type Producto = Pick<
   | "nombre"
   | "descripcion"
   | "precio_orientativo"
-  | "foto"
+  | "fotos"
   | "visible"
   | "orden"
 >;
@@ -15,9 +15,14 @@ export type Producto = Pick<
 /** El bucket de Storage donde están las fotos de los productos. */
 export const BUCKET_FOTOS = "productos";
 
-/** La dirección pública de la foto de un producto. */
+/** La dirección pública de una foto de un producto. */
 export function urlFoto(ruta: string) {
   return urlFotoPublica(BUCKET_FOTOS, ruta);
+}
+
+/** La portada de un producto (su primera foto), o null si no tiene. */
+export function portada(producto: Pick<Producto, "fotos">) {
+  return producto.fotos[0] ?? null;
 }
 
 const formatoEuros = new Intl.NumberFormat("es-ES", {

@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import type { EstadoBorrado } from "@/components/boton-borrar";
 import { exigirAdministrador } from "@/lib/auth";
 import { responder } from "@/lib/formularios";
+import { resolverFotos } from "@/lib/fotos-producto";
 import { esIdValido } from "@/lib/ids";
 import { borrarFotos, subirFoto } from "@/lib/supabase/fotos";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
@@ -13,11 +14,41 @@ import { BUCKET_FOTOS } from "@/lib/tienda";
 import {
   validarProducto,
   type EstadoFormularioProducto,
+  type FotosEnviadas,
 } from "./validacion";
 
 const NO_ENCONTRADO = "No se ha encontrado el producto. Puede que se haya borrado.";
 const NO_GUARDADO = "No se han podido guardar los cambios. Inténtalo de nuevo.";
-const FOTO_NO_SUBIDA = "No se ha podido subir la foto. Inténtalo de nuevo.";
+const FOTO_NO_SUBIDA = "No se ha podido subir una de las fotos. Inténtalo de nuevo.";
+
+type Supabase = Awaited<ReturnType<typeof crearClienteServidor>>;
+
+/**
+ * Sube las fotos nuevas, una a una y en su orden, a la carpeta del producto.
+ * Si una falla, borra las que ya se habían subido: no quedan fotos sueltas.
+ */
+async function subirFotosNuevas(
+  supabase: Supabase,
+  id: string,
+  fotos: FotosEnviadas,
+): Promise<Map<number, string> | null> {
+  const subidas = new Map<number, string>();
+
+  for (const item of fotos.items) {
+    if (!("nueva" in item)) continue;
+    const archivo = fotos.nuevas.get(item.nueva);
+    const ruta = archivo
+      ? await subirFoto(supabase, BUCKET_FOTOS, id, archivo)
+      : null;
+    if (!ruta) {
+      await borrarFotos(supabase, BUCKET_FOTOS, [...subidas.values()]);
+      return null;
+    }
+    subidas.set(item.nueva, ruta);
+  }
+
+  return subidas;
+}
 
 function revalidarTienda(id: string) {
   revalidatePath("/tienda");
@@ -34,18 +65,27 @@ export async function crearProducto(
   if (!validacion.ok) {
     return responder(anterior, validacion.respuesta);
   }
-  const { datos, foto, valores } = validacion;
+  const { datos, fotos, valores } = validacion;
 
   const supabase = await crearClienteServidor();
-  // El id se elige aquí para subir la foto a su carpeta antes de crear el
+  // El id se elige aquí para subir las fotos a su carpeta antes de crear el
   // producto: así nunca queda un producto a medias.
   const id = randomUUID();
-  const rutaFoto = foto
-    ? await subirFoto(supabase, BUCKET_FOTOS, id, foto)
-    : null;
-  if (foto && !rutaFoto) {
+  const subidas = await subirFotosNuevas(supabase, id, fotos);
+  if (!subidas) {
     return responder(anterior, {
-      errores: { foto: FOTO_NO_SUBIDA },
+      errores: { fotos: FOTO_NO_SUBIDA },
+      mensaje: "Revisa los campos marcados.",
+      valores,
+    });
+  }
+
+  // Un producto nuevo no tiene fotos de antes: todas son nuevas.
+  const resuelto = resolverFotos([], fotos.items, subidas);
+  if (!resuelto.ok) {
+    await borrarFotos(supabase, BUCKET_FOTOS, [...subidas.values()]);
+    return responder(anterior, {
+      errores: { fotos: resuelto.error },
       mensaje: "Revisa los campos marcados.",
       valores,
     });
@@ -58,11 +98,11 @@ export async function crearProducto(
     precio_orientativo: datos.precio,
     orden: datos.orden,
     visible: datos.visible,
-    foto: rutaFoto,
+    fotos: resuelto.fotos,
   });
 
   if (error) {
-    await borrarFotos(supabase, BUCKET_FOTOS, [rutaFoto]);
+    await borrarFotos(supabase, BUCKET_FOTOS, [...subidas.values()]);
     return responder(anterior, { errores: {}, mensaje: NO_GUARDADO, valores });
   }
 
@@ -81,8 +121,7 @@ export async function actualizarProducto(
   if (!validacion.ok) {
     return responder(anterior, validacion.respuesta);
   }
-  const { datos, foto, valores } = validacion;
-  const quitarFoto = formData.get("quitar_foto") === "si";
+  const { datos, fotos, valores } = validacion;
 
   if (!esIdValido(id)) {
     return responder(anterior, { errores: {}, mensaje: NO_ENCONTRADO, valores });
@@ -91,7 +130,7 @@ export async function actualizarProducto(
   const supabase = await crearClienteServidor();
   const { data: actual, error: errorActual } = await supabase
     .from("productos")
-    .select("foto")
+    .select("fotos")
     .eq("id", id)
     .maybeSingle();
 
@@ -102,19 +141,24 @@ export async function actualizarProducto(
     return responder(anterior, { errores: {}, mensaje: NO_ENCONTRADO, valores });
   }
 
-  // Foto nueva, quitar la que hay, o dejarla como está.
-  let rutaFoto = actual.foto;
-  if (foto) {
-    rutaFoto = await subirFoto(supabase, BUCKET_FOTOS, id, foto);
-    if (!rutaFoto) {
-      return responder(anterior, {
-        errores: { foto: FOTO_NO_SUBIDA },
-        mensaje: "Revisa los campos marcados.",
-        valores,
-      });
-    }
-  } else if (quitarFoto) {
-    rutaFoto = null;
+  // Las que ya tiene (en el orden pedido), más las nuevas; y las que se quitan.
+  const subidas = await subirFotosNuevas(supabase, id, fotos);
+  if (!subidas) {
+    return responder(anterior, {
+      errores: { fotos: FOTO_NO_SUBIDA },
+      mensaje: "Revisa los campos marcados.",
+      valores,
+    });
+  }
+
+  const resuelto = resolverFotos(actual.fotos, fotos.items, subidas);
+  if (!resuelto.ok) {
+    await borrarFotos(supabase, BUCKET_FOTOS, [...subidas.values()]);
+    return responder(anterior, {
+      errores: { fotos: resuelto.error },
+      mensaje: "Revisa los campos marcados.",
+      valores,
+    });
   }
 
   const { error } = await supabase
@@ -125,17 +169,15 @@ export async function actualizarProducto(
       precio_orientativo: datos.precio,
       orden: datos.orden,
       visible: datos.visible,
-      foto: rutaFoto,
+      fotos: resuelto.fotos,
     })
     .eq("id", id)
     .select("id")
     .single();
 
   if (error) {
-    // La foto recién subida ya no se usa.
-    if (rutaFoto !== actual.foto) {
-      await borrarFotos(supabase, BUCKET_FOTOS, [rutaFoto]);
-    }
+    // Las fotos recién subidas ya no se usan.
+    await borrarFotos(supabase, BUCKET_FOTOS, [...subidas.values()]);
     return responder(anterior, {
       errores: {},
       mensaje: error.code === "PGRST116" ? NO_ENCONTRADO : NO_GUARDADO,
@@ -143,10 +185,8 @@ export async function actualizarProducto(
     });
   }
 
-  // La foto anterior ya no se usa.
-  if (actual.foto !== rutaFoto) {
-    await borrarFotos(supabase, BUCKET_FOTOS, [actual.foto]);
-  }
+  // Las fotos que se han quitado ya no se usan.
+  await borrarFotos(supabase, BUCKET_FOTOS, resuelto.quitadas);
 
   revalidarTienda(id);
   redirect(`/tienda/${id}`);
@@ -164,7 +204,7 @@ export async function borrarProducto(id: string): Promise<EstadoBorrado> {
     .from("productos")
     .delete()
     .eq("id", id)
-    .select("foto");
+    .select("fotos");
 
   if (error) {
     return { error: "No se ha podido borrar el producto. Inténtalo de nuevo." };
@@ -176,7 +216,7 @@ export async function borrarProducto(id: string): Promise<EstadoBorrado> {
   await borrarFotos(
     supabase,
     BUCKET_FOTOS,
-    data.map(({ foto }) => foto),
+    data.flatMap(({ fotos }) => fotos),
   );
 
   revalidarTienda(id);

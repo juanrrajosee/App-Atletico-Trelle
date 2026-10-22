@@ -39,7 +39,7 @@ export default async function PaginaEditarProducto({
           orden: String(producto.orden),
           visible: producto.visible ? "si" : "no",
         }}
-        fotoActual={producto.foto ? urlFoto(producto.foto) : null}
+        fotosActuales={producto.fotos.map((ruta) => ({ ruta, url: urlFoto(ruta) }))}
         textoBoton="Guardar cambios"
         hrefCancelar={`/tienda/${producto.id}`}
       />
@@ -47,7 +47,7 @@ export default async function PaginaEditarProducto({
         accion={borrarProducto.bind(null, producto.id)}
         texto="Borrar producto"
         pregunta={`¿Borrar ${producto.nombre}?`}
-        consecuencias="Desaparecerá de la tienda junto con su foto. No se puede deshacer. Si solo está agotado, puedes ocultarlo."
+        consecuencias="Desaparecerá de la tienda junto con sus fotos. No se puede deshacer. Si solo está agotado, puedes ocultarlo."
       />
     </div>
   );

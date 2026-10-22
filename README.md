@@ -18,7 +18,7 @@ Cualquiera puede abrir la aplicación y ver cuándo juega el equipo, cómo qued�
 | Estadísticas de la temporada: balance del equipo, clasificaciones y ficha de cada jugador | Hecho |
 | Noticias, con borradores, y su escritura por el administrador | Hecho |
 | El club: historia, la de Trelle, directiva, cuerpo técnico y contacto, y su edición por el administrador | Hecho |
-| Tienda con fotos: pedir presupuesto por WhatsApp o por teléfono | Hecho |
+| Tienda con varias fotos por producto: pedir presupuesto por WhatsApp o por teléfono | Hecho |
 | Panel de gestión del administrador con lo que falta por hacer | Hecho |
 | Mi cuenta: cambiar la contraseña, salir y borrar la cuenta | Hecho |
 | Política de privacidad y aviso legal (borrador, por revisar) | Hecho |
@@ -120,9 +120,9 @@ La directiva y el cuerpo técnico (entrenador, delegado…) son dos listas igual
 
 Dentro de *Club*, en la pestaña *Tienda*. Los productos no se compran en la aplicación: cada uno tiene los botones *Por WhatsApp* (con un mensaje ya escrito: «Hola, me interesa … ¿Me podéis dar presupuesto?») y *Llamar*, los dos al teléfono del club que se pone en *Club → Editar historia y contacto*. Sin ese teléfono no salen los botones.
 
-El administrador añade productos desde *Tienda → Añadir*: foto, nombre, descripción, precio orientativo (opcional; si no se pone, no se enseña), posición en la tienda y si se ve. Un producto agotado se puede ocultar en vez de borrarlo.
+El administrador añade productos desde *Tienda → Añadir*: fotos (hasta 6), nombre, descripción, precio orientativo (opcional; si no se pone, no se enseña), posición en la tienda y si se ve. Un producto agotado se puede ocultar en vez de borrarlo.
 
-La foto se hace o se elige desde el móvil y **se reduce en el propio móvil** (1600 píxeles por el lado largo, en JPEG) antes de subirla, así pesa unos cientos de KB en lugar de varios MB. Se guarda en el bucket público `productos` de Supabase Storage, que crea la migración `0018_tienda.sql`: cualquiera ve las fotos, pero solo el administrador las sube y las borra. Al cambiar la foto, quitarla o borrar el producto, la anterior se borra.
+Las fotos se hacen o se eligen desde el móvil (se pueden elegir varias de golpe) y **se reducen en el propio móvil** (1600 píxeles por el lado largo, en JPEG) antes de subirlas, así cada una pesa unos cientos de KB en lugar de varios MB. Un producto puede tener **hasta 6**. En el formulario se ven como una tira de miniaturas: con las flechas se cambia su orden, con la cruz se quita una, y **la primera es la portada** (la de la lista de la tienda y la que sale al compartir el enlace). En la página del producto el público ve una galería que se desliza con el dedo, con flechas, contador y miniaturas; en la lista, la portada lleva un aviso con cuántas fotos tiene. Las rutas de las fotos, en orden, están en la columna `fotos` de `productos` (migración `0029_fotos_producto.sql`; la columna antigua `foto` queda en desuso y se quitará en una migración posterior). Se guardan en el bucket público `productos` de Supabase Storage, que crea la migración `0018_tienda.sql`: cualquiera ve las fotos, pero solo el administrador las sube y las borra. Las fotos nuevas de un envío no pueden pesar más de 3,4 MB en total (Vercel no deja pasar más de 4,5 MB por petición): se avisa al elegirlas, y el servidor lo vuelve a comprobar. El servidor tampoco se fía del navegador: solo acepta rutas que ya sean del producto, comprueba el contenido de cada foto nueva y, al cambiar las fotos, quitar una o borrar el producto, borra de Storage las que sobran.
 
 ### Gestión
 
@@ -220,7 +220,7 @@ Para probar *Continuar con Google* en local: poner `enabled = true` en `[auth.ex
 | `npm run build` | Compilación de producción |
 | `npm run lint` | ESLint |
 | `npm run typecheck` | Comprobación de tipos (TypeScript) |
-| `npm test` | Tests de la aplicación (`src/**/*.test.ts`, con el ejecutor de tests de Node): fotos y ruta de vuelta tras entrar |
+| `npm test` | Tests de la aplicación (`src/**/*.test.ts`, con el ejecutor de tests de Node): fotos (también el orden de las de un producto), copia de seguridad, límites, visitas, app instalable y ruta de vuelta tras entrar |
 | `npm run db:iniciar` / `db:parar` | Arranca / para Supabase en local |
 | `npm run db:reset` | Recrea la base de datos local aplicando todas las migraciones |
 | `npm run db:test` | Tests de la base de datos (políticas RLS, reglas de los resultados, votaciones, estadísticas, noticias y sus fotos, club, tienda, apodos, borrado de cuentas, reglas de longitud y máximos, y límites de intentos) |
@@ -294,7 +294,7 @@ src/
 │   ├── noticias/          # Lista de noticias
 │   ├── partidos/          # Marcador, tarjeta, lista y etiqueta de los partidos
 │   ├── plantilla/         # Piezas compartidas de la plantilla (dorsal, foto del jugador y etiqueta de estado)
-│   ├── tienda/            # Foto de un producto
+│   ├── tienda/            # Portada de un producto y galería de sus fotos
 │   ├── ui/                # Componentes de shadcn/ui
 │   ├── votaciones/        # Formulario de voto y aviso de votación abierta
 │   ├── boton-borrar.tsx   # Botón de borrar con confirmación
@@ -309,7 +309,8 @@ src/
 │   ├── auth.ts            # Usuario actual y comprobación de administrador
 │   ├── fechas.ts          # Fechas siempre en hora de España (y su paso a UTC)
 │   ├── formularios.ts     # Estado común de los formularios
-│   ├── fotos.ts           # Reducir una foto en el navegador antes de subirla
+│   ├── fotos.ts           # Reducir una foto en el navegador antes de subirla, y comprobarla en el servidor
+│   ├── fotos-producto.ts  # Varias fotos por producto: leer su orden y juntarlo con las que ya tiene (+ sus límites)
 │   ├── ids.ts             # Comprobación de ids
 │   ├── limites.ts         # Límites de intentos al entrar, registrarse y recuperar la contraseña
 │   ├── noticias.ts        # Borrador o publicada, párrafos y resumen

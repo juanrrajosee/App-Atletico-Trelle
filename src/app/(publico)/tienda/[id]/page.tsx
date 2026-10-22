@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Texto } from "@/components/texto";
 import { FotoProducto } from "@/components/tienda/foto-producto";
+import { GaleriaProducto } from "@/components/tienda/galeria-producto";
 import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
 import {
@@ -32,7 +33,7 @@ export async function generateMetadata({
       description: producto.descripcion ?? undefined,
       siteName: "Atlético Trelle",
       locale: "es_ES",
-      images: producto.foto ? [urlFoto(producto.foto)] : undefined,
+      images: producto.fotos.length > 0 ? producto.fotos.map(urlFoto) : undefined,
     },
   };
 }
@@ -73,14 +74,22 @@ export default async function PaginaProducto({
         </p>
       )}
 
-      {/* En el ordenador, la foto a un lado y lo demás al otro. */}
+      {/* En el ordenador, las fotos a un lado y lo demás al otro. */}
       <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
-        <FotoProducto
-          producto={producto}
-          tamanos="(min-width: 64rem) 30rem, (min-width: 42rem) 40rem, 100vw"
-          className="rounded-xl"
-          prioridad
-        />
+        {producto.fotos.length > 0 ? (
+          <GaleriaProducto
+            nombre={producto.nombre}
+            fotos={producto.fotos.map(urlFoto)}
+            tamanos="(min-width: 64rem) 30rem, (min-width: 42rem) 40rem, 100vw"
+          />
+        ) : (
+          <FotoProducto
+            producto={producto}
+            tamanos="(min-width: 64rem) 30rem, (min-width: 42rem) 40rem, 100vw"
+            className="rounded-xl"
+            prioridad
+          />
+        )}
 
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-1">
