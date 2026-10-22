@@ -4,7 +4,11 @@ import { ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { startTransition, useActionState, type FormEvent } from "react";
 import { CampoFormulario } from "@/components/campo-formulario";
-import { SelectorFoto, useSelectorFoto } from "@/components/selector-foto";
+import {
+  SelectorFotos,
+  useSelectorFotos,
+  type FotoActual,
+} from "@/components/selector-fotos";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,20 +20,20 @@ type Props = {
     formData: FormData,
   ) => Promise<EstadoFormularioProducto>;
   valoresIniciales: EstadoFormularioProducto["valores"];
-  /** Dirección de la foto que ya tiene el producto, si tiene. */
-  fotoActual?: string | null;
+  /** Las fotos que ya tiene el producto, en orden (la primera es la portada). */
+  fotosActuales?: FotoActual[];
   textoBoton: string;
   hrefCancelar: string;
 };
 
 /**
  * Formulario de un producto. Se envía a mano (no con action) para mandar
- * la foto ya reducida en lugar de la original.
+ * las fotos ya reducidas en lugar de las originales.
  */
 export function FormularioProducto({
   accion,
   valoresIniciales,
-  fotoActual = null,
+  fotosActuales = [],
   textoBoton,
   hrefCancelar,
 }: Props) {
@@ -41,12 +45,12 @@ export function FormularioProducto({
   });
   const { errores } = estado;
 
-  const selectorFoto = useSelectorFoto(fotoActual);
+  const selectorFotos = useSelectorFotos(fotosActuales);
 
   function guardar(evento: FormEvent<HTMLFormElement>) {
     evento.preventDefault();
     const datos = new FormData(evento.currentTarget);
-    selectorFoto.prepararEnvio(datos);
+    selectorFotos.prepararEnvio(datos);
     startTransition(() => enviar(datos));
   }
 
@@ -58,9 +62,9 @@ export function FormularioProducto({
 
   return (
     <form onSubmit={guardar} className="flex flex-col gap-5" noValidate>
-      <SelectorFoto
-        selector={selectorFoto}
-        error={errores.foto}
+      <SelectorFotos
+        selector={selectorFotos}
+        error={errores.fotos}
         icono={ShoppingBag}
         alt="Foto del producto"
       />
@@ -147,7 +151,7 @@ export function FormularioProducto({
       <div className="flex flex-col gap-3">
         <Button
           type="submit"
-          disabled={pendiente || selectorFoto.procesando}
+          disabled={pendiente || selectorFotos.procesando}
           className="h-11 w-full"
         >
           {pendiente ? "Guardando…" : textoBoton}

@@ -32,6 +32,21 @@ test("null, booleanos y números van sin comillas", () => {
   assert.equal(literal(0), "0");
 });
 
+test("una lista de textos va como array de Postgres, con cada texto escapado", () => {
+  assert.equal(literal(["a/uno.jpg", "a/dos.jpg"]), "array['a/uno.jpg', 'a/dos.jpg']::text[]");
+  assert.equal(literal(["O'Brien", 'con "comillas"', "a\\b"]), "array['O''Brien', 'con \"comillas\"', 'a\\b']::text[]");
+  assert.equal(literal(["x"]), "array['x']::text[]");
+});
+
+test("una lista vacía no es nula: va como '{}'::text[]", () => {
+  assert.equal(literal([]), "'{}'::text[]");
+});
+
+test("una lista que no es de textos da error", () => {
+  assert.throws(() => literal([1, 2] as unknown as string[]));
+  assert.throws(() => literal([null] as unknown as string[]));
+});
+
 test("un número que no es un número da error y no una copia rota", () => {
   assert.throws(() => literal(Number.NaN));
   assert.throws(() => literal(Number.POSITIVE_INFINITY));

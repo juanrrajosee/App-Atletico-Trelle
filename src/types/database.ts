@@ -17,6 +17,7 @@ export type Database = {
           titular_domicilio: string | null;
           titular_nombre: string | null;
         };
+        ComputedFields: never;
         Insert: {
           actualizado_en?: string;
           campo?: string | null;
@@ -53,6 +54,7 @@ export type Database = {
           nombre: string;
           orden: number;
         };
+        ComputedFields: never;
         Insert: {
           cargo: string;
           creado_en?: string;
@@ -77,6 +79,7 @@ export type Database = {
           nombre: string;
           orden: number;
         };
+        ComputedFields: never;
         Insert: {
           cargo: string;
           creado_en?: string;
@@ -106,6 +109,7 @@ export type Database = {
           tarjetas_amarillas: number;
           titular: boolean;
         };
+        ComputedFields: never;
         Insert: {
           asistencias?: number;
           creado_en?: string;
@@ -166,6 +170,7 @@ export type Database = {
           nombre: string;
           posicion: Database["public"]["Enums"]["posicion_jugador"];
         };
+        ComputedFields: never;
         Insert: {
           apellidos: string;
           apodo?: string | null;
@@ -201,6 +206,7 @@ export type Database = {
           resumen: string | null;
           titulo: string;
         };
+        ComputedFields: never;
         Insert: {
           actualizado_en?: string;
           creado_en?: string;
@@ -237,6 +243,7 @@ export type Database = {
           id: string;
           rival: string;
         };
+        ComputedFields: never;
         Insert: {
           alineacion_registrada_en?: string | null;
           campo?: string | null;
@@ -271,6 +278,7 @@ export type Database = {
           id: string;
           rol: Database["public"]["Enums"]["rol_usuario"];
         };
+        ComputedFields: never;
         Insert: {
           creado_en?: string;
           id: string;
@@ -288,16 +296,19 @@ export type Database = {
           creado_en: string;
           descripcion: string | null;
           foto: string | null;
+          fotos: string[];
           id: string;
           nombre: string;
           orden: number;
           precio_orientativo: number | null;
           visible: boolean;
         };
+        ComputedFields: never;
         Insert: {
           creado_en?: string;
           descripcion?: string | null;
           foto?: string | null;
+          fotos?: string[];
           id?: string;
           nombre: string;
           orden?: number;
@@ -308,6 +319,7 @@ export type Database = {
           creado_en?: string;
           descripcion?: string | null;
           foto?: string | null;
+          fotos?: string[];
           id?: string;
           nombre?: string;
           orden?: number;
@@ -325,6 +337,7 @@ export type Database = {
           partido_id: string;
           perfil_id: string | null;
         };
+        ComputedFields: never;
         Insert: {
           categoria: Database["public"]["Enums"]["categoria_votacion"];
           creado_en?: string;
@@ -385,6 +398,7 @@ export type Database = {
           nombre: string | null;
           posicion: Database["public"]["Enums"]["posicion_jugador"] | null;
         };
+        ComputedFields: never;
         Insert: {
           activo?: never;
           apellidos?: string | null;
