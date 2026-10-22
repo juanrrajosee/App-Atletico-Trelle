@@ -10,11 +10,13 @@ import {
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { Desplegable } from "@/components/desplegable";
 import { Escudo } from "@/components/escudo";
 import { PestanasClub } from "@/components/pestanas";
 import { Texto } from "@/components/texto";
 import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
+import { extracto } from "@/lib/textos";
 import {
   cargarClub,
   cargarCuerpoTecnico,
@@ -153,8 +155,8 @@ export default async function PaginaClub() {
 }
 
 /**
- * Un texto del club. Si no se ha escrito, el público no ve nada y el
- * administrador ve qué falta.
+ * Un texto del club, plegado en un desplegable. Si no se ha escrito, el
+ * público no ve nada y el administrador ve qué falta.
  */
 function Seccion({
   titulo,
@@ -171,16 +173,21 @@ function Seccion({
     return null;
   }
 
+  // Plegado: el título y una línea sacada del principio del propio texto.
+  if (texto) {
+    return (
+      <Desplegable titulo={titulo} descripcion={extracto(texto)}>
+        <Texto texto={texto} />
+      </Desplegable>
+    );
+  }
+
   return (
     <section className="flex flex-col gap-3">
       <h2 className="text-xl font-semibold tracking-tight">{titulo}</h2>
-      {texto ? (
-        <Texto texto={texto} />
-      ) : (
-        <p className="rounded-xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
-          {vacio}
-        </p>
-      )}
+      <p className="rounded-xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
+        {vacio}
+      </p>
     </section>
   );
 }
