@@ -75,7 +75,7 @@ export default async function PaginaEstadisticas({
       </div>
 
       {/* En el ordenador, el equipo a un lado y los jugadores al otro. */}
-      <div className="grid gap-6 lg:grid-cols-[2fr_3fr] lg:items-start">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[2fr_3fr] lg:items-start">
         {balance.jugados === 0 ? (
           <p className="rounded-xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
             Todavía no hay partidos jugados en esta temporada.

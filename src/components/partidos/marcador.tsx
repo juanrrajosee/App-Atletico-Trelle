@@ -18,7 +18,7 @@ export function Marcador({
   const [local, visitante] = equipos(partido);
 
   return (
-    <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+    <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3">
       <NombreEquipo equipo={local} grande={grande} />
       <p
         className={cn(
@@ -54,7 +54,7 @@ export function Marcador({
 function NombreEquipo({ equipo, grande }: { equipo: Equipo; grande: boolean }) {
   const tamano = grande ? 64 : 48;
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex min-w-0 flex-col items-center gap-2">
       {equipo.esTrelle ? (
         <Escudo tamano={tamano} decorativo />
       ) : (
@@ -68,7 +68,8 @@ function NombreEquipo({ equipo, grande }: { equipo: Equipo; grande: boolean }) {
       )}
       <p
         className={cn(
-          "text-center leading-tight text-balance",
+          // Los nombres largos (hasta 80 letras) se parten en lugar de salirse.
+          "max-w-full text-center leading-tight text-balance [overflow-wrap:anywhere]",
           grande ? "text-lg" : "text-base",
           equipo.esTrelle ? "font-semibold" : "text-muted-foreground",
         )}

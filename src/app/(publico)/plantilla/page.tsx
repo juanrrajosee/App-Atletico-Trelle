@@ -57,7 +57,7 @@ export default async function PaginaPlantilla() {
       )}
 
       {/* En el ordenador, las posiciones en dos columnas. */}
-      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
         {POSICIONES.map((posicion) => (
           <GrupoJugadores
             key={posicion}
