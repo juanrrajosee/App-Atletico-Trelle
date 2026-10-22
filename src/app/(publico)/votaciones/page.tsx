@@ -70,7 +70,7 @@ export default async function PaginaVotaciones({
               el ranking, decide el total de votos.
             </p>
             {/* En el ordenador, las tres categorías lado a lado. */}
-            <div className="grid gap-6 lg:grid-cols-3 lg:items-start">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:items-start">
               {CATEGORIAS_VOTACION.map((categoria) => (
                 <Clasificacion
                   key={categoria}

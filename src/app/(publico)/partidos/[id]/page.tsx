@@ -63,7 +63,7 @@ export default async function PaginaPartido({
       </Link>
 
       <div
-        className={cn("grid gap-6", dosColumnas && "lg:grid-cols-2 lg:items-start")}
+        className={cn("grid grid-cols-1 gap-6", dosColumnas && "lg:grid-cols-2 lg:items-start")}
       >
         <div className="flex flex-col gap-6">
           <header className="flex flex-col gap-4 rounded-xl border bg-card px-4 py-5">

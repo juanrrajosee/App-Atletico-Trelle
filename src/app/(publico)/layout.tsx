@@ -19,14 +19,14 @@ export default async function LayoutPublico({ children }: LayoutProps<"/">) {
         <div className="mx-auto flex h-14 max-w-2xl items-center justify-between gap-4 px-4 lg:h-16 lg:max-w-5xl">
           <Link
             href="/"
-            className="flex items-center gap-2 font-display text-lg font-semibold tracking-wide whitespace-nowrap uppercase"
+            className="flex min-w-0 items-center gap-2 font-display text-lg font-semibold tracking-wide whitespace-nowrap uppercase"
           >
             <Escudo tamano={36} decorativo inmediato />
-            Atlético Trelle
+            <span className="truncate">Atlético Trelle</span>
           </Link>
           <NavegacionCabecera />
           {usuario ? (
-            <div className="flex items-center gap-1">
+            <div className="flex shrink-0 items-center gap-1">
               {esAdministrador(usuario) && (
                 <Button
                   asChild
@@ -43,14 +43,15 @@ export default async function LayoutPublico({ children }: LayoutProps<"/">) {
               >
                 <Link href="/cuenta">
                   <CircleUser aria-hidden />
-                  Mi cuenta
+                  {/* En el móvil solo el icono: con "Gestión" no cabe más. */}
+                  <span className="max-sm:sr-only">Mi cuenta</span>
                 </Link>
               </Button>
             </div>
           ) : (
             <Button
               asChild
-              className="h-10 bg-white text-granate hover:bg-white/90"
+              className="h-10 shrink-0 bg-white text-granate hover:bg-white/90"
             >
               <Link href="/acceso">Entrar</Link>
             </Button>

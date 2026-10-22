@@ -227,7 +227,9 @@ function ResultadosCategoria({
               ) : (
                 <span className="size-4 shrink-0" aria-hidden />
               )}
-              <span className="min-w-0 flex-1 truncate">
+              {/* relative: el texto oculto "(ganador)" se recorta con el nombre
+                  en lugar de ensanchar la página. */}
+              <span className="relative min-w-0 flex-1 truncate">
                 {nombres.get(jugador_id) ?? "Jugador"}
                 {gana && <span className="sr-only"> (ganador)</span>}
               </span>

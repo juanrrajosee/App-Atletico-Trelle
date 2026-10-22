@@ -65,7 +65,7 @@ function FilaPartido({ partido }: { partido: Partido }) {
       className="flex min-h-16 items-center gap-3 px-4 py-3 active:bg-accent"
     >
       <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <p className="truncate text-xs text-muted-foreground">
+        <p className="line-clamp-2 text-xs text-muted-foreground [overflow-wrap:anywhere]">
           {formatearFechaCorta(partido.fecha_hora)} ·{" "}
           {formatearHora(partido.fecha_hora)}
           {partido.competicion && ` · ${partido.competicion}`}
@@ -86,7 +86,7 @@ function FilaPartido({ partido }: { partido: Partido }) {
 function LineaEquipo({ equipo }: { equipo: Equipo }) {
   return (
     <p className="flex items-center justify-between gap-3">
-      <span className="flex min-w-0 items-center gap-2">
+      <span className="flex min-w-0 items-center gap-2 leading-tight">
         {equipo.esTrelle ? (
           <Escudo tamano={20} decorativo />
         ) : (
@@ -95,7 +95,12 @@ function LineaEquipo({ equipo }: { equipo: Equipo }) {
             aria-hidden
           />
         )}
-        <span className={cn("truncate", equipo.esTrelle && "font-semibold")}>
+        <span
+          className={cn(
+            "line-clamp-2 [overflow-wrap:anywhere]",
+            equipo.esTrelle && "font-semibold",
+          )}
+        >
           {equipo.nombre}
         </span>
       </span>

@@ -75,7 +75,7 @@ export default async function PaginaClub() {
 
       {/* En el ordenador, la historia a un lado; la directiva, el cuerpo
           técnico y el contacto, al otro. */}
-      <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-start">
         <div className="flex flex-col gap-8">
           <Seccion
             titulo="Historia del club"

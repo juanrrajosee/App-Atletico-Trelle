@@ -41,7 +41,7 @@ export default async function PaginaJugador({
       </Link>
 
       {/* En el ordenador, el cartel a un lado y sus estadísticas al otro. */}
-      <div className="grid gap-6 lg:grid-cols-[2fr_3fr] lg:items-start">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[2fr_3fr] lg:items-start">
         <div className="flex flex-col gap-6">
           {/* Como los carteles del club: los dos granates de la camiseta, el
               dorsal en grande y el escudo en la esquina. */}
