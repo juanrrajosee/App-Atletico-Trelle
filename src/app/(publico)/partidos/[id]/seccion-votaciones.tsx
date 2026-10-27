@@ -28,7 +28,7 @@ import type { Participacion } from "../datos";
 /**
  * Las votaciones de la afición en la ficha de un partido: antes del partido,
  * un aviso; con la votación abierta, votar (o a quién se ha votado); ya
- * cerrada, los resultados.
+ * cerrada, los resultados. Si se perdió por goleada, no hay votación.
  */
 export async function SeccionVotaciones({
   partido,
@@ -60,6 +60,16 @@ export async function SeccionVotaciones({
         <p className="text-sm text-muted-foreground">
           La votación se abrirá en cuanto se registre la alineación del
           partido.
+        </p>
+      </Seccion>
+    );
+  }
+
+  if (votacion.estado === "sin_votacion") {
+    return (
+      <Seccion>
+        <p className="text-sm text-muted-foreground">
+          Este partido no tiene votación.
         </p>
       </Seccion>
     );

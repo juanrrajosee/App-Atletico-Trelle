@@ -432,6 +432,7 @@ export type Database = {
           estado: Database["public"]["Enums"]["estado_votacion"];
         }[];
       };
+      diferencia_sin_votacion: { Args: Record<PropertyKey, never>; Returns: number };
       es_administrador: { Args: Record<PropertyKey, never>; Returns: boolean };
       es_candidato: {
         Args: {
@@ -490,7 +491,7 @@ export type Database = {
       condicion_partido: "local" | "visitante";
       estado_jugador: "disponible" | "lesionado" | "sancionado" | "baja";
       estado_partido: "programado" | "jugado" | "aplazado";
-      estado_votacion: "pendiente" | "abierta" | "cerrada";
+      estado_votacion: "pendiente" | "abierta" | "cerrada" | "sin_votacion";
       posicion_jugador: "portero" | "defensa" | "centrocampista" | "delantero";
       rol_usuario: "aficionado" | "administrador";
     };
@@ -612,7 +613,7 @@ export const Constants = {
       condicion_partido: ["local", "visitante"],
       estado_jugador: ["disponible", "lesionado", "sancionado", "baja"],
       estado_partido: ["programado", "jugado", "aplazado"],
-      estado_votacion: ["pendiente", "abierta", "cerrada"],
+      estado_votacion: ["pendiente", "abierta", "cerrada", "sin_votacion"],
       posicion_jugador: ["portero", "defensa", "centrocampista", "delantero"],
       rol_usuario: ["aficionado", "administrador"],
     },

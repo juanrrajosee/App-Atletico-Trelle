@@ -42,7 +42,8 @@ export default async function PaginaVotaciones({
         <h1 className="text-2xl font-semibold tracking-tight">Votaciones</h1>
         <p className="max-w-2xl text-sm text-muted-foreground">
           Después de cada partido, la afición vota al MVP, al mejor suplente
-          y al jugador con más compromiso.
+          y al jugador con más compromiso. Si el equipo pierde por goleada, ese
+          partido no tiene votación.
         </p>
       </div>
 
