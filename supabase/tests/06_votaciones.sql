@@ -6,7 +6,7 @@ begin;
 -- deja todo como estaba.
 truncate auth.users, public.jugadores, public.partidos cascade;
 
-select plan(37);
+select plan(48);
 
 insert into auth.users (id, email) values
   ('a0000000-0000-0000-0000-000000000001', 'aficionado-a@test.local'),
@@ -42,7 +42,18 @@ values
   ('99999999-0000-0000-0000-000000000009', 'Antiguo', now() - interval '10 days', 'local', 'jugado', 1, 0, now()),
   ('aaaaaaaa-0000-0000-0000-00000000000a', 'Antiguo sin alineación', now() - interval '10 days', 'local', 'jugado', 1, 0, null),
   -- Con la alineación registrada hace un rato pero luego vaciada.
-  ('bbbbbbbb-0000-0000-0000-00000000000b', 'Vaciada', now(), 'local', 'jugado', 1, 0, now());
+  ('bbbbbbbb-0000-0000-0000-00000000000b', 'Vaciada', now(), 'local', 'jugado', 1, 0, now()),
+  -- Goleadas en contra (4 goles o más): sin votación, aunque tengan alineación.
+  ('c1000000-0000-0000-0000-0000000000c1', 'Goleada', now(), 'local', 'jugado', 0, 4, now()),
+  ('c5000000-0000-0000-0000-0000000000c5', 'Goleada fuera', now(), 'visitante', 'jugado', 1, 5, now()),
+  -- Goleada con el resultado puesto pero la alineación sin registrar: tampoco
+  -- queda pendiente.
+  ('c2000000-0000-0000-0000-0000000000c2', 'Goleada sin alineación', now(), 'local', 'jugado', 0, 5, null),
+  -- Una goleada antigua, que de otro modo estaría cerrada y con votos.
+  ('c6000000-0000-0000-0000-0000000000c6', 'Goleada antigua', '2025-10-19 15:00+00', 'local', 'jugado', 0, 4, '2025-10-19 18:00+00'),
+  -- Derrotas y victorias que no son goleada en contra: votación normal.
+  ('c3000000-0000-0000-0000-0000000000c3', 'Derrota por 3', now(), 'local', 'jugado', 0, 3, now()),
+  ('c4000000-0000-0000-0000-0000000000c4', 'Victoria amplia', now(), 'local', 'jugado', 5, 0, now());
 
 insert into public.estadisticas_partido (partido_id, jugador_id, titular, minutos)
 select p.id, j.id, j.titular, j.minutos
@@ -51,7 +62,12 @@ from (values
   ('77777777-0000-0000-0000-000000000007'),
   ('22222222-0000-0000-0000-000000000002'),
   ('55555555-0000-0000-0000-000000000005'),
-  ('66666666-0000-0000-0000-000000000006')
+  ('66666666-0000-0000-0000-000000000006'),
+  ('c1000000-0000-0000-0000-0000000000c1'),
+  ('c5000000-0000-0000-0000-0000000000c5'),
+  ('c6000000-0000-0000-0000-0000000000c6'),
+  ('c3000000-0000-0000-0000-0000000000c3'),
+  ('c4000000-0000-0000-0000-0000000000c4')
 ) as p (id)
 cross join (values
   ('a0000000-0000-0000-0000-00000000000a'::uuid, true, 90),
@@ -69,7 +85,9 @@ from (values
   ('22222222-0000-0000-0000-000000000002', 'b0000000-0000-0000-0000-00000000000b', 1),
   ('55555555-0000-0000-0000-000000000005', 'a0000000-0000-0000-0000-00000000000a', 2),
   ('55555555-0000-0000-0000-000000000005', 'b0000000-0000-0000-0000-00000000000b', 2),
-  ('66666666-0000-0000-0000-000000000006', 'b0000000-0000-0000-0000-00000000000b', 5)
+  ('66666666-0000-0000-0000-000000000006', 'b0000000-0000-0000-0000-00000000000b', 5),
+  -- Votos que había en un partido que luego resultó ser una goleada: no cuentan.
+  ('c6000000-0000-0000-0000-0000000000c6', 'b0000000-0000-0000-0000-00000000000b', 3)
 ) as v (partido, jugador, cuantos)
 cross join lateral generate_series(1, v.cuantos);
 
@@ -113,6 +131,40 @@ select is(
 select is(
   (select estado::text from public.consultar_votacion('aaaaaaaa-0000-0000-0000-00000000000a')),
   'cerrada', 'ni se queda esperándola'
+);
+
+-- Goleadas en contra: sin votación.
+select is(
+  public.diferencia_sin_votacion(), 4,
+  'sin votación a partir de 4 goles de diferencia en contra'
+);
+select is(
+  (select estado::text from public.consultar_votacion('c1000000-0000-0000-0000-0000000000c1')),
+  'sin_votacion', 'perder 0-4 con la alineación registrada: sin votación'
+);
+select is(
+  (select cierre from public.consultar_votacion('c1000000-0000-0000-0000-0000000000c1')),
+  null, 'y no tiene hora de cierre'
+);
+select is(
+  (select estado::text from public.consultar_votacion('c5000000-0000-0000-0000-0000000000c5')),
+  'sin_votacion', 'da igual jugar fuera: perder 1-5 también'
+);
+select is(
+  (select estado::text from public.consultar_votacion('c2000000-0000-0000-0000-0000000000c2')),
+  'sin_votacion', 'se sabe en cuanto se pone el resultado, sin esperar a la alineación'
+);
+select is(
+  (select estado::text from public.consultar_votacion('c6000000-0000-0000-0000-0000000000c6')),
+  'sin_votacion', 'una goleada antigua tampoco figura como cerrada'
+);
+select is(
+  (select estado::text from public.consultar_votacion('c3000000-0000-0000-0000-0000000000c3')),
+  'abierta', 'perder por 3 goles sí tiene votación'
+);
+select is(
+  (select estado::text from public.consultar_votacion('c4000000-0000-0000-0000-0000000000c4')),
+  'abierta', 'ganar por goleada sí tiene votación'
 );
 
 -- Como la aficionada A.
@@ -183,6 +235,19 @@ select throws_ok(
   'ni en un partido sin alineación'
 );
 select throws_ok(
+  $$ select public.votar('c1000000-0000-0000-0000-0000000000c1', 'mvp',
+       'a0000000-0000-0000-0000-00000000000a') $$,
+  'P0001', 'En este partido no hay votación.',
+  'no se vota en un partido perdido por goleada'
+);
+select throws_ok(
+  $$ insert into public.votos (partido_id, categoria, jugador_id)
+     values ('c1000000-0000-0000-0000-0000000000c1', 'mvp',
+       'a0000000-0000-0000-0000-00000000000a') $$,
+  '42501', null,
+  'ni saltándose la función'
+);
+select throws_ok(
   $$ insert into public.votos (partido_id, categoria, perfil_id, jugador_id)
      values ('11111111-0000-0000-0000-000000000001', 'compromiso',
        'b0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-00000000000a') $$,
@@ -250,6 +315,11 @@ select is(
   (select count(*)::int from public.consultar_votacion('11111111-0000-0000-0000-000000000001')),
   1,
   'cualquiera puede consultar si una votación está abierta'
+);
+select is(
+  (select count(*)::int from public.resultados_votacion('c6000000-0000-0000-0000-0000000000c6')),
+  0,
+  'de una goleada no se enseña recuento, aunque tuviera votos'
 );
 
 -- Ranking de la temporada 2025/26: Ana gana en Cerrado y empata en Cerrado 2
