@@ -63,7 +63,7 @@ export function NavegacionInferior() {
                 href={href}
                 aria-current={activa ? "page" : undefined}
                 className={cn(
-                  // El icono de la sección en la que se está, en una píldora lima.
+                  // El icono de la sección en la que se está, en una píldora granate.
                   "group flex h-16 flex-col items-center justify-center gap-1 text-xs",
                   activa
                     ? "font-semibold text-primary"
@@ -73,7 +73,7 @@ export function NavegacionInferior() {
                 <span
                   className={cn(
                     "flex h-7 w-12 items-center justify-center rounded-full",
-                    activa && "bg-lima text-lima-foreground",
+                    activa && "bg-acento text-acento-foreground",
                   )}
                 >
                   <Icono className="size-5" aria-hidden />
@@ -90,7 +90,7 @@ export function NavegacionInferior() {
 
 /**
  * En el ordenador, las secciones en la cabecera, como píldoras (en el móvil
- * van en la barra de abajo). La sección en la que se está, en lima.
+ * van en la barra de abajo). La sección en la que se está, en granate.
  */
 export function NavegacionCabecera() {
   const rutaActual = usePathname();
@@ -109,7 +109,7 @@ export function NavegacionCabecera() {
                 className={cn(
                   "flex h-9 items-center rounded-full px-4 text-sm font-semibold",
                   activa
-                    ? "bg-lima text-lima-foreground"
+                    ? "bg-acento text-acento-foreground"
                     : "text-primary hover:bg-accent",
                 )}
               >

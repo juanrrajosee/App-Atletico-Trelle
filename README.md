@@ -29,7 +29,7 @@ Cualquiera puede abrir la aplicación y ver cuándo juega el equipo, cómo qued�
 | Capa | Herramienta |
 |---|---|
 | Framework | Next.js (App Router) + TypeScript |
-| Estilos | Tailwind CSS + shadcn/ui, con un sistema visual en verde bosque y lima (ver abajo) |
+| Estilos | Tailwind CSS + shadcn/ui, con los colores del club (ver abajo) |
 | Base de datos | Supabase (PostgreSQL) |
 | Autenticación | Supabase Auth |
 | Almacenamiento | Supabase Storage (fotos de la tienda) |
@@ -79,14 +79,14 @@ Borrar un partido borra también su alineación y sus estadísticas.
 
 ### Diseño
 
-Verde bosque y lima: el verde bosque (`#163300`) para los títulos, los bloques oscuros y lo que tiene peso; un lima eléctrico (`#9fe870`) solo para la acción principal y lo que está activo; el resto, blanco y grises verdosos (`#e8ebe6`), con el texto en gris carbón (`#454745`). Los tokens están en `src/app/globals.css`:
+Los colores son los del club, el granate y el blanco de la equipación roxibranca: granate oscuro (`#6e1520`) para los títulos y las portadas, granate (`#8a1c2b`) para la acción principal y lo que está activo, y blanco y grises cálidos para lo demás. Los tokens están en `src/app/globals.css`:
 
 - **Letra:** Inter en toda la aplicación. Los titulares grandes, en su peso más grueso (900), en mayúsculas y con las letras muy juntas (`titular`).
 - **Formas:** botones, etiquetas y pestañas son píldoras; las tarjetas y los campos tienen esquinas de 10 px y los bloques grandes de 28 px.
 - **Plano:** líneas finas en lugar de sombras; solo lo que flota (un aviso, una tarjeta al pasar el ratón) lleva una sombra suave.
-- **Portadas** (`fondo-portada`): bloques verde bosque con los titulares en lima, que invierten solos los colores de lo que llevan dentro.
-- **Resultados y estados:** victoria en lima, empate en gris y derrota con borde, siempre con su letra o su palabra. El rojo se guarda para los errores y para confirmar un borrado; las tarjetas amarillas y rojas de las actas se siguen pintando de su color.
-- **Cabecera:** blanca y fija arriba; en el ordenador, las secciones son píldoras y la activa va en lima.
+- **Portadas** (`fondo-portada`): los dos granates de la camiseta en diagonal, con el texto en blanco; invierten solos los colores de lo que llevan dentro.
+- **Resultados y estados:** victoria en granate, empate en gris y derrota con borde, siempre con su letra o su palabra. Las tarjetas amarillas y rojas de las actas se pintan de su color.
+- **Cabecera:** blanca y fija arriba; en el ordenador, las secciones son píldoras y la activa va en granate.
 
 ### Votaciones
 

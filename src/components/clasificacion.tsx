@@ -19,7 +19,7 @@ export type FilaClasificacion = {
 /**
  * Una clasificación de jugadores, ya ordenada de mejor a peor. Quien empata
  * comparte puesto, y el primero (o los primeros) llevan una copa y van
- * destacados en verde bosque. Cada fila lleva a la ficha del jugador.
+ * destacados en granate. Cada fila lleva a la ficha del jugador.
  */
 export function Clasificacion({
   titulo,
@@ -60,7 +60,7 @@ export function Clasificacion({
                 <span
                   className={cn(
                     "flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold tabular-nums",
-                    lider ? "bg-lima text-lima-foreground" : "bg-muted",
+                    lider ? "bg-primary-foreground text-primary" : "bg-muted",
                   )}
                 >
                   {lider ? (

@@ -32,7 +32,7 @@ function Pestanas({
           className={cn(
             "flex h-10 items-center justify-center rounded-full text-sm font-medium",
             href === activa
-              ? "bg-lima font-semibold text-lima-foreground"
+              ? "bg-acento font-semibold text-acento-foreground"
               : "text-foreground hover:bg-accent",
           )}
         >

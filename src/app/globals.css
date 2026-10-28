@@ -26,9 +26,9 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --color-lima: var(--lima);
+  --color-acento: var(--acento);
   --color-titulo: var(--titulo);
-  --color-lima-foreground: var(--lima-foreground);
+  --color-acento-foreground: var(--acento-foreground);
   /* Esquinas: tarjetas y campos con 10 px; los bloques grandes (portadas),
      28 px; botones, etiquetas y pestañas, píldoras (rounded-full). */
   --radius-sm: 6px;
@@ -53,67 +53,64 @@
 }
 
 :root {
-  /* Verde bosque para el texto fuerte y los bloques oscuros, y un verde
-     lima eléctrico solo para la acción principal y lo activo. */
-  --bosque: #163300;
-  --abeto: #054d28;
-  --lima: #9fe870;
-  --lima-foreground: #163300;
-  --menta: #e2f6d5;
-  --niebla: #e8ebe6;
-  --carbon: #454745;
-  --obsidiana: #0e0f0c;
-  --pizarra: #6a6c6a;
-  --guijarro: #868685;
-  --background: #ffffff;
-  --foreground: var(--carbon);
+  /* Los colores del club, sacados del escudo y de la equipación roxibranca:
+     el granate y el blanco. El granate oscuro para los títulos y las
+     portadas; el granate para la acción principal y lo que está activo. */
+  --club-granate: #6e1520;
+  --club-granate-claro: #801b29;
+  --acento: #8a1c2b;
+  --acento-foreground: #ffffff;
+  --background: #f7f4f3;
+  --foreground: #1c1213;
   --card: #ffffff;
-  --card-foreground: var(--carbon);
+  --card-foreground: #1c1213;
   --popover: #ffffff;
-  --popover-foreground: var(--carbon);
-  --primary: var(--bosque);
+  --popover-foreground: #1c1213;
+  --primary: #8a1c2b;
   --primary-foreground: #ffffff;
-  --secondary: var(--niebla);
-  --secondary-foreground: var(--bosque);
-  --muted: var(--niebla);
-  --muted-foreground: var(--pizarra);
-  --accent: var(--menta);
-  --accent-foreground: var(--bosque);
-  --destructive: #cb272f;
-  --destructive-foreground: #ffffff;
-  --border: rgb(14 15 12 / 0.12);
-  --input: var(--guijarro);
-  --ring: var(--bosque);
-  --titulo: var(--bosque);
-  --chart-1: #163300;
-  --chart-2: #9fe870;
-  --chart-3: #054d28;
-  --chart-4: #e2f6d5;
-  --chart-5: #868685;
+  --secondary: #efe9e8;
+  --secondary-foreground: #1c1213;
+  --muted: #efe9e8;
+  --muted-foreground: #6b6061;
+  --accent: #f7edee;
+  --accent-foreground: #8a1c2b;
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.97 0.01 17.4);
+  --border: #e6dedd;
+  --input: #ddd3d2;
+  --ring: #8a1c2b;
+  --titulo: var(--club-granate);
+  --chart-1: #8a1c2b;
+  --chart-2: #6e1520;
+  --chart-3: #bd1e30;
+  --chart-4: #efe9e8;
+  --chart-5: #6b6061;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0e0f0c;
-    --foreground: #e8ebe6;
-    --card: #151a11;
-    --card-foreground: #e8ebe6;
-    --popover: #151a11;
-    --popover-foreground: #e8ebe6;
-    --primary: var(--lima);
-    --primary-foreground: var(--bosque);
-    --secondary: #1d2617;
-    --secondary-foreground: #e8ebe6;
-    --muted: #1d2617;
-    --muted-foreground: #a3a8a0;
-    --accent: #1f3312;
-    --accent-foreground: #e2f6d5;
-    --destructive: #ef5b62;
-    --destructive-foreground: #ffffff;
-    --border: rgb(255 255 255 / 0.12);
-    --input: #6a6c6a;
-    --ring: var(--lima);
-    --titulo: #ffffff;
+    --acento: #f08a96;
+    --acento-foreground: #140d0e;
+    --background: #140d0e;
+    --foreground: #f7f1f1;
+    --card: #1f1617;
+    --card-foreground: #f7f1f1;
+    --popover: #1f1617;
+    --popover-foreground: #f7f1f1;
+    --primary: #f08a96;
+    --primary-foreground: #140d0e;
+    --secondary: #2b2021;
+    --secondary-foreground: #f7f1f1;
+    --muted: #2b2021;
+    --muted-foreground: #b5a9aa;
+    --accent: #3a2224;
+    --accent-foreground: #f7f1f1;
+    --destructive: oklch(0.704 0.191 22.216);
+    --destructive-foreground: oklch(0.985 0 0);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: #f08a96;
+    --titulo: #f7f1f1;
   }
 }
 
@@ -122,7 +119,7 @@
     @apply border-border outline-ring/50;
   }
 
-  /* Los títulos, en verde bosque, gruesos y con las letras algo juntas. */
+  /* Los títulos, en granate, gruesos y con las letras algo juntas. */
   h1,
   h2,
   h3 {
@@ -130,19 +127,26 @@
   }
 }
 
-/* Las portadas (el inicio, el club, la ficha de un jugador): un bloque verde
-   bosque con el texto en blanco y los titulares en lima. Igual en claro y en
-   oscuro. Lo de dentro (etiquetas, botones, bordes) se ve como sobre oscuro. */
+/* Las portadas (el inicio, el club, la ficha de un jugador): los dos
+   granates de la camiseta, partidos en diagonal, con el texto en blanco. Igual
+   en claro y en oscuro. Lo de dentro (etiquetas, botones, bordes) se ve en
+   blanco sobre granate. */
 @utility fondo-portada {
-  background-color: #163300;
+  background-image: linear-gradient(
+    110deg,
+    var(--club-granate) 58%,
+    var(--club-granate-claro) 58%
+  );
   color: #ffffff;
   --foreground: #ffffff;
-  --titulo: #9fe870;
-  --primary: #9fe870;
-  --primary-foreground: #163300;
-  --muted: #054d28;
-  --muted-foreground: #e2f6d5;
-  --border: rgb(255 255 255 / 0.2);
+  --titulo: #ffffff;
+  --acento: #ffffff;
+  --acento-foreground: #6e1520;
+  --primary: #ffffff;
+  --primary-foreground: #6e1520;
+  --muted: rgb(255 255 255 / 0.15);
+  --muted-foreground: rgb(255 255 255 / 0.8);
+  --border: rgb(255 255 255 / 0.3);
 }
 
 /* Los titulares grandes: muy gruesos, en mayúsculas y apretados. */

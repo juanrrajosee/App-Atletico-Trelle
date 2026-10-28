@@ -46,8 +46,8 @@ export const NOMBRE_ESTADO: Record<EstadoJugador, string> = {
 };
 
 /**
- * Cómo se ve la etiqueta de cada estado: los que no pueden jugar, en verde
- * bosque o con borde; los demás, en suave.
+ * Cómo se ve la etiqueta de cada estado: los que no pueden jugar, en granate
+ * o con borde; los demás, en suave.
  */
 export const COLOR_ESTADO: Record<EstadoJugador, string> = {
   disponible: "bg-accent text-accent-foreground",

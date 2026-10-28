@@ -125,8 +125,8 @@ export default async function PaginaInicio({ searchParams }: PageProps<"/">) {
 }
 
 /**
- * La portada del inicio: un bloque verde bosque con el nombre del club como
- * titular, muy grueso y en lima, el escudo y el botón para ver los partidos.
+ * La portada del inicio: los dos granates de la camiseta con el nombre del club como
+ * titular, muy grueso y en blanco, el escudo y el botón para ver los partidos.
  * En el móvil va de lado a lado, pegada a la barra de arriba.
  */
 function Portada() {
