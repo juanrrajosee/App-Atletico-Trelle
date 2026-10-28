@@ -61,6 +61,8 @@ where id = (select id from auth.users where email = 'correo@ejemplo.com');
 
 ### Plantilla
 
+La plantilla se ve en una **pizarra**: un campo de fútbol (en vertical en el móvil, con nuestra portería abajo; en horizontal en el ordenador) con las cuatro posiciones y cuántos jugadores hay en cada una. Al entrar no sale nadie; al tocar una posición se despliegan debajo sus jugadores, y al tocarla otra vez se recogen (`src/components/plantilla/pizarra.tsx`). Los jugadores de baja, que solo ve el administrador, siguen en su lista debajo.
+
 El administrador da de alta a cada jugador desde *Equipo → Plantilla → Añadir*: nombre, apellidos, **apodo** (opcional), dorsal, posición y estado. Si tiene apodo, la aplicación le llama así en todas partes (plantilla, partidos, votaciones y estadísticas), con el nombre completo debajo en la plantilla y en su ficha. El dorsal no se puede repetir entre los que están en la plantilla. El estado (lesionado, sancionado) solo lo ve el administrador: es un dato de salud y no se publica.
 
 Cada jugador puede tener una **foto** (opcional), que se sube desde su formulario. Es una imagen de una persona, así que solo se sube la de quien ha dado su permiso para publicarla (y, si es menor, el de su padre, madre o tutor); quitarla es igual de fácil. Se reduce en el móvil a 640 píxeles por el lado largo antes de subirla, y se guarda en el bucket público `jugadores`. En la lista ocupa el hueco del dorsal (que pasa a una chapa en la esquina) y en su ficha va junto al nombre; sin foto, todo se ve como antes.

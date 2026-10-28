@@ -5,6 +5,7 @@ import { PestanasEquipo } from "@/components/pestanas";
 import { Dorsal } from "@/components/plantilla/dorsal";
 import { EtiquetaEstado } from "@/components/plantilla/etiqueta-estado";
 import { FotoJugador } from "@/components/plantilla/foto-jugador";
+import { Pizarra } from "@/components/plantilla/pizarra";
 import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
 import {
@@ -56,19 +57,24 @@ export default async function PaginaPlantilla() {
         </p>
       )}
 
-      {/* En el ordenador, las posiciones en dos columnas. */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
-        {POSICIONES.map((posicion) => (
-          <GrupoJugadores
-            key={posicion}
-            titulo={NOMBRE_POSICION_PLURAL[posicion]}
-            jugadores={activos.filter((jugador) => jugador.posicion === posicion)}
-          />
-        ))}
+      {activos.length > 0 && (
+        <Pizarra
+          grupos={POSICIONES.map((posicion) => {
+            const jugadores = activos.filter(
+              (jugador) => jugador.posicion === posicion,
+            );
+            return {
+              posicion,
+              titulo: NOMBRE_POSICION_PLURAL[posicion],
+              cantidad: jugadores.length,
+              contenido: <ListaJugadores jugadores={jugadores} />,
+            };
+          })}
+        />
+      )}
 
-        {/* Los que ya no están en la plantilla solo le interesan a quien la gestiona. */}
-        {administrador && <GrupoJugadores titulo="De baja" jugadores={deBaja} />}
-      </div>
+      {/* Los que ya no están en la plantilla solo le interesan a quien la gestiona. */}
+      {administrador && <GrupoJugadores titulo="De baja" jugadores={deBaja} />}
     </div>
   );
 }
@@ -89,14 +95,21 @@ function GrupoJugadores({
       <h2 className="mb-2 titulo-apartado">
         {titulo}
       </h2>
-      <ul className="flex flex-col gap-2">
-        {jugadores.map((jugador) => (
-          <li key={jugador.id}>
-            <TarjetaJugador jugador={jugador} />
-          </li>
-        ))}
-      </ul>
+      <ListaJugadores jugadores={jugadores} />
     </section>
+  );
+}
+
+/** Las tarjetas de unos jugadores; en el ordenador, en dos columnas. */
+function ListaJugadores({ jugadores }: { jugadores: Jugador[] }) {
+  return (
+    <ul className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+      {jugadores.map((jugador) => (
+        <li key={jugador.id}>
+          <TarjetaJugador jugador={jugador} />
+        </li>
+      ))}
+    </ul>
   );
 }
 
