@@ -80,7 +80,7 @@ export async function SeccionEstadisticas({
                 className="flex flex-col items-center gap-1 bg-card px-1 py-3 text-center"
               >
                 <dt className="text-xs text-muted-foreground">{etiqueta}</dt>
-                <dd className="font-display text-2xl font-semibold tabular-nums">
+                <dd className="font-display text-2xl font-black tracking-tight text-titulo tabular-nums">
                   {valor}
                 </dd>
               </div>
@@ -95,7 +95,7 @@ export async function SeccionEstadisticas({
               <ul className="flex flex-col gap-1.5">
                 {premios.map((premio) => (
                   <li key={premio} className="flex items-center gap-2 text-sm">
-                    <Trophy className="size-4 shrink-0 text-amber-500" aria-hidden />
+                    <Trophy className="size-4 shrink-0" aria-hidden />
                     {premio}
                   </li>
                 ))}

@@ -107,7 +107,7 @@ export default async function PaginaAdministracion() {
 
         {!hayPendientes && (
           <p className="flex items-center gap-2 text-sm">
-            <CircleCheck className="size-4 text-emerald-600" aria-hidden />
+            <CircleCheck className="size-4" aria-hidden />
             Todo al día.
           </p>
         )}
@@ -232,7 +232,7 @@ function FilaAviso({ href, children }: { href: string; children: ReactNode }) {
         href={href}
         className="flex min-h-12 items-center gap-3 px-4 py-2 text-sm active:bg-accent"
       >
-        <CircleAlert className="size-4 shrink-0 text-amber-600" aria-hidden />
+        <CircleAlert className="size-4 shrink-0" aria-hidden />
         <span className="min-w-0 flex-1">{children}</span>
         <ChevronRight
           className="size-4 shrink-0 text-muted-foreground"

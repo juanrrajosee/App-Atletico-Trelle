@@ -43,17 +43,17 @@ export default async function PaginaJugador({
       {/* En el ordenador, el cartel a un lado y sus estadísticas al otro. */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[2fr_3fr] lg:items-start">
         <div className="flex flex-col gap-6">
-          {/* Como los carteles del club: los dos granates de la camiseta, el
+          {/* Como un cartel: el bloque negro de las portadas, el
               dorsal en grande y el escudo en la esquina. */}
-          <header className="relative flex gap-4 overflow-hidden rounded-2xl fondo-camiseta p-5 text-white shadow-sm">
+          <header className="relative flex gap-4 overflow-hidden rounded-2xl fondo-portada p-5 text-white shadow-sm">
             <Escudo tamano={44} decorativo className="absolute top-4 right-4" />
             <div className="flex min-w-0 flex-1 flex-col gap-3">
-              <p className="font-display text-7xl leading-none font-semibold tabular-nums">
+              <p className="titular text-7xl text-titulo tabular-nums">
                 <span className="sr-only">Dorsal </span>
                 {jugador.dorsal}
               </p>
               <div className="flex min-w-0 flex-col gap-1">
-                <h1 className="text-3xl leading-tight font-semibold uppercase">
+                <h1 className="text-3xl leading-tight font-bold text-white uppercase">
                   {nombreVisible(jugador)}
                 </h1>
                 {jugador.apodo && (

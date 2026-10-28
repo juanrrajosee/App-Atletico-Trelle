@@ -19,8 +19,7 @@ export type FilaClasificacion = {
 /**
  * Una clasificación de jugadores, ya ordenada de mejor a peor. Quien empata
  * comparte puesto, y el primero (o los primeros) llevan una copa y van
- * destacados en granate (en claro y en oscuro: es el color del club). Cada
- * fila lleva a la ficha del jugador.
+ * destacados en granate. Cada fila lleva a la ficha del jugador.
  */
 export function Clasificacion({
   titulo,
@@ -54,14 +53,14 @@ export function Clasificacion({
                 className={cn(
                   "flex min-h-14 items-center gap-3 px-4 py-2",
                   lider
-                    ? "bg-granate text-white active:bg-granate/90"
+                    ? "bg-primary text-primary-foreground active:opacity-90"
                     : "active:bg-accent",
                 )}
               >
                 <span
                   className={cn(
                     "flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold tabular-nums",
-                    lider ? "bg-white text-granate" : "bg-muted",
+                    lider ? "bg-primary-foreground text-primary" : "bg-muted",
                   )}
                 >
                   {lider ? (
@@ -78,7 +77,7 @@ export function Clasificacion({
                     className={cn(
                       "truncate",
                       lider
-                        ? "font-display text-lg font-semibold tracking-wide uppercase"
+                        ? "text-lg font-bold tracking-tight"
                         : "font-medium",
                     )}
                   >
@@ -88,7 +87,7 @@ export function Clasificacion({
                     <span
                       className={cn(
                         "text-xs",
-                        lider ? "text-white/80" : "text-muted-foreground",
+                        lider ? "text-primary-foreground/70" : "text-muted-foreground",
                       )}
                     >
                       {fila.detalle}
@@ -98,7 +97,7 @@ export function Clasificacion({
                 <span
                   className={cn(
                     "text-sm tabular-nums",
-                    lider ? "font-medium text-white" : "text-muted-foreground",
+                    lider ? "font-medium text-primary-foreground" : "text-muted-foreground",
                   )}
                 >
                   {fila.valor}

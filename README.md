@@ -29,7 +29,7 @@ Cualquiera puede abrir la aplicación y ver cuándo juega el equipo, cómo qued�
 | Capa | Herramienta |
 |---|---|
 | Framework | Next.js (App Router) + TypeScript |
-| Estilos | Tailwind CSS + shadcn/ui |
+| Estilos | Tailwind CSS + shadcn/ui, con los colores del club (ver abajo) |
 | Base de datos | Supabase (PostgreSQL) |
 | Autenticación | Supabase Auth |
 | Almacenamiento | Supabase Storage (fotos de la tienda) |
@@ -76,6 +76,17 @@ El administrador lo hace todo desde la propia aplicación, en *Partidos*:
 La base de datos cuida de que todo cuadre: un partido jugado tiene siempre los dos goles y uno sin jugar ninguno; los goles de los jugadores no pueden pasar de los del equipo (pueden quedarse por debajo, por ejemplo con un gol en propia puerta del rival); y a un partido con alineación no se le puede quitar el resultado: antes hay que borrarla (dejando a todos como no convocados).
 
 Borrar un partido borra también su alineación y sus estadísticas.
+
+### Diseño
+
+Los colores son los del club, el granate y el blanco de la equipación roxibranca: granate oscuro (`#6e1520`) para los títulos y las portadas, granate (`#8a1c2b`) para la acción principal y lo que está activo, y blanco y grises cálidos para lo demás. Los tokens están en `src/app/globals.css`:
+
+- **Letra:** Inter en toda la aplicación. Los titulares grandes, en su peso más grueso (900), en mayúsculas y con las letras muy juntas (`titular`).
+- **Formas:** botones, etiquetas y pestañas son píldoras; las tarjetas y los campos tienen esquinas de 10 px y los bloques grandes de 28 px.
+- **Plano:** líneas finas en lugar de sombras; solo lo que flota (un aviso, una tarjeta al pasar el ratón) lleva una sombra suave.
+- **Portadas** (`fondo-portada`): los dos granates de la camiseta en diagonal, con el texto en blanco; invierten solos los colores de lo que llevan dentro.
+- **Resultados y estados:** victoria en granate, empate en gris y derrota con borde, siempre con su letra o su palabra. Las tarjetas amarillas y rojas de las actas se pintan de su color.
+- **Cabecera:** blanca y fija arriba; en el ordenador, las secciones son píldoras y la activa va en granate.
 
 ### Votaciones
 

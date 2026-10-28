@@ -149,7 +149,7 @@ export async function SeccionVotaciones({
               {votado ? (
                 <p className="flex items-center gap-2 text-sm">
                   <CircleCheck
-                    className="size-4 shrink-0 text-emerald-600"
+                    className="size-4 shrink-0"
                     aria-hidden
                   />
                   Has votado a {nombreDe(votado)}.
@@ -233,7 +233,7 @@ function ResultadosCategoria({
               )}
             >
               {gana ? (
-                <Trophy className="size-4 shrink-0 text-amber-500" aria-hidden />
+                <Trophy className="size-4 shrink-0" aria-hidden />
               ) : (
                 <span className="size-4 shrink-0" aria-hidden />
               )}

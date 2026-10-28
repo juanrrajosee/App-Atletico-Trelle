@@ -5,6 +5,7 @@ import { ListaNoticias } from "@/components/noticias/lista-noticias";
 import { Racha } from "@/components/partidos/racha";
 import { TarjetaPartido } from "@/components/partidos/tarjeta-partido";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { AvisoVotacion } from "@/components/votaciones/aviso-votacion";
 import { formatearCuantoFalta } from "@/lib/fechas";
 import { temporadaActual } from "@/lib/temporadas";
@@ -18,8 +19,7 @@ import {
 } from "./partidos/datos";
 import { cargarVotacionesAbiertas } from "./votaciones/datos";
 
-const TITULO_SECCION =
-  "font-display text-xl font-semibold tracking-wide uppercase";
+const TITULO_SECCION = "text-2xl font-bold tracking-tight";
 
 export default async function PaginaInicio({ searchParams }: PageProps<"/">) {
   // Al borrar la cuenta se vuelve aquí con ?cuenta=borrada.
@@ -125,22 +125,25 @@ export default async function PaginaInicio({ searchParams }: PageProps<"/">) {
 }
 
 /**
- * La cabecera del inicio: el escudo sobre los dos granates de la camiseta.
- * En el móvil va pegada a la barra de arriba; en el ordenador, con el
- * escudo al lado del nombre.
+ * La portada del inicio: los dos granates de la camiseta con el nombre del club como
+ * titular, muy grueso y en blanco, el escudo y el botón para ver los partidos.
+ * En el móvil va de lado a lado, pegada a la barra de arriba.
  */
 function Portada() {
   return (
-    <section className="fondo-camiseta -mx-4 -mt-6 flex flex-col items-center gap-3 px-4 pt-6 pb-8 text-center text-white sm:rounded-b-2xl lg:mx-0 lg:mt-0 lg:flex-row lg:justify-center lg:gap-6 lg:rounded-2xl lg:py-10 lg:text-left">
-      <Escudo tamano={104} decorativo inmediato className="drop-shadow-lg" />
-      <div>
-        <h1 className="font-display text-3xl font-semibold tracking-wide uppercase lg:text-5xl">
-          Atlético Trelle
+    <section className="fondo-portada -mx-4 -mt-6 flex flex-col gap-8 px-5 pt-10 pb-10 lg:mx-0 lg:mt-0 lg:flex-row lg:items-end lg:justify-between lg:rounded-2xl lg:px-12 lg:py-16">
+      <div className="flex flex-col gap-5">
+        <h1 className="titular text-[clamp(3.5rem,17vw,6.5rem)] text-titulo">
+          Atlético
+          <br />
+          Trelle
         </h1>
-        <p className="mt-1 text-sm text-white/80 lg:text-base">
-          #FamiliaRoxibranca
-        </p>
+        <p className="text-lg text-white/80">#FamiliaRoxibranca</p>
+        <Button asChild className="h-11 w-fit px-6 text-base">
+          <Link href="/partidos">Ver partidos</Link>
+        </Button>
       </div>
+      <Escudo tamano={120} decorativo inmediato className="self-start lg:self-end" />
     </section>
   );
 }

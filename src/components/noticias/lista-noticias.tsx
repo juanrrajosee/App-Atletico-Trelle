@@ -46,14 +46,14 @@ export function ListaNoticias({ noticias }: { noticias: Noticia[] }) {
 }
 
 /**
- * La noticia más reciente, en grande y con los colores del club, encima de
+ * La noticia más reciente, en grande y en el bloque negro, encima de
  * la lista. Si tiene foto, va arriba.
  */
 export function NoticiaDestacada({ noticia }: { noticia: Noticia }) {
   return (
     <Link
       href={`/noticias/${noticia.id}`}
-      className="flex flex-col overflow-hidden rounded-2xl fondo-camiseta text-white shadow-sm active:opacity-90"
+      className="flex flex-col overflow-hidden rounded-2xl fondo-portada text-white shadow-sm active:opacity-90"
     >
       {noticia.foto && (
         <FotoNoticia
@@ -67,7 +67,7 @@ export function NoticiaDestacada({ noticia }: { noticia: Noticia }) {
         <span className="text-xs tracking-[0.2em] text-white/80 uppercase">
           Lo último · <FechaNoticia noticia={noticia} />
         </span>
-        <span className="font-display text-2xl leading-tight font-semibold">
+        <span className="text-2xl leading-tight font-bold tracking-tight text-titulo">
           {noticia.titulo}
         </span>
         <span className="line-clamp-3 text-sm text-white/90">
@@ -99,7 +99,7 @@ export function FechaNoticia({ noticia }: { noticia: Noticia }) {
   if (estado === "programada" && noticia.publicada_en) {
     return (
       <>
-        <Badge className="border-transparent bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300">
+        <Badge className="border-primary bg-transparent text-primary">
           Programada
         </Badge>
         {formatearFechaHora(noticia.publicada_en)}

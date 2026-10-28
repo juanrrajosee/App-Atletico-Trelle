@@ -11,7 +11,7 @@ export function Dorsal({
   return (
     <span
       className={cn(
-        "flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary font-display text-lg font-semibold text-primary-foreground tabular-nums",
+        "flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary text-lg font-bold text-primary-foreground tabular-nums",
         className,
       )}
     >

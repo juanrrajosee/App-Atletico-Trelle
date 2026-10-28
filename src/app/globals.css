@@ -26,23 +26,40 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --font-sans: var(--font-geist-sans);
+  --color-acento: var(--acento);
+  --color-titulo: var(--titulo);
+  --color-acento-foreground: var(--acento-foreground);
+  /* Esquinas: tarjetas y campos con 10 px; los bloques grandes (portadas),
+     28 px; botones, etiquetas y pestañas, píldoras (rounded-full). */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 10px;
+  --radius-xl: 10px;
+  --radius-2xl: 28px;
+  --radius-3xl: 28px;
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
-  --font-display: var(--font-oswald);
-  --color-granate: var(--club-granate);
-  --color-rojo: var(--club-rojo);
+  /* Los titulares grandes: la misma letra en su peso más grueso (900) y con
+     las letras muy juntas. */
+  --font-display: var(--font-inter);
+  /* Plano: líneas finas en lugar de sombras. Solo lo que flota (los avisos,
+     una tarjeta al pasar el ratón) lleva una sombra suave. */
+  --shadow-2xs: none;
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: 0 6px 20px rgb(0 0 0 / 0.08);
+  --shadow-lg: 0 6px 20px rgb(0 0 0 / 0.08);
+  --shadow-xl: 0 10px 32px rgb(0 0 0 / 0.15), 0 40px 40px rgb(0 0 0 / 0.04);
 }
 
 :root {
-  --radius: 0.625rem;
-  /* Colores del club, sacados del escudo y de la equipación roxibranca. */
+  /* Los colores del club, sacados del escudo y de la equipación roxibranca:
+     el granate y el blanco. El granate oscuro para los títulos y las
+     portadas; el granate para la acción principal y lo que está activo. */
   --club-granate: #6e1520;
   --club-granate-claro: #801b29;
-  --club-rojo: #bd1e30;
+  --acento: #8a1c2b;
+  --acento-foreground: #ffffff;
   --background: #f7f4f3;
   --foreground: #1c1213;
   --card: #ffffff;
@@ -62,15 +79,18 @@
   --border: #e6dedd;
   --input: #ddd3d2;
   --ring: #8a1c2b;
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+  --titulo: var(--club-granate);
+  --chart-1: #8a1c2b;
+  --chart-2: #6e1520;
+  --chart-3: #bd1e30;
+  --chart-4: #efe9e8;
+  --chart-5: #6b6061;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
+    --acento: #f08a96;
+    --acento-foreground: #140d0e;
     --background: #140d0e;
     --foreground: #f7f1f1;
     --card: #1f1617;
@@ -90,11 +110,7 @@
     --border: oklch(1 0 0 / 10%);
     --input: oklch(1 0 0 / 15%);
     --ring: #f08a96;
-    --chart-1: oklch(0.488 0.243 264.376);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.769 0.188 70.08);
-    --chart-4: oklch(0.627 0.265 303.9);
-    --chart-5: oklch(0.645 0.246 16.439);
+    --titulo: #f7f1f1;
   }
 }
 
@@ -103,22 +119,41 @@
     @apply border-border outline-ring/50;
   }
 
-  /* Los títulos de página y de sección, con la letra de los carteles del
-     club. */
+  /* Los títulos, en granate, gruesos y con las letras algo juntas. */
   h1,
-  h2 {
-    @apply font-display;
+  h2,
+  h3 {
+    @apply font-semibold tracking-tight text-titulo;
   }
 }
 
-/* Los dos granates de la camiseta, partidos en diagonal: el fondo de las
-   portadas y los carteles del club. Igual en claro y en oscuro. */
-@utility fondo-camiseta {
+/* Las portadas (el inicio, el club, la ficha de un jugador): los dos
+   granates de la camiseta, partidos en diagonal, con el texto en blanco. Igual
+   en claro y en oscuro. Lo de dentro (etiquetas, botones, bordes) se ve en
+   blanco sobre granate. */
+@utility fondo-portada {
   background-image: linear-gradient(
     110deg,
     var(--club-granate) 58%,
     var(--club-granate-claro) 58%
   );
+  color: #ffffff;
+  --foreground: #ffffff;
+  --titulo: #ffffff;
+  --acento: #ffffff;
+  --acento-foreground: #6e1520;
+  --primary: #ffffff;
+  --primary-foreground: #6e1520;
+  --muted: rgb(255 255 255 / 0.15);
+  --muted-foreground: rgb(255 255 255 / 0.8);
+  --border: rgb(255 255 255 / 0.3);
+}
+
+/* Los titulares grandes: muy gruesos, en mayúsculas y apretados. */
+@utility titular {
+  @apply font-display font-black uppercase;
+  letter-spacing: -0.04em;
+  line-height: 0.85;
 }
 
 /* En el ordenador, las páginas de leer o de rellenar (una noticia, un
@@ -127,9 +162,10 @@
   @apply mx-auto w-full max-w-2xl;
 }
 
-/* Tarjeta que reacciona: con ratón, sube unos píxeles y gana sombra; al
-   pulsarla (en el móvil, sobre todo), se hunde un poco. Si el sistema pide
-   reducir el movimiento, no se mueve ni se anima: solo gana la sombra. */
+/* Tarjeta que reacciona: con ratón, sube unos píxeles y gana una sombra
+   suave; al pulsarla (en el móvil, sobre todo), se hunde un poco. Si el
+   sistema pide reducir el movimiento, no se mueve ni se anima: solo gana la
+   sombra. */
 @utility tarjeta-elevable {
   position: relative;
   transition:
@@ -141,15 +177,13 @@
     &:hover {
       z-index: 1;
       transform: translateY(-4px);
-      box-shadow:
-        0 12px 24px -10px rgb(0 0 0 / 0.28),
-        0 4px 8px -4px rgb(0 0 0 / 0.12);
+      box-shadow: 0 6px 20px rgb(0 0 0 / 0.08);
     }
   }
 
   &:active {
     transform: translateY(0) scale(0.98);
-    box-shadow: 0 1px 2px rgb(0 0 0 / 0.1);
+    box-shadow: none;
     transition-duration: 90ms;
   }
 
@@ -166,10 +200,12 @@
 /* Los títulos pequeños que agrupan una lista (Porteros, Goleadores,
    Próximos…). */
 @utility titulo-apartado {
-  @apply font-display text-sm font-medium tracking-wider text-primary uppercase;
+  @apply text-sm font-semibold tracking-tight text-titulo;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+  letter-spacing: -0.006em;
+  font-feature-settings: "calt";
 }

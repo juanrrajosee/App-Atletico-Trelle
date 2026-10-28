@@ -303,7 +303,7 @@ function FilaJugador({
               onChange={(evento) =>
                 onCambio({ tarjeta_roja: evento.target.checked })
               }
-              className="size-5 accent-red-600"
+              className="size-5 accent-primary"
             />
             Tarjeta roja
           </label>

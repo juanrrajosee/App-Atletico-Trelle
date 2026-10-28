@@ -22,7 +22,7 @@ export function Marcador({
       <NombreEquipo equipo={local} grande={grande} />
       <p
         className={cn(
-          "text-center font-display font-semibold whitespace-nowrap tabular-nums",
+          "text-center font-display font-black tracking-tighter whitespace-nowrap text-titulo tabular-nums",
           grande ? "text-5xl" : "text-4xl",
           partido.estado !== "jugado" && "text-2xl text-muted-foreground",
         )}
