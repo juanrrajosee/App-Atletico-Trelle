@@ -101,9 +101,9 @@ function GrupoJugadores({
 }
 
 /**
- * Un jugador. Con foto, en el móvil la foto es grande (con su dorsal en la
- * esquina) y al lado van el nombre y la posición; en el ordenador vuelve a
- * ser una fila compacta. Sin foto, siempre la fila compacta con el dorsal.
+ * Un jugador. Con foto, la foto es grande (con su dorsal en la esquina) y al
+ * lado van el nombre, la posición y el estado; en el ordenador, un poco más
+ * grande todavía. Sin foto, la fila compacta con el dorsal.
  */
 function TarjetaJugador({ jugador }: { jugador: Jugador }) {
   const conFoto = jugador.foto !== null;
@@ -118,7 +118,7 @@ function TarjetaJugador({ jugador }: { jugador: Jugador }) {
       href={`/plantilla/${jugador.id}`}
       className={cn(
         "tarjeta-elevable flex min-h-14 items-center gap-3 rounded-xl border bg-card px-4 py-2 shadow-xs",
-        conFoto && "gap-4 py-3 lg:gap-3 lg:py-2",
+        conFoto && "gap-4 py-3 lg:gap-5",
       )}
     >
       {jugador.foto ? (
@@ -127,10 +127,10 @@ function TarjetaJugador({ jugador }: { jugador: Jugador }) {
         <span className="relative shrink-0">
           <FotoJugador
             ruta={jugador.foto}
-            tamanos="(min-width: 64rem) 40px, 96px"
-            className="aspect-4/5 w-24 rounded-lg lg:size-10"
+            tamanos="(min-width: 64rem) 112px, 96px"
+            className="aspect-4/5 w-24 rounded-lg lg:w-28"
           />
-          <span className="absolute -right-2 -bottom-2 min-w-7 rounded-full bg-primary px-1.5 text-center text-base leading-7 font-bold text-primary-foreground tabular-nums ring-2 ring-card lg:-right-1.5 lg:-bottom-1.5 lg:min-w-5 lg:px-1 lg:text-xs lg:leading-5">
+          <span className="absolute -right-2 -bottom-2 min-w-7 rounded-full bg-primary px-1.5 text-center text-base leading-7 font-bold text-primary-foreground tabular-nums ring-2 ring-card">
             <span className="sr-only">Dorsal </span>
             {jugador.dorsal}
           </span>
@@ -143,7 +143,7 @@ function TarjetaJugador({ jugador }: { jugador: Jugador }) {
           className={cn(
             "font-medium",
             conFoto
-              ? "line-clamp-2 text-lg leading-tight font-semibold lg:truncate lg:text-base lg:font-medium"
+              ? "line-clamp-2 text-lg leading-tight font-semibold lg:text-xl"
               : "truncate",
           )}
         >
@@ -155,23 +155,18 @@ function TarjetaJugador({ jugador }: { jugador: Jugador }) {
           </span>
         )}
         {conFoto && (
-          <span className="mt-0.5 truncate text-sm text-muted-foreground lg:hidden">
+          <span className="mt-0.5 truncate text-sm text-muted-foreground">
             {NOMBRE_POSICION[jugador.posicion]}
           </span>
         )}
-        {/* Con foto, en el móvil la etiqueta va debajo y no le quita sitio al
-            nombre. */}
+        {/* Con foto, la etiqueta va debajo y no le quita sitio al nombre. */}
         {estado && conFoto && (
-          <span className="mt-1.5 flex lg:hidden">
+          <span className="mt-1.5 flex">
             <EtiquetaEstado estado={estado} />
           </span>
         )}
       </span>
-      {estado && (
-        <span className={cn(conFoto && "hidden lg:block")}>
-          <EtiquetaEstado estado={estado} />
-        </span>
-      )}
+      {estado && !conFoto && <EtiquetaEstado estado={estado} />}
       <ChevronRight
         className="size-4 shrink-0 text-muted-foreground"
         aria-hidden
