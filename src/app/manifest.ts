@@ -9,8 +9,8 @@ import type { MetadataRoute } from "next";
  * Next la sirve en /manifest.webmanifest y la enlaza desde todas las páginas.
  */
 export default function manifest(): MetadataRoute.Manifest {
-  // El granate de la cabecera (el mismo que themeColor en layout.tsx).
-  const granate = "#6e1520";
+  // El blanco de la cabecera (el mismo que themeColor en layout.tsx).
+  const blanco = "#ffffff";
 
   return {
     name: "Atlético Trelle",
@@ -21,8 +21,8 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: "/",
     scope: "/",
     display: "standalone",
-    background_color: granate,
-    theme_color: granate,
+    background_color: blanco,
+    theme_color: blanco,
     icons: [
       { src: "/iconos/icono-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
       { src: "/iconos/icono-512.png", sizes: "512x512", type: "image/png", purpose: "any" },

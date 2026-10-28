@@ -21,7 +21,7 @@ function Pestanas({
   return (
     <nav
       aria-label={etiqueta}
-      className="grid gap-1 rounded-lg bg-muted p-1 lg:max-w-md"
+      className="grid gap-1 rounded-full bg-muted p-1 lg:max-w-md"
       style={{ gridTemplateColumns: `repeat(${pestanas.length}, 1fr)` }}
     >
       {pestanas.map(({ href, etiqueta: texto }) => (
@@ -30,10 +30,10 @@ function Pestanas({
           href={href}
           aria-current={href === activa ? "page" : undefined}
           className={cn(
-            "flex h-10 items-center justify-center rounded-md text-sm",
+            "flex h-10 items-center justify-center rounded-full text-sm font-medium",
             href === activa
-              ? "bg-card font-medium text-primary shadow-sm"
-              : "text-muted-foreground",
+              ? "bg-lima font-semibold text-lima-foreground"
+              : "text-foreground hover:bg-accent",
           )}
         >
           {texto}

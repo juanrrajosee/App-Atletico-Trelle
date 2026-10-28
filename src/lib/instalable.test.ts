@@ -19,9 +19,9 @@ test("tiene lo que pide Chrome para ofrecer instalarla", () => {
   assert.equal(ficha.lang, "es");
 });
 
-test("el color es el granate de la cabecera", () => {
-  assert.equal(ficha.theme_color, "#6e1520");
-  assert.equal(ficha.background_color, "#6e1520");
+test("el color es el blanco de la cabecera", () => {
+  assert.equal(ficha.theme_color, "#ffffff");
+  assert.equal(ficha.background_color, "#ffffff");
 });
 
 test("tiene iconos de 192 y de 512 píxeles", () => {

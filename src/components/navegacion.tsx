@@ -51,7 +51,7 @@ export function NavegacionInferior() {
   return (
     <nav
       aria-label="Secciones"
-      className="fixed inset-x-0 bottom-0 z-10 border-t bg-card pb-[env(safe-area-inset-bottom)] lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-10 border-t bg-background pb-[env(safe-area-inset-bottom)] lg:hidden"
     >
       <ul className="mx-auto flex max-w-2xl">
         {SECCIONES.map((seccion) => {
@@ -63,14 +63,21 @@ export function NavegacionInferior() {
                 href={href}
                 aria-current={activa ? "page" : undefined}
                 className={cn(
-                  // La raya de arriba marca la sección en la que se está.
-                  "flex h-16 flex-col items-center justify-center gap-1 border-t-2 text-xs",
+                  // El icono de la sección en la que se está, en una píldora lima.
+                  "group flex h-16 flex-col items-center justify-center gap-1 text-xs",
                   activa
-                    ? "border-primary font-medium text-primary"
-                    : "border-transparent text-muted-foreground",
+                    ? "font-semibold text-primary"
+                    : "text-muted-foreground",
                 )}
               >
-                <Icono className="size-5" aria-hidden />
+                <span
+                  className={cn(
+                    "flex h-7 w-12 items-center justify-center rounded-full",
+                    activa && "bg-lima text-lima-foreground",
+                  )}
+                >
+                  <Icono className="size-5" aria-hidden />
+                </span>
                 {etiqueta}
               </Link>
             </li>
@@ -82,17 +89,17 @@ export function NavegacionInferior() {
 }
 
 /**
- * En el ordenador, las secciones en la cabecera granate (en el móvil van en
- * la barra de abajo).
+ * En el ordenador, las secciones en la cabecera, como píldoras (en el móvil
+ * van en la barra de abajo). La sección en la que se está, en lima.
  */
 export function NavegacionCabecera() {
   const rutaActual = usePathname();
 
   return (
     <nav aria-label="Secciones" className="hidden lg:block">
-      <ul className="flex items-center gap-1">
+      <ul className="flex items-center gap-1 rounded-full bg-muted p-1">
         {SECCIONES.map((seccion) => {
-          const { href, etiqueta, icono: Icono } = seccion;
+          const { href, etiqueta } = seccion;
           const activa = estaActiva(seccion, rutaActual);
           return (
             <li key={href}>
@@ -100,13 +107,12 @@ export function NavegacionCabecera() {
                 href={href}
                 aria-current={activa ? "page" : undefined}
                 className={cn(
-                  "flex h-10 items-center gap-2 rounded-md px-3 text-sm font-medium",
+                  "flex h-9 items-center rounded-full px-4 text-sm font-semibold",
                   activa
-                    ? "bg-white/15 text-white"
-                    : "text-white/80 hover:bg-white/10 hover:text-white",
+                    ? "bg-lima text-lima-foreground"
+                    : "text-primary hover:bg-accent",
                 )}
               >
-                <Icono className="size-4" aria-hidden />
                 {etiqueta}
               </Link>
             </li>

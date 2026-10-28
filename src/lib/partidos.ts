@@ -80,10 +80,12 @@ export const NOMBRE_DESENLACE: Record<Desenlace, string> = {
   derrota: "Derrota",
 };
 
-/** Clases de color de cada desenlace, en claro y en oscuro. */
+/**
+ * Cómo se ve cada desenlace: la victoria en lima, el empate en gris y la
+ * derrota solo con el borde. La letra o la palabra dicen cuál es.
+ */
 export const COLOR_DESENLACE: Record<Desenlace, string> = {
-  victoria:
-    "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
+  victoria: "bg-lima text-lima-foreground",
   empate: "bg-muted text-muted-foreground",
-  derrota: "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300",
+  derrota: "border-primary bg-transparent text-primary",
 };

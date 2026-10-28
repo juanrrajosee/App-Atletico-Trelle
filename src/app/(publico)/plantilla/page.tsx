@@ -130,7 +130,7 @@ function TarjetaJugador({ jugador }: { jugador: Jugador }) {
             tamanos="(min-width: 64rem) 40px, 96px"
             className="aspect-4/5 w-24 rounded-lg lg:size-10"
           />
-          <span className="absolute -right-2 -bottom-2 min-w-7 rounded-md bg-primary px-1.5 text-center font-display text-base leading-7 font-semibold text-primary-foreground tabular-nums ring-2 ring-card lg:-right-1.5 lg:-bottom-1.5 lg:min-w-5 lg:px-1 lg:text-xs lg:leading-5">
+          <span className="absolute -right-2 -bottom-2 min-w-7 rounded-full bg-primary px-1.5 text-center text-base leading-7 font-bold text-primary-foreground tabular-nums ring-2 ring-card lg:-right-1.5 lg:-bottom-1.5 lg:min-w-5 lg:px-1 lg:text-xs lg:leading-5">
             <span className="sr-only">Dorsal </span>
             {jugador.dorsal}
           </span>

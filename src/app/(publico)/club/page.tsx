@@ -49,8 +49,8 @@ export default async function PaginaClub() {
       <PestanasClub activa="/club" />
 
       <div className="-mt-2 flex flex-col gap-4">
-        {/* Como los carteles del club: el escudo sobre los dos granates. */}
-        <header className="fondo-camiseta flex items-center gap-4 rounded-2xl p-5 text-white shadow-sm">
+        {/* Como las portadas: el escudo sobre el bloque negro. */}
+        <header className="fondo-portada flex items-center gap-4 rounded-2xl p-5 text-white shadow-sm">
           <Escudo tamano={72} decorativo />
           <div className="min-w-0">
             <h1 className="text-3xl leading-tight font-semibold uppercase">

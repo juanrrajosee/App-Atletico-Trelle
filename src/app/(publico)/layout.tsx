@@ -14,12 +14,12 @@ export default async function LayoutPublico({ children }: LayoutProps<"/">) {
 
   return (
     <div className="flex flex-1 flex-col">
-      {/* Granate en claro y en oscuro: es el color del club. */}
-      <header className="sticky top-0 z-10 bg-granate text-white shadow-sm">
-        <div className="mx-auto flex h-14 max-w-2xl items-center justify-between gap-4 px-4 lg:h-16 lg:max-w-5xl">
+      {/* Blanca y fija arriba, con una línea fina debajo. */}
+      <header className="sticky top-0 z-10 border-b bg-background">
+        <div className="mx-auto flex h-16 max-w-2xl items-center justify-between gap-4 px-4 lg:max-w-5xl">
           <Link
             href="/"
-            className="flex min-w-0 items-center gap-2 font-display text-lg font-semibold tracking-wide whitespace-nowrap uppercase"
+            className="flex min-w-0 items-center gap-2 text-lg font-black tracking-tight whitespace-nowrap text-primary"
           >
             <Escudo tamano={36} decorativo inmediato />
             <span className="truncate">Atlético Trelle</span>
@@ -31,7 +31,7 @@ export default async function LayoutPublico({ children }: LayoutProps<"/">) {
                 <Button
                   asChild
                   variant="ghost"
-                  className="h-10 px-2 text-white/80 hover:bg-white/10 hover:text-white"
+                  className="h-10 px-3 text-primary"
                 >
                   <Link href="/administracion">Gestión</Link>
                 </Button>
@@ -39,7 +39,7 @@ export default async function LayoutPublico({ children }: LayoutProps<"/">) {
               <Button
                 asChild
                 variant="ghost"
-                className="h-10 px-2 text-white hover:bg-white/10 hover:text-white"
+                className="h-10 px-3 text-primary"
               >
                 <Link href="/cuenta">
                   <CircleUser aria-hidden />
@@ -51,7 +51,8 @@ export default async function LayoutPublico({ children }: LayoutProps<"/">) {
           ) : (
             <Button
               asChild
-              className="h-10 shrink-0 bg-white text-granate hover:bg-white/90"
+              variant="outline"
+              className="h-10 shrink-0 px-5"
             >
               <Link href="/acceso">Entrar</Link>
             </Button>

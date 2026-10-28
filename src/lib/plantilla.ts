@@ -45,13 +45,14 @@ export const NOMBRE_ESTADO: Record<EstadoJugador, string> = {
   baja: "Baja",
 };
 
-/** Clases de color de la etiqueta de cada estado, en claro y en oscuro. */
+/**
+ * Cómo se ve la etiqueta de cada estado: los que no pueden jugar, en verde
+ * bosque o con borde; los demás, en suave.
+ */
 export const COLOR_ESTADO: Record<EstadoJugador, string> = {
-  disponible:
-    "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
-  lesionado: "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300",
-  sancionado:
-    "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300",
+  disponible: "bg-accent text-accent-foreground",
+  lesionado: "bg-primary text-primary-foreground",
+  sancionado: "border-primary bg-transparent text-primary",
   baja: "bg-muted text-muted-foreground",
 };
 

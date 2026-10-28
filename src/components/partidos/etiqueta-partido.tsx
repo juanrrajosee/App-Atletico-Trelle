@@ -46,7 +46,7 @@ export function EtiquetaPartido({
 
   if (partido.estado === "aplazado") {
     return (
-      <Badge className="border-transparent bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300">
+      <Badge className="border-primary bg-transparent text-primary">
         Aplazado
       </Badge>
     );

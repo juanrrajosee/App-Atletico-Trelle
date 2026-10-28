@@ -33,7 +33,7 @@ export function Racha({ partidos }: { partidos: Partido[] }) {
                 href={`/partidos/${partido.id}`}
                 title={`${titulo(partido)}: ${marcador}`}
                 className={cn(
-                  "flex size-11 items-center justify-center rounded-full font-display text-lg font-semibold",
+                  "flex size-11 items-center justify-center rounded-full border border-transparent text-lg font-bold",
                   COLOR_DESENLACE[resultado],
                 )}
               >
