@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { useId, useRef, useState, type ReactNode } from "react";
-import campoHorizontal from "@/assets/campo-horizontal.webp";
 import campoVertical from "@/assets/campo-vertical.webp";
 import type { Posicion } from "@/lib/plantilla";
 import { cn } from "@/lib/utils";
@@ -31,9 +30,9 @@ const FRANJA: Record<Posicion, string> = {
 /**
  * La pizarra de la plantilla: un campo con las cuatro posiciones. Al entrar
  * no enseña a nadie; al pulsar una posición se despliegan debajo sus
- * jugadores, y al pulsarla otra vez se recogen. En el móvil el campo va en
- * vertical, con nuestra portería abajo; en el ordenador, en horizontal, con
- * nuestra portería a la izquierda.
+ * jugadores, y al pulsarla otra vez se recogen. El campo va en vertical, con
+ * nuestra portería abajo; en el ordenador, a la izquierda y fijo mientras se
+ * baja por la lista, que va a su derecha.
  */
 export function Pizarra({ grupos }: { grupos: GrupoPizarra[] }) {
   const [abierta, setAbierta] = useState<Posicion | null>(null);
@@ -61,28 +60,20 @@ export function Pizarra({ grupos }: { grupos: GrupoPizarra[] }) {
   const grupoAbierto = grupos.find((grupo) => grupo.posicion === abierta);
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="relative mx-auto aspect-[475/740] w-full max-w-xs overflow-hidden rounded-2xl lg:aspect-[740/475] lg:max-w-3xl">
+    <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[20rem_minmax(0,1fr)] lg:items-start lg:gap-8">
+      <div className="relative mx-auto aspect-[475/740] w-full max-w-xs overflow-hidden rounded-2xl lg:sticky lg:top-24 lg:max-w-none">
         <Image
           src={campoVertical}
           alt=""
           fill
           sizes="20rem"
           priority
-          className="object-cover lg:hidden"
-        />
-        <Image
-          src={campoHorizontal}
-          alt=""
-          fill
-          sizes="48rem"
-          priority
-          className="hidden object-cover lg:block"
+          className="object-cover"
         />
         <div
           role="group"
           aria-label="Posiciones"
-          className="absolute inset-0 flex flex-col-reverse lg:flex-row"
+          className="absolute inset-0 flex flex-col-reverse"
         >
           {grupos.map(({ posicion, titulo, cantidad }) => {
             const activa = abierta === posicion;
@@ -101,7 +92,7 @@ export function Pizarra({ grupos }: { grupos: GrupoPizarra[] }) {
               >
                 <span
                   className={cn(
-                    "flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold shadow-md ring-offset-2 ring-offset-transparent transition-colors duration-200 group-focus-visible:ring-2 group-focus-visible:ring-white motion-reduce:transition-none lg:text-base",
+                    "flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold shadow-md ring-offset-2 ring-offset-transparent transition-colors duration-200 group-focus-visible:ring-2 group-focus-visible:ring-white motion-reduce:transition-none",
                     activa
                       ? "bg-primary text-primary-foreground"
                       : "bg-white/95 text-primary",

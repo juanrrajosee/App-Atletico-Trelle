@@ -100,10 +100,10 @@ function GrupoJugadores({
   );
 }
 
-/** Las tarjetas de unos jugadores; en el ordenador, en dos columnas. */
+/** Las tarjetas de unos jugadores, una debajo de otra. */
 function ListaJugadores({ jugadores }: { jugadores: Jugador[] }) {
   return (
-    <ul className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+    <ul className="flex flex-col gap-2">
       {jugadores.map((jugador) => (
         <li key={jugador.id}>
           <TarjetaJugador jugador={jugador} />
