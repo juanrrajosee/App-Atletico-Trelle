@@ -105,6 +105,8 @@ export function EditorAlineacion({
       ([jugadorId, { minutos, ...resto }]) => ({
         jugador_id: jugadorId,
         ...resto,
+        // Las asistencias ya no se apuntan: no hay forma fiable de saberlas.
+        asistencias: 0,
         minutos: minutos.trim() === "" ? null : Number(minutos),
       }),
     );
@@ -285,18 +287,12 @@ function FilaJugador({
             onCambio={(goles) => onCambio({ goles })}
           />
           <Contador
-            etiqueta="Asistencias"
-            valor={fila.asistencias}
-            maximo={20}
-            onCambio={(asistencias) => onCambio({ asistencias })}
-          />
-          <Contador
             etiqueta="Amarillas"
             valor={fila.tarjetas_amarillas}
             maximo={2}
             onCambio={(tarjetas_amarillas) => onCambio({ tarjetas_amarillas })}
           />
-          <label className="col-span-2 flex h-11 cursor-pointer items-center gap-3 rounded-md border bg-background px-3 text-sm font-medium has-focus-visible:ring-2 has-focus-visible:ring-ring">
+          <label className="flex h-11 cursor-pointer items-center gap-3 self-end rounded-md border bg-background px-3 text-sm font-medium has-focus-visible:ring-2 has-focus-visible:ring-ring">
             <input
               type="checkbox"
               checked={fila.tarjeta_roja}

@@ -5,6 +5,7 @@ import { formatearFechaCorta } from "@/lib/fechas";
 import { equipos, titulo } from "@/lib/partidos";
 import { nombreTemporada, temporadaDe } from "@/lib/temporadas";
 import { contar } from "@/lib/textos";
+import { cn } from "@/lib/utils";
 import {
   CATEGORIAS_VOTACION,
   NOMBRE_CORTO_CATEGORIA,
@@ -70,14 +71,18 @@ export async function SeccionEstadisticas({
               { etiqueta: "Jugados", valor: suyas.partidos_jugados },
               { etiqueta: "Titular", valor: suyas.titularidades },
               { etiqueta: "Minutos", valor: suyas.minutos },
-              { etiqueta: "Goles", valor: suyas.goles },
-              { etiqueta: "Asistencias", valor: suyas.asistencias },
+              // Los goles ocupan dos huecos: así las siete cifras llenan
+              // las dos filas.
+              { etiqueta: "Goles", valor: suyas.goles, ancho: true },
               { etiqueta: "Amarillas", valor: suyas.tarjetas_amarillas },
               { etiqueta: "Rojas", valor: suyas.tarjetas_rojas },
-            ].map(({ etiqueta, valor }) => (
+            ].map(({ etiqueta, valor, ancho }) => (
               <div
                 key={etiqueta}
-                className="flex flex-col items-center gap-1 bg-card px-1 py-3 text-center"
+                className={cn(
+                  "flex flex-col items-center gap-1 bg-card px-1 py-3 text-center",
+                  ancho && "col-span-2",
+                )}
               >
                 <dt className="text-xs text-muted-foreground">{etiqueta}</dt>
                 <dd className="font-display text-2xl font-black tracking-tight text-titulo tabular-nums">
@@ -130,8 +135,6 @@ function FilaPartido({ fila }: { fila: PartidoDelJugador }) {
     fila.titular ? "Titular" : "Suplente",
     fila.minutos > 0 ? `${fila.minutos} min` : "No jugó",
     fila.goles > 0 && contar(fila.goles, "gol", "goles"),
-    fila.asistencias > 0 &&
-      contar(fila.asistencias, "asistencia", "asistencias"),
     fila.tarjetas_amarillas > 0 &&
       contar(fila.tarjetas_amarillas, "amarilla", "amarillas"),
     fila.tarjeta_roja && "roja",

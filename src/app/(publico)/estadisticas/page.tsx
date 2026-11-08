@@ -107,15 +107,6 @@ export default async function PaginaEstadisticas({
               )}
             />
             <Clasificacion
-              titulo="Asistencias"
-              filas={clasificar(
-                (fila) => fila.asistencias,
-                (fila) => ({
-                  valor: contar(fila.asistencias, "asistencia", "asistencias"),
-                }),
-              )}
-            />
-            <Clasificacion
               titulo="Minutos jugados"
               filas={clasificar(
                 (fila) => fila.minutos,

@@ -73,7 +73,7 @@ El administrador lo hace todo desde la propia aplicación, en *Partidos*:
 
 1. **Añadir el partido** al calendario (*Añadir*): rival, fecha y hora, en casa o fuera y, si se quiere, el campo y la competición. Las horas se escriben y se muestran siempre en hora de España.
 2. **Poner el resultado** cuando se ha jugado (*Editar partido*): el estado pasa a *Jugado* y se piden los goles. Un partido que aún no ha empezado no puede estar jugado. Si se aplaza, se marca como *Aplazado*.
-3. **Registrar la alineación** (*Alineación y estadísticas*): cada jugador como titular, suplente o no convocado y, de los convocados, los minutos, los goles, las asistencias y las tarjetas. Se guarda entera de una vez.
+3. **Registrar la alineación** (*Alineación y estadísticas*): cada jugador como titular, suplente o no convocado y, de los convocados, los minutos, los goles y las tarjetas (las asistencias no se apuntan: no hay forma fiable de saberlas). Se guarda entera de una vez.
 
 La base de datos cuida de que todo cuadre: un partido jugado tiene siempre los dos goles y uno sin jugar ninguno; los goles de los jugadores no pueden pasar de los del equipo (pueden quedarse por debajo, por ejemplo con un gol en propia puerta del rival); y a un partido con alineación no se le puede quitar el resultado: antes hay que borrarla (dejando a todos como no convocados).
 
@@ -113,8 +113,8 @@ Todas estas reglas las impone la base de datos, no solo la pantalla.
 
 Salen solas de los resultados y de las alineaciones que registra el administrador; no hay que meter nada más. Van por temporada (del 1 de julio al 30 de junio), y en cada pantalla se puede pasar a las anteriores, desde la 2023/24.
 
-- **Estadísticas:** el balance del equipo (partidos, victorias, empates, derrotas y goles) y las clasificaciones de goleadores, asistencias, minutos, partidos jugados y tarjetas.
-- **Ficha de cada jugador:** sus convocatorias, partidos jugados, titularidades, minutos, goles, asistencias y tarjetas, lo que ha ganado en las votaciones y la lista de sus partidos.
+- **Estadísticas:** el balance del equipo (partidos, victorias, empates, derrotas y goles) y las clasificaciones de goleadores, minutos, partidos jugados y tarjetas.
+- **Ficha de cada jugador:** sus convocatorias, partidos jugados, titularidades, minutos, goles y tarjetas, lo que ha ganado en las votaciones y la lista de sus partidos.
 
 Solo cuentan los partidos jugados. Un jugador está *convocado* si figura en la alineación, y ha *jugado* si fue titular o salió desde el banquillo. Los jugadores dados de baja conservan su historial.
 
