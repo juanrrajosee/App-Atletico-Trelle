@@ -188,20 +188,13 @@ function GrupoAlineacion({
   );
 }
 
-/** "Delantero · 90 min · 2 goles · 1 asistencia" */
+/** "Delantero · 90 min · 2 goles" */
 function resumen(jugador: Participacion) {
   const partes = [NOMBRE_POSICION[jugador.posicion]];
 
   partes.push(jugador.minutos > 0 ? `${jugador.minutos} min` : "No jugó");
   if (jugador.goles > 0) {
     partes.push(jugador.goles === 1 ? "1 gol" : `${jugador.goles} goles`);
-  }
-  if (jugador.asistencias > 0) {
-    partes.push(
-      jugador.asistencias === 1
-        ? "1 asistencia"
-        : `${jugador.asistencias} asistencias`,
-    );
   }
 
   return partes.join(" · ");
