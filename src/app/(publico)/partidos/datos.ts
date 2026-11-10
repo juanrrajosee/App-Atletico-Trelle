@@ -2,6 +2,7 @@ import "server-only";
 
 import { cache } from "react";
 import { esIdValido } from "@/lib/ids";
+import type { FilaLiga } from "@/lib/clasificacion";
 import type { Partido } from "@/lib/partidos";
 import { POSICIONES, type Posicion } from "@/lib/plantilla";
 import { crearClienteServidor } from "@/lib/supabase/servidor";
@@ -239,4 +240,24 @@ export async function cargarEditorAlineacion(partidoId: string): Promise<{
       ),
     filas: filas.data,
   };
+}
+
+/** La clasificación de la liga de una temporada, del primero al último. */
+export async function cargarClasificacionLiga(
+  temporada: number,
+): Promise<FilaLiga[]> {
+  const supabase = await crearClienteServidor();
+  const { data, error } = await supabase
+    .from("clasificacion")
+    .select(
+      "id, posicion, equipo, puntos, jugados, ganados, empatados, perdidos, sancion, ultimos, zona, actualizada_en",
+    )
+    .eq("temporada", temporada)
+    .order("posicion");
+
+  if (error) {
+    throw new Error(`No se ha podido cargar la clasificación: ${error.message}`);
+  }
+
+  return data;
 }

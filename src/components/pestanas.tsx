@@ -67,3 +67,19 @@ const PESTANAS_CLUB = [
 export function PestanasClub({ activa }: { activa: "/club" | "/tienda" }) {
   return <Pestanas etiqueta="Club" pestanas={PESTANAS_CLUB} activa={activa} />;
 }
+
+const PESTANAS_PARTIDOS = [
+  { href: "/partidos", etiqueta: "Calendario" },
+  { href: "/partidos/clasificacion", etiqueta: "Clasificación" },
+];
+
+/** Partidos: el calendario con los resultados, y la clasificación de la liga. */
+export function PestanasPartidos({
+  activa,
+}: {
+  activa: "/partidos" | "/partidos/clasificacion";
+}) {
+  return (
+    <Pestanas etiqueta="Partidos" pestanas={PESTANAS_PARTIDOS} activa={activa} />
+  );
+}
