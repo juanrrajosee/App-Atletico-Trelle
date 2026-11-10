@@ -14,6 +14,7 @@ Cualquiera puede abrir la aplicación y ver cuándo juega el equipo, cómo qued�
 | Plantilla pública (sin datos de salud) y su gestión por el administrador | Hecho |
 | Cuentas de aficionado: registro con email confirmado o con Google, y recuperación de contraseña | Hecho |
 | Calendario y resultados, con la edición del partido (resultado, alineación y estadísticas) | Hecho |
+| Clasificación de la liga, copiada a mano de la FGF | Hecho |
 | Votaciones por partido y rankings por categoría | Hecho |
 | Estadísticas de la temporada: balance del equipo, clasificaciones y ficha de cada jugador | Hecho |
 | Noticias, con borradores, y su escritura por el administrador | Hecho |
@@ -78,6 +79,12 @@ El administrador lo hace todo desde la propia aplicación, en *Partidos*:
 La base de datos cuida de que todo cuadre: un partido jugado tiene siempre los dos goles y uno sin jugar ninguno; los goles de los jugadores no pueden pasar de los del equipo (pueden quedarse por debajo, por ejemplo con un gol en propia puerta del rival); y a un partido con alineación no se le puede quitar el resultado: antes hay que borrarla (dejando a todos como no convocados).
 
 Borrar un partido borra también su alineación y sus estadísticas.
+
+#### Clasificación
+
+*Partidos* tiene dos pestañas: *Calendario* (los próximos partidos y los resultados) y *Clasificación* (`/partidos/clasificacion`), con la tabla de la liga: posición, equipo, puntos, jugados, ganados, empatados y perdidos, los últimos resultados (G, E o P, del más antiguo al más reciente, como los da la federación) y, si algún equipo la tiene, la sanción en puntos. El Atlético Trelle va destacado, y la franja de color de la federación se enseña en los colores del club con su leyenda (*Ascenso*, *Promoción*, *Descenso*). Debajo, la fecha de la última actualización y la fuente. Se puede ver la de temporadas anteriores con las flechas, si se guardó.
+
+No se calcula con nuestros partidos (solo tenemos los del Trelle): se copia de la web de la FGF después de cada jornada, una fila por equipo y temporada, en la tabla `clasificacion` (migración `0031_clasificacion.sql`). Cualquiera la lee y solo el administrador la cambia. La base de datos comprueba que no se repitan posiciones ni equipos en una temporada, que ganados, empatados y perdidos sumen los jugados y que los últimos resultados sean solo G, E o P. De momento no hay formulario: se actualiza con un script SQL que borra la de la temporada y la vuelve a meter entera.
 
 ### Diseño
 
@@ -144,7 +151,7 @@ El administrador ve *Gestión* en la cabecera. Lleva a un panel con atajos para 
 
 #### Copia de seguridad
 
-El plan gratuito de Supabase no hace copias automáticas (*Database → Backups* lo avisa), así que *Gestión* tiene un botón **Descargar copia**. Baja un único archivo `.sql` (`/administracion/copia`, solo para el administrador) con los datos de las tablas del club: jugadores, partidos, estadísticas de los partidos, noticias, directiva, cuerpo técnico, tienda y la información del club. **No** lleva las fotos (solo su ruta: hay que guardar los originales aparte), ni las cuentas de los aficionados ni sus votos. Lleva datos personales, incluido el estado de salud de los jugadores: se guarda en un sitio privado y no se comparte. Conviene bajar una después de cada partido, o al menos una vez al mes.
+El plan gratuito de Supabase no hace copias automáticas (*Database → Backups* lo avisa), así que *Gestión* tiene un botón **Descargar copia**. Baja un único archivo `.sql` (`/administracion/copia`, solo para el administrador) con los datos de las tablas del club: jugadores, partidos, estadísticas de los partidos, noticias, directiva, cuerpo técnico, tienda, la clasificación de la liga y la información del club. **No** lleva las fotos (solo su ruta: hay que guardar los originales aparte), ni las cuentas de los aficionados ni sus votos. Lleva datos personales, incluido el estado de salud de los jugadores: se guarda en un sitio privado y no se comparte. Conviene bajar una después de cada partido, o al menos una vez al mes.
 
 Para restaurarla en un proyecto de Supabase con las migraciones ya aplicadas (`npx supabase db push`), se pega entera en el *SQL Editor* y se pulsa *Run*. Va en una transacción (si algo falla, no se cambia nada), y si una fila ya existe no se toca, así que se puede ejecutar encima de datos que ya estén. Los textos con comillas, barras o saltos de línea viajan escapados (`src/lib/copia.ts`, con tests). Se probó la ida y vuelta: copia, vaciar las tablas, restaurar con el archivo, y las ocho tablas quedan idénticas.
 
@@ -183,7 +190,7 @@ Los textos son un **borrador** redactado para esta aplicación: antes de abrirla
 
 ### Navegación
 
-La barra de abajo tiene *Inicio*, *Partidos*, *Noticias*, *Equipo* y *Club*. *Equipo* reúne con pestañas la plantilla, las estadísticas y las votaciones, y *Club* la información del club y la tienda. En un móvil caben cómodamente cinco secciones, así que lo que venga se agrupa igual.
+La barra de abajo tiene *Inicio*, *Partidos*, *Noticias*, *Equipo* y *Club*. *Partidos* reúne con pestañas el calendario y la clasificación, *Equipo* la plantilla, las estadísticas y las votaciones, y *Club* la información del club y la tienda. En un móvil caben cómodamente cinco secciones, así que lo que venga se agrupa igual.
 
 **Instalarla en el móvil.** La web lleva la ficha de una app instalable (`src/app/manifest.ts`, que Next sirve en `/manifest.webmanifest`) y los iconos con el escudo en `public/iconos/` (192, 512 y uno adaptable de 512). En Android, Chrome ofrece *Instalar aplicación*; en el iPhone, desde Safari, *Compartir → Añadir a pantalla de inicio*. Se abre a pantalla completa, con su nombre y el escudo, sin la barra del navegador. No funciona sin internet ni manda notificaciones. Un enlace abierto desde WhatsApp u otra app se abre en su navegador interno, que no deja instalarla: hay que abrirlo en Safari o en Chrome. La app instalada guarda su propia sesión, aparte de la del navegador. El escudo original es de 150 píxeles; con uno de más resolución, los iconos grandes saldrían más nítidos.
 
