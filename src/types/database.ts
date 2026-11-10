@@ -46,6 +46,55 @@ export type Database = {
         };
         Relationships: [];
       };
+      clasificacion: {
+        Row: {
+          actualizada_en: string;
+          empatados: number;
+          equipo: string;
+          ganados: number;
+          id: string;
+          jugados: number;
+          perdidos: number;
+          posicion: number;
+          puntos: number;
+          sancion: number;
+          temporada: number;
+          ultimos: string;
+          zona: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          actualizada_en?: string;
+          empatados: number;
+          equipo: string;
+          ganados: number;
+          id?: string;
+          jugados: number;
+          perdidos: number;
+          posicion: number;
+          puntos: number;
+          sancion?: number;
+          temporada: number;
+          ultimos?: string;
+          zona?: string | null;
+        };
+        Update: {
+          actualizada_en?: string;
+          empatados?: number;
+          equipo?: string;
+          ganados?: number;
+          id?: string;
+          jugados?: number;
+          perdidos?: number;
+          posicion?: number;
+          puntos?: number;
+          sancion?: number;
+          temporada?: number;
+          ultimos?: string;
+          zona?: string | null;
+        };
+        Relationships: [];
+      };
       cuerpo_tecnico: {
         Row: {
           cargo: string;

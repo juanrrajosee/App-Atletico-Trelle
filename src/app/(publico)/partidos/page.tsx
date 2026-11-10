@@ -2,6 +2,7 @@ import { Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ListaPartidos } from "@/components/partidos/lista-partidos";
+import { PestanasPartidos } from "@/components/pestanas";
 import { Button } from "@/components/ui/button";
 import { esAdministrador, obtenerUsuarioActual } from "@/lib/auth";
 import { cargarPartidos } from "./datos";
@@ -29,6 +30,8 @@ export default async function PaginaPartidos() {
 
   return (
     <div className="flex flex-col gap-6">
+      <PestanasPartidos activa="/partidos" />
+
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-semibold tracking-tight">Partidos</h1>
         {administrador && (

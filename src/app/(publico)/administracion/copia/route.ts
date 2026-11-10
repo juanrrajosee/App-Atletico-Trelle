@@ -15,6 +15,7 @@ const TABLAS = [
   "directiva",
   "cuerpo_tecnico",
   "productos",
+  "clasificacion",
 ] as const;
 
 /** Cuántas filas pide cada vez (Supabase da como mucho 1000 por consulta). */
